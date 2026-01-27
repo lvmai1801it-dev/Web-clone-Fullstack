@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors - Derived from original design but mapped to Tailwind tokens if possible */
+  /* Primary */
+  --color-primary: #2563EB;
+  --color-primary-dark: #1D4ED8;
+  --color-primary-light: #3B82F6;
+
+  /* Backgrounds */
+  --color-background: #F8FAFC;
+  --color-background-card: #FFFFFF;
+  --color-background-gradient-start: #F0F9FF;
+  --color-background-gradient-end: #FFFFFF;
+
+  /* Text */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+
+  /* Border */
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+
+  /* Status Colors */
+  --color-badge-full: #10B981;
+  --color-badge-hot: #F59E0B;
+  --color-badge-translate: #06B6D4;
+  --color-badge-convert: #F97316;
+
+  /* Badge Gradients (for legacy support) */
+  --gradient-badge-full: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --gradient-badge-hot: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  --gradient-badge-translate: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
+  --gradient-badge-convert: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+
+  /* Other vars */
+  --radius-card: 8px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Base Styles */
+body {
+  background: linear-gradient(180deg, var(--color-background-gradient-start) 0%, var(--color-background-gradient-end) 100%);
+  background-attachment: fixed;
+  color: var(--color-text-primary);
+  /* Tailwind automatically handles font-sans via font-smooth */
+}
+
+/* 
+   LEGACY UTILITIES & COMPONENTS
+   --------------------------------------------------------------------------
+   Restored to fix UI regression in components that haven't been refactored yet.
+   TODO: Refactor components to use Tailwind utilities and remove these classes.
+*/
+
+/* Scrollbar */
+@utility scrollbar-custom {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+  }
+}
+
+/* Container */
+@utility container-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* 1. SECTION TITLE */
+@layer components {
+  .section-title {
+    color: var(--color-primary);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 16px;
+    background: var(--color-background-card);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 0 var(--radius-card) var(--radius-card) 0;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* 2. GRID SYSTEM for Stories */
+@layer components {
+  .story-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .story-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .story-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .story-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+  }
+}
+
+/* 3. LAYOUT MAIN (Sidebar) */
+@layer components {
+  .layout-main {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+  }
+
+  @media (max-width: 1024px) {
+    .layout-main {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* 4. BADGE (Legacy) */
+@layer components {
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-full {
+    background: var(--gradient-badge-full);
+  }
+
+  .badge-hot {
+    background: var(--gradient-badge-hot);
+  }
+
+  .badge-translate {
+    background: var(--gradient-badge-translate);
+  }
+
+  .badge-convert {
+    background: var(--gradient-badge-convert);
+  }
+}
+
+/* 5. AUDIO PLAYER (Legacy) */
+@layer components {
+  .audio-player {
+    background: linear-gradient(135deg, var(--color-background-card) 0%, #F0F9FF 100%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+  }
+
+  .audio-player::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+  }
+
+  /* Range Inputs */
+  .audio-player input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--color-border);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .audio-player input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  }
+
+  .audio-player input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+}
+
+/* 6. Card & Cover (Legacy - used in StoryListItem?) */
+@layer components {
+  .card {
+    background: var(--color-background-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border-light);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .story-cover {
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    width: 100%;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .story-cover img {
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover .story-cover img {
+    transform: scale(1.05);
+  }
+}

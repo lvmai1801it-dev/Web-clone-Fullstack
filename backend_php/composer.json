@@ -1,0 +1,28 @@
+{
+    "name": "audiostories/backend",
+    "description": "Backend API for Audio Stories Platform",
+    "type": "project",
+    "require": {
+        "php": "^8.1",
+        "vlucas/phpdotenv": "^5.6",
+        "firebase/php-jwt": "^6.10",
+        "zircote/swagger-php": "^4.7",
+        "doctrine/annotations": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Lib\\": "lib/",
+            "Config\\": "config/"
+        }
+    },
+    "authors": [
+        {
+            "name": "AudioStories Team"
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {}
+    }
+}
