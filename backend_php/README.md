@@ -2,16 +2,51 @@
 
 Chào mừng bạn đến với dự án Backend của hệ thống Audio Stories.
 
-## 📂 Cấu trúc Tài liệu
-Mọi tài liệu quy hoạch, kiến trúc và theo dõi tiến độ đều được lưu trong thư mục `docs/`. Vui lòng đọc kỹ trước khi bắt đầu làm việc.
+## 📂 Cấu trúc Tài liệu & Hướng dẫn Đọc
 
-* **[docs/task.md](docs/task.md)**: ✅ **START HERE**. Danh sách các đầu việc (Checklist), tiến độ chi tiết của dự án.
-* **[docs/documentation.md](docs/documentation.md)**: Hướng dẫn tổng quan cho Developer (Cách cài đặt, API Reference).
-* **[docs/project_context.md](docs/project_context.md)**: Bối cảnh kỹ thuật, kiến trúc và các quyết định quan trọng.
-* **[docs/implementation_plan.md](docs/implementation_plan.md)**: Kế hoạch triển khai gốc.
-* **[docs/architecture_rules.md](docs/architecture_rules.md)**: Các quy tắc kiến trúc (MVC, Repository) bắt buộc tuân thủ.
-* **[docs/requirements_features.md](docs/requirements_features.md)**: Chi tiết yêu cầu chức năng.
-* **[docs/review_report.md](docs/review_report.md)**: 🔍 Báo cáo review code và các cải tiến cần thiết.
+Mọi tài liệu quy hoạch, kiến trúc và theo dõi tiến độ đều được lưu trong thư mục `docs/`. **Vui lòng đọc theo logic sau để hiểu đầy đủ cấu trúc dự án:**
+
+### 🎯 Logic Đọc Tài liệu (Từ cơ bản → chi tiết)
+
+#### **BƯỚC 1: Hiểu Bối cảnh Dự án (5-10 phút)**
+1. **[PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md)**: Tổng quan dự án, công nghệ sử dụng, quyết định kiến trúc
+
+#### **BƯỚC 2: Hiểu Yêu cầu & Tính năng (10-15 phút)**
+2. **[FEATURES-SPECIFICATION.md](docs/FEATURES-SPECIFICATION.md)**: Chi tiết các yêu cầu chức năng và feature
+
+#### **BƯỚC 3: Nắm Các Quy tắc Kiến trúc (10 phút)**
+3. **[CODE-STANDARDS.md](docs/CODE-STANDARDS.md)**: Các quy tắc kiến trúc (MVC, Repository, Middleware) bắt buộc tuân thủ
+
+#### **BƯỚC 4: Tìm Hiểu Chi tiết Hệ thống (20-30 phút)**
+Chọn một trong các walkthroughs sau tùy interest:
+- **[WALKTHROUGH-CHAPTERS.md](docs/WALKTHROUGH-CHAPTERS.md)**: Tìm hiểu hệ thống Chapter (CRUD, Soft Delete)
+- **[WALKTHROUGH-CORE.md](docs/WALKTHROUGH-CORE.md)**: Tìm hiểu Core optimization (Base Classes, DI Pattern)
+- **[WALKTHROUGH-PUBLIC-API.md](docs/WALKTHROUGH-PUBLIC-API.md)**: Tìm hiểu Public API (Stories, Categories)
+
+#### **BƯỚC 5: Xem Hướng dẫn Developer (15-20 phút)**
+5. **[DEVELOPER-GUIDE.md](docs/DEVELOPER-GUIDE.md)**: Hướng dẫn tổng quan (Cài đặt, Setup, API Reference)
+
+#### **BƯỚC 6: Kiểm tra Danh sách Công việc Hiện tại (5 phút)**
+6. **[TASKS-CURRENT.md](docs/TASKS-CURRENT.md)**: ✅ Danh sách đầu việc (Checklist) và tiến độ chi tiết của dự án
+
+---
+
+### 📊 Tài liệu Khác (Tham khảo khi cần)
+
+#### **Code Review & Refactoring**
+- **[README-CODE-REVIEW.md](docs/README-CODE-REVIEW.md)**: Index tất cả tài liệu review code (đọc tiếp)
+- **[CODE-REVIEW-SUMMARY.md](docs/CODE-REVIEW-SUMMARY.md)**: Tóm tắt 24 issues tìm thấy, đề xuất cải tiến
+- **[FULL-CODE-REVIEW.md](docs/FULL-CODE-REVIEW.md)**: Báo cáo review code chi tiết (24 issues với code examples)
+- **[STRUCTURE-ANALYSIS.md](docs/STRUCTURE-ANALYSIS.md)**: Phân tích cấu trúc tài liệu và optimization
+
+#### **Kế hoạch & Báo cáo**
+- **[REFACTORING-PLAN.md](docs/REFACTORING-PLAN.md)**: Kế hoạch refactoring chi tiết (timeline, effort estimate)
+- **[SPRINT-4-PLAN.md](docs/SPRINT-4-PLAN.md)**: Kế hoạch Sprint 4 chi tiết
+- **[FOUNDATION-REPORT.md](docs/FOUNDATION-REPORT.md)**: Báo cáo nền tảng dự án
+- **[TASKS-ORIGINAL.md](docs/TASKS-ORIGINAL.md)**: Danh sách công việc gốc (tham khảo lịch sử)
+
+#### **Implementation & Guides**
+- **[refactoring-implementation-guide.md](docs/refactoring-implementation-guide.md)**: Hướng dẫn từng bước implement các fix
 
 ## 🚀 Trạng thái hiện tại
 *   **Core**: Hoàn thành.

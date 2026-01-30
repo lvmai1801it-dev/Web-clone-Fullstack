@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation';
 import StoryCard from '@/components/features/story/StoryCard';
 import Pagination from '@/components/ui/Pagination';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockStories, mockRanking } from '@/lib/mock-data';
+import { mockRanking } from '@/lib/mock-data';
 import { Story } from '@/lib/types';
+import { StoryService } from '@/services/story.service';
 
 interface ListPageProps {
     params: Promise<{ slug: string }>;
@@ -33,34 +34,44 @@ export default async function ListPage({ params, searchParams }: ListPageProps) 
     const itemsPerPage = 24;
 
     let title = '';
-    let stories: Story[] = [...mockStories];
+    let stories: Story[] = [];
+    let totalPages = 0;
 
-    // Filter and Sort Logic
+    // Filter and Sort Logic using API
+    let response;
     switch (slug) {
         case 'moi-cap-nhat':
             title = 'Truyện Mới Cập Nhật';
-            // Sort by updatedAt descending
-            stories.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+            response = await StoryService.getNewStories(itemsPerPage, currentPage);
             break;
         case 'hot':
             title = 'Truyện Hot';
-            // Sort by views descending
-            stories.sort((a, b) => b.views - a.views);
+            response = await StoryService.getHotStories(itemsPerPage, currentPage);
             break;
         case 'hoan-thanh':
             title = 'Truyện Full';
-            // Filter by status completed and sort by views
-            stories = stories.filter(s => s.status === 'completed');
-            stories.sort((a, b) => b.views - a.views);
+            response = await StoryService.getCompletedStories(itemsPerPage, currentPage);
             break;
         default:
             notFound();
     }
 
-    // Pagination Logic
-    const totalPages = Math.ceil(stories.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedStories = stories.slice(startIndex, startIndex + itemsPerPage);
+    if (response && response.success && response.data) {
+        // Handle PaginatedResponse
+        stories = response.data.items || [];
+        const pagination = response.data.pagination;
+        totalPages = pagination ? pagination.total_pages : 1;
+    }
+
+    // Since our Service methods currently take 'limit' but not 'page' explicity for these specific helpers,
+    // we might need to update StoryService to accept 'page' or use getAll directly with params.
+    // For now, let's assume the specific methods utilize the limit and we might need to pass page if we want real pagination.
+    // The current getNewStories implementation only takes limit.
+
+    // Let's rely on standard GetAll for better control if specific methods are limited?
+    // Actually, let's stick to specific methods but we should update them to accept page.
+
+    const paginatedStories = stories; // API already paginates
 
     return (
         <div className="min-h-screen bg-gray-50/50 pb-12">

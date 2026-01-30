@@ -8,45 +8,70 @@ use App\Core\Config;
 
 class Logger
 {
-    public static function info(string $message, array $context = []): void
+    private string $logPath;
+
+    public function __construct(string $logPath = null)
     {
-        self::log('INFO', $message, $context);
+        // Default to project_root/storage/logs/app-YYYY-MM-DD.log
+        if ($logPath === null) {
+            $date = date('Y-m-d');
+            $this->logPath = dirname(__DIR__, 2) . "/storage/logs/app-{$date}.log";
+        } else {
+            $this->logPath = $logPath;
+        }
+
+        $this->ensureDirectoryExists();
     }
 
-    public static function error(string $message, array $context = []): void
+    private function ensureDirectoryExists(): void
     {
-        self::log('ERROR', $message, $context);
-    }
-
-    public static function debug(string $message, array $context = []): void
-    {
-        if (Config::get('APP_DEBUG') === 'true') {
-            self::log('DEBUG', $message, $context);
+        $dir = dirname($this->logPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true); // Changed to 0755 for security
         }
     }
 
-    private static function log(string $level, string $message, array $context): void
+    public function info(string $message, array $context = []): void
     {
+        $this->log('INFO', $message, $context);
+    }
+
+    public function error(string $message, array $context = []): void
+    {
+        $this->log('ERROR', $message, $context);
+    }
+
+    public function warning(string $message, array $context = []): void
+    {
+        $this->log('WARNING', $message, $context);
+    }
+
+    public function debug(string $message, array $context = []): void
+    {
+        if (Config::get('APP_DEBUG') === 'true') {
+            $this->log('DEBUG', $message, $context);
+        }
+    }
+
+    public function log(string $level, string $message, array $context = []): void
+    {
+        $timestamp = date('c');
+        $requestId = $_SERVER['REQUEST_ID'] ?? uniqid();
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $method = $_SERVER['REQUEST_METHOD'] ?? '';
+
         $logEntry = [
-            'timestamp' => date('c'),
+            'timestamp' => $timestamp,
             'level' => $level,
             'message' => $message,
             'context' => $context,
-            'request_id' => $_SERVER['REQUEST_ID'] ?? uniqid(),
-            'uri' => $_SERVER['REQUEST_URI'] ?? '',
-            'method' => $_SERVER['REQUEST_METHOD'] ?? ''
+            'request_id' => $requestId,
+            'uri' => $uri,
+            'method' => $method
         ];
 
-        $date = date('Y-m-d');
-        $logFile = __DIR__ . '/../../storage/logs/app-' . $date . '.log';
-
-        // Ensure directory exists
-        if (!is_dir(dirname($logFile))) {
-            mkdir(dirname($logFile), 0777, true);
-        }
-
         file_put_contents(
-            $logFile,
+            $this->logPath,
             json_encode($logEntry, JSON_UNESCAPED_UNICODE) . PHP_EOL,
             FILE_APPEND
         );

@@ -1,8 +1,7 @@
 /vendor
 /.env
-/storage/logs/*.log
-/storage/cache/*
-!/storage/cache/.gitkeep
+/storage/*
+!/storage/**/.gitkeep
 /public/storage
 /.idea
 /.vscode

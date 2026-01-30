@@ -1,7 +1,10 @@
 import Link from 'next/link';
-import { mockCategories } from '@/lib/mock-data';
+import { CategoryService } from '@/services/category.service';
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+    const response = await CategoryService.getAll();
+    const categories = response.success ? response.data : [];
+
     return (
         <div className="min-h-screen bg-gray-50 pb-12">
             {/* Header */}
@@ -14,7 +17,7 @@ export default function CategoriesPage() {
 
             <div className="container-main">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {mockCategories.map((category) => (
+                    {categories.map((category) => (
                         <Link
                             key={category.id}
                             href={`/the-loai/${category.slug}`}
@@ -27,7 +30,7 @@ export default function CategoriesPage() {
                                     </svg>
                                 </div>
                                 <span className="text-xs font-semibold text-gray-400 bg-gray-50 px-2 py-1 rounded-full group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                    {category.storyCount.toLocaleString()} truyện
+                                    {(category.story_count || 0).toLocaleString()} truyện
                                 </span>
                             </div>
 

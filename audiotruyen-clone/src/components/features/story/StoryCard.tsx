@@ -11,10 +11,12 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, showBadge = true, className }: StoryCardProps) {
+
+
     const isCompleted = story.status === 'completed';
     // Format progress text
     const progressText = isCompleted
-        ? `${story.totalChapters} Chương`
+        ? `${story.total_chapters} Chương`
         : `Chương ${story.currentChapter || 0}`;
 
     return (
@@ -26,9 +28,9 @@ export default function StoryCard({ story, showBadge = true, className }: StoryC
             <div className="relative h-full overflow-hidden rounded-[var(--radius-card)] bg-[var(--color-background-card)] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border border-[var(--color-border-light)]">
                 {/* Cover Image Container */}
                 <div className="relative aspect-[2/3] w-full overflow-hidden bg-[var(--color-background)]">
-                    {story.cover ? (
+                    {story.cover_url ? (
                         <Image
-                            src={story.cover}
+                            src={story.cover_url}
                             alt={story.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-105"

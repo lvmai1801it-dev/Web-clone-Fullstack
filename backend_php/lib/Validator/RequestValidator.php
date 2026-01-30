@@ -75,4 +75,39 @@ class RequestValidator
         }
         return $sanitized;
     }
+    /**
+     * Validate and respond with error if validation fails
+     * 
+     * @param array $data Data to validate
+     * @param array $rules Validation rules
+     * @param \App\Core\BaseController $controller Controller instance for error response
+     * @return bool True if validation passed, false otherwise (error response already sent)
+     */
+    public function validateAndRespond(
+        array $data,
+        array $rules,
+        \App\Core\BaseController $controller
+    ): bool {
+        $errors = $this->validate($data, $rules);
+
+        if (!empty($errors)) {
+            $controller->errorResponse('Dữ liệu không hợp lệ', 400, $errors);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get clean data (sanitized) based on rules
+     */
+    public function getCleanData(array $data, array $rules = []): array
+    {
+        // Nếu có rules, chỉ giữ lại fields trong rules
+        if (!empty($rules)) {
+            $data = array_intersect_key($data, array_flip(array_keys($rules)));
+        }
+
+        return $this->sanitize($data);
+    }
 }

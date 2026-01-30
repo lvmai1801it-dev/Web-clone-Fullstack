@@ -1,39 +1,44 @@
-// Story Interface
+// Story Interface (Synced with Backend API)
 export interface Story {
-  id: string;
+  id: number;
   slug: string;
   title: string;
-  cover: string;
-  author: string;
+  cover_url: string; // Changed from cover
+  author_name: string; // Changed from author
+  author_id: number; // Added
   narrator?: string;
-  genres: string[];
+  categories: Category[]; // Changed from genres
   status: 'ongoing' | 'completed';
-  totalChapters: number;
+  total_chapters: number; // Changed from totalChapters
   currentChapter?: number;
   views: number;
-  rating: number;
-  ratingCount: number;
+  rating_avg: string; // Changed from rating
+  rating_count: number; // Changed from ratingCount
   description: string;
-  tags: string[];
-  updatedAt: string;
+  tags?: string[];
+  created_at: string;
+  updated_at: string; // Changed from updatedAt
+  chapters?: Chapter[]; // Added for eager loading
 }
 
 // Chapter Interface
+// Chapter Interface
 export interface Chapter {
-  id: string;
-  storyId: string;
+  id: number;
+  story_id?: number;
   number: number;
   title: string;
-  audioUrl: string;
-  duration: number; // in seconds
+  audio_url: string;
+  duration_sec: number; // in seconds
+  created_at?: string;
 }
 
 // Category Interface
 export interface Category {
-  id: string;
+  id: number;
   slug: string;
   name: string;
-  storyCount: number;
+  story_count?: number; // Changed from storyCount
 }
 
 // Comment Interface

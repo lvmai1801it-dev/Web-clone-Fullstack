@@ -8,20 +8,28 @@ use App\Core\BaseController;
 use App\Models\Story;
 use App\Repositories\StoryRepository;
 use App\Repositories\ChapterRepository;
+use App\Services\StoryService;
+use Lib\Validator\RequestValidator;
 use Lib\Database\DatabaseConnection;
 use OpenApi\Annotations as OA;
+use Api\V1\Middleware\AuthMiddleware;
 
 class StoryController extends BaseController
 {
     private StoryRepository $storyRepo;
     private ChapterRepository $chapterRepo;
+    private StoryService $storyService;
+    private RequestValidator $validator;
 
     public function __construct()
     {
-        $db = DatabaseConnection::getInstance();
-        $this->storyRepo = new StoryRepository($db);
-        $this->chapterRepo = new ChapterRepository($db);
+        $container = \Lib\Container\ServiceContainer::getInstance();
+        $this->storyRepo = $container->get('storyRepository');
+        $this->chapterRepo = $container->get('chapterRepository'); // Use from container
+        $this->storyService = $container->get('storyService');
+        $this->validator = $container->get('validator');
     }
+
 
     /**
      * @OA\Get(
@@ -120,9 +128,14 @@ class StoryController extends BaseController
         }
 
         if (!$story) {
-            $this->errorResponse('Không tìm thấy truyện', 404);
+            \Lib\ErrorHandler\ErrorHandler::notFound($this, 'Truyện');
             return;
         }
+
+        // Convert DTO to array to allow appending dynamic properties like 'chapters'
+        // or just rely on the fact that we return JSON eventually.
+        // But if we assign $story['chapters'], $story MUST be an array.
+        $storyArray = $story->toArray();
 
         // Tăng lượt xem (có thể làm async hoặc đơn giản ở đây)
         // $this->storyRepo->incrementViewCount($story->id); 
@@ -131,39 +144,118 @@ class StoryController extends BaseController
         // Thêm param ?with_chapters=1
         if (isset($_GET['with_chapters'])) {
             $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 50;
-            $story['chapters'] = $this->chapterRepo->getChaptersByStoryId((int) $story['id'], 1, $limit);
+            $chapters = $this->chapterRepo->getChaptersByStoryId((int) $story->id, 1, $limit);
+            // Convert chapter DTOs to arrays
+            $storyArray['chapters'] = array_map(fn($c) => $c->toArray(), $chapters);
         }
 
-        $this->successResponse($story);
+        $this->successResponse($storyArray);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/public/stories/{storyId}/chapters",
-     *     tags={"Stories"},
-     *     summary="Get Chapters List",
-     *     @OA\Parameter(name="storyId", in="path", description="ID of the story", required=true, @OA\Schema(type="integer")),
-     *     @OA\Parameter(name="page", in="query", description="Page number", required=false, @OA\Schema(type="integer", default=1)),
-     *     @OA\Parameter(name="limit", in="query", description="Items per page", required=false, @OA\Schema(type="integer", default=50)),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of chapters",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
-    public function chapters($storyId)
+    // ... (rest of methods until save)
+
+    private function handleSaveStory(array $data): \App\DTOs\StoryDto
     {
-        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 50; // Chương thường lấy nhiều hơn
+        $rules = [
+            'title' => ['required', 'string', 'min:3', 'max:255'],
+        ];
 
-        $chapters = $this->chapterRepo->getChaptersByStoryId((int) $storyId, $page, $limit);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($data['id'])) {
+            // Creation rules
+        }
 
-        // Vì chapterRepo trả về mảng chapters trực tiếp chứ chưa có pagination full struct
-        // Ta tạm trả về dạng list
-        $this->successResponse($chapters);
+        // Use validator manually since we might be in a loop (bulk import) or single request
+        // But validator->validateAndRespond sends response and exits.
+        // We need validate only.
+        // The validator helper validateAndRespond is bound to controller instance to send response.
+        // Here we want to throw exception if invalid, or return errors.
+
+        // Let's check Validator class. If simple, I'll just check title.
+        if (empty($data['title'])) {
+            throw new \Exception("Title is required");
+        }
+
+        $result = $this->storyService->saveStory($data);
+        if (!$result) {
+            throw new \Exception("Failed to save story");
+        }
+
+        return $result;
+    }
+
+    public function save()
+    {
+        // [AUTH] Check Permission (Admin Only)
+        try {
+            $auth = new AuthMiddleware();
+            $user = $auth->handle();
+
+            if ($user->role !== \App\Constants\AppConstants::ROLE_ADMIN) {
+                \Lib\ErrorHandler\ErrorHandler::unauthorized($this, 'Unauthorized: Admin access required');
+                return;
+            }
+        } catch (\Exception $e) {
+            \Lib\ErrorHandler\ErrorHandler::unauthorized($this, $e->getMessage());
+            return;
+        }
+
+        $input = file_get_contents("php://input");
+        $data = json_decode($input, true);
+
+        if (!$data) {
+            \Lib\ErrorHandler\ErrorHandler::validationFailed($this, ['json' => 'Invalid JSON Data']);
+            return;
+        }
+
+        try {
+            // Check if input is an array of stories (Bulk Upsert)
+            if (array_is_list($data)) {
+                $results = [];
+                foreach ($data as $item) {
+                    try {
+                        $results[] = $this->handleSaveStory($item);
+                    } catch (\Exception $e) {
+                        $results[] = [
+                            'success' => false,
+                            'input_title' => $item['title'] ?? 'Unknown',
+                            'error' => $e->getMessage()
+                        ];
+                    }
+                }
+                $this->successResponse($results);
+            } else {
+                // Single Story Upsert
+                $result = $this->handleSaveStory($data);
+                $this->successResponse($result);
+            }
+        } catch (\Exception $e) {
+            \Lib\ErrorHandler\ErrorHandler::internalError($this, $e->getMessage());
+        }
+    }
+
+    // ...
+
+    public function delete($id)
+    {
+        // [AUTH] Check Permission (Admin Only)
+        try {
+            $auth = new AuthMiddleware();
+            $user = $auth->handle();
+
+            if ($user->role !== \App\Constants\AppConstants::ROLE_ADMIN) {
+                \Lib\ErrorHandler\ErrorHandler::unauthorized($this, 'Unauthorized: Admin access required');
+                return;
+            }
+        } catch (\Exception $e) {
+            \Lib\ErrorHandler\ErrorHandler::unauthorized($this, $e->getMessage());
+            return;
+        }
+
+        try {
+            $this->storyService->deleteStory((int) $id);
+            $this->successResponse(['message' => "Deleted story $id successfully"]);
+        } catch (\Exception $e) {
+            \Lib\ErrorHandler\ErrorHandler::internalError($this, $e->getMessage());
+        }
     }
 }

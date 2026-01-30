@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation';
 import StoryCard from '@/components/features/story/StoryCard';
 import Pagination from '@/components/ui/Pagination';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockCategories, mockRanking, getStoriesByCategory } from '@/lib/mock-data';
+import { mockRanking } from '@/lib/mock-data';
+import { CategoryService } from '@/services/category.service';
+import { StoryService } from '@/services/story.service';
 
 interface CategoryPageProps {
     params: Promise<{ slug: string }>;
@@ -13,7 +15,8 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: CategoryPageProps) {
     const { slug } = await params;
-    const category = mockCategories.find(cat => cat.slug === slug);
+    const response = await CategoryService.getBySlug(slug);
+    const category = response.success ? response.data : null;
 
     if (!category) {
         return {
@@ -34,27 +37,45 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
 
+    // Get slug from params
     const { slug } = await params;
     const { page } = await searchParams;
     const currentPage = Number(page) || 1;
     const itemsPerPage = 24;
 
-    // Find category by slug
-    const category = mockCategories.find(cat => cat.slug === slug);
+    // 1. Fetch all categories (User modified service to return list)
+    const response = await CategoryService.getBySlug(slug); // Note: This now calls /public/categories
+
+    if (!response.success || !response.data) {
+        notFound();
+    }
+
+    // response.data is Category[] (Array of categories)
+    // We need to find the specific category matching the slug
+    const categories = Array.isArray(response.data) ? response.data : [response.data];
+    const category = categories.find((cat: any) => cat.slug === slug); // Use temporary any if type mismatch, but likely Category type is fine if it has slug
 
     if (!category) {
         notFound();
     }
 
-    // Get stories for this category
-    const allCategoryStories = getStoriesByCategory(slug);
+    // 2. Fetch stories by category_id
+    const storiesRes = await StoryService.getAll({
+        category_id: category.id,
+        page: currentPage,
+        limit: itemsPerPage,
+        sort: 'updated_at', // Optional: sort by something relevant
+        order: 'desc'
+    });
 
-    // Pagination logic
-    const totalItems = allCategoryStories.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentStories = allCategoryStories.slice(startIndex, endIndex);
+    const currentStories = storiesRes.success ? storiesRes.data?.items || [] : [];
+    const pagination = storiesRes.success ? storiesRes.data?.pagination : null;
+    const totalPages = pagination ? pagination.total_pages : 1;
+    const totalItems = pagination ? pagination.total : 0;
+
+    // 3. Fetch all categories for sidebar
+    const allCategoriesRes = await CategoryService.getAll();
+    const allCategories = allCategoriesRes.success ? allCategoriesRes.data || [] : [];
 
     return (
         <div className="min-h-screen bg-gray-50/50 pb-12">
@@ -79,7 +100,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                 {category.name}
                             </h1>
                             <p className="text-slate-500 text-sm mt-1">
-                                Tổng hợp {totalItems} truyện {category.name.toLowerCase()} chọn lọc
+                                Tổng hợp {category.story_count || 0} truyện {category.name} chọn lọc
+
                             </p>
                         </div>
                     </div>
@@ -93,9 +115,9 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm mb-8">
                         {currentStories.length > 0 ? (
                             <div className="story-grid">
-                                {currentStories.map((story) => (
-                                    <StoryCard key={story.id} story={story} />
-                                ))}
+                                {currentStories.map((story) => {
+                                    return <StoryCard key={story.id} story={story} />
+                                })}
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-20 text-slate-400">
@@ -133,7 +155,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                         </div>
                         <div className="p-4">
                             <div className="flex flex-wrap gap-2">
-                                {mockCategories.map((cat) => (
+                                {allCategories.map((cat) => (
                                     <Link
                                         key={cat.id}
                                         href={`/the-loai/${cat.slug}`}

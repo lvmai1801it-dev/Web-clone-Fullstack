@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import AudioPlayer from '@/components/features/audio/AudioPlayer';
 import StoryHero from '@/components/features/story/StoryHero';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { getStoryBySlug, mockRanking } from '@/lib/mock-data';
+import { mockRanking } from '@/lib/mock-data';
+import { StoryService } from '@/services/story.service';
 
 interface StoryPageProps {
     params: Promise<{ slug: string }>;
@@ -11,18 +12,22 @@ interface StoryPageProps {
 
 export default async function StoryPage({ params }: StoryPageProps) {
     const { slug } = await params;
-    const story = getStoryBySlug(slug);
 
-    if (!story) {
+    // Fetch story from API (with chapters)
+    const response = await StoryService.getById(slug, true);
+
+    if (!response.success || !response.data) {
         notFound();
     }
 
-    // Mock chapters for demo
-    const mockChapters = Array.from({ length: Math.min(story.totalChapters, 10) }, (_, i) => ({
-        number: i + 1,
-        title: `Chương ${i + 1}`,
-        audioUrl: '', // Would be real URLs in production
-    }));
+    const story = response.data;
+
+    // Use actual chapters from API
+    const chapters = story.chapters?.map(chap => ({
+        number: chap.number,
+        title: `Chương ${chap.number}: ${chap.title}`,
+        audioUrl: chap.audio_url,
+    })) || [];
 
     return (
         <div className="min-h-screen bg-gray-50/50">
@@ -49,7 +54,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
 
                         {/* Tags */}
                         <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-gray-50">
-                            {story.tags.map((tag) => (
+                            {(story.tags || []).map((tag) => (
                                 <Link
                                     key={tag}
                                     href={`/tag/${tag.toLowerCase().replace(' ', '-')}`}
@@ -65,7 +70,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
                     <section>
                         <AudioPlayer
                             title="Nghe Truyện"
-                            chapters={mockChapters}
+                            chapters={chapters}
                             currentChapter={1}
                         />
                     </section>

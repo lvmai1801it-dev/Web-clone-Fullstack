@@ -24,12 +24,14 @@ class JwtAuthenticator
         $this->expiration = (int) Config::get('JWT_EXPIRATION', 3600);
     }
 
-    public function createToken(array $payload): string
+    public function createToken(array $payload, ?int $expireSeconds = null): string
     {
         $issuedAt = time();
+        $expiration = $expireSeconds ?? $this->expiration;
+
         $tokenPayload = array_merge($payload, [
             'iat' => $issuedAt,
-            'exp' => $issuedAt + $this->expiration
+            'exp' => $issuedAt + $expiration
         ]);
 
         return JWT::encode($tokenPayload, $this->secret, $this->algo);

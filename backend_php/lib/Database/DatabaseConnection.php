@@ -40,7 +40,7 @@ class DatabaseConnection
 
                 self::$instance = new PDO($dsn, $user, $pass, $options);
             } catch (PDOException $e) {
-                Logger::error('Database Connection Failed', ['error' => $e->getMessage()]);
+                (new Logger())->error('Database Connection Failed', ['error' => $e->getMessage()]);
                 // In production, don't show real error details
                 throw new Exception('Database Connection Error');
             }

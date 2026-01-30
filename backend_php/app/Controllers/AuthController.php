@@ -13,21 +13,17 @@ class AuthController extends BaseController
 {
     private AuthService $authService;
     private RequestValidator $validator;
+    private \Lib\Logger\Logger $logger;
 
-    // Dependency Injection: Service và Validator được tự động tiêm vào (hoặc khởi tạo ở đây nếu chưa có DI container)
+
     public function __construct()
     {
-        // Trong môi trường PHP thuần đơn giản, ta tự khởi tạo dependencies
-        // Thực tế nên dùng Container để quản lý việc này
-        global $authService; // Giả sử service được khởi tạo global ở index hoặc bootstrap, hoặc ta new ở đây
+        // Use ServiceContainer to get dependencies
+        $container = \Lib\Container\ServiceContainer::getInstance();
 
-        // Tạm thời new trực tiếp để dễ hiểu flow
-        $db = \Lib\Database\DatabaseConnection::getInstance();
-        $repo = new \App\Repositories\UserRepository($db);
-        $jwt = new \Lib\Auth\JwtAuthenticator();
-
-        $this->authService = new AuthService($repo, $jwt);
-        $this->validator = new RequestValidator();
+        $this->authService = $container->get('authService');
+        $this->validator = $container->get('validator');
+        $this->logger = $container->get(\Lib\Logger\Logger::class);
     }
 
     /**
@@ -69,18 +65,19 @@ class AuthController extends BaseController
         ];
 
         // 3. Kiểm tra dữ liệu
-        $errors = $this->validator->validate($data, $rules);
-        if (!empty($errors)) {
-            // Nếu có lỗi, trả về lỗi 400 Bad Request
-            $this->errorResponse('Dữ liệu không hợp lệ', 400, $errors);
+        if (!$this->validator->validateAndRespond($data, $rules, $this)) {
+            $this->logger->warning('Register validation failed', ['data' => $data]);
             return;
         }
 
         // 4. Sanitize (Làm sạch dữ liệu để chống XSS)
-        $cleanData = $this->validator->sanitize($data);
+        $cleanData = $this->validator->getCleanData($data, $rules);
 
         // 5. Gọi Service để xử lý logic đăng ký
         $user = $this->authService->register($cleanData);
+
+        // Log success
+        $this->logger->info('User registered successfully', ['user_id' => $user->id, 'email' => $user->email]);
 
         // 6. Trả về kết quả thành công (201 Created)
         $this->successResponse($user, 'Đăng ký thành công', 201);
@@ -120,20 +117,55 @@ class AuthController extends BaseController
         $data = $this->getJsonBody();
 
         // Validate cơ bản
-        $errors = $this->validator->validate($data, [
+        $rules = [
             'email' => ['required', 'email'],
             'password' => ['required', 'string']
-        ]);
+        ];
 
-        if (!empty($errors)) {
-            $this->errorResponse('Vui lòng nhập email và mật khẩu', 400, $errors);
+        if (!$this->validator->validateAndRespond($data, $rules, $this)) {
             return;
         }
 
-        // Gọi Service xử lý đăng nhập & lấy token
-        $result = $this->authService->login($data['email'], $data['password']);
+        try {
+            // Gọi Service xử lý đăng nhập & lấy token
+            $result = $this->authService->login($data['email'], $data['password']);
 
-        $this->successResponse($result, 'Đăng nhập thành công');
+            $this->logger->info('User logged in', ['email' => $data['email']]);
+            $this->successResponse($result, 'Đăng nhập thành công');
+        } catch (\Exception $e) {
+            $this->logger->warning('Login failed', ['email' => $data['email'], 'reason' => $e->getMessage()]);
+            throw $e;
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/user/logout",
+     *     tags={"Auth"},
+     *     summary="Logout user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout Successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Đăng xuất thành công")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
+    public function logout()
+    {
+        // 1. Với Stateless JWT, server không lưu session nên không thể "delete session".
+        // 2. Client chịu trách nhiệm xóa token khỏi LocalStorage/Cookie.
+        // 3. (Tuỳ chọn) Server có thể blacklist token này trong Redis nếu cần bảo mật cao (chưa implement ở đây).
+
+        // Chỉ cần trả về success để client biết response ok
+        $this->successResponse(null, 'Đăng xuất thành công (Vui lòng xóa token phía Client)');
     }
 
     /**
@@ -158,7 +190,7 @@ class AuthController extends BaseController
         // Vì router đơn giản chưa hỗ trợ middleware config, ta gọi thủ công ở đây
         // Trong thực tế (Laravel/Symfony), việc này được cấu hình ở Router
         try {
-            $middleware = new \App\Middleware\AuthMiddleware();
+            $middleware = new \Api\V1\Middleware\AuthMiddleware();
             $middleware->handle(); // Nếu k có token hoặc sai sẽ throw Exception 401
         } catch (\App\Exceptions\AuthenticationException $e) {
             // Ném tiếp để Global Handler xử lý trả về 401

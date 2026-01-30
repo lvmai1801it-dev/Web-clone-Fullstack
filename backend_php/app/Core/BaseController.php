@@ -10,11 +10,20 @@ class BaseController
     {
         http_response_code($statusCode);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        try {
+            echo json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        } catch (\JsonException $e) {
+            // Fallback for valid internal error in case of encoding failure
+            echo json_encode([
+                'success' => false,
+                'message' => 'JSON Encoding Error: ' . $e->getMessage()
+            ]);
+            http_response_code(500);
+        }
         exit;
     }
 
-    protected function successResponse(mixed $data = null, string $message = 'Success', int $statusCode = 200): void
+    public function successResponse(mixed $data = null, string $message = 'Success', int $statusCode = 200): void
     {
         $this->jsonResponse([
             'success' => true,
@@ -24,7 +33,7 @@ class BaseController
         ], $statusCode);
     }
 
-    protected function errorResponse(string $message, int $statusCode = 400, ?array $errors = null): void
+    public function errorResponse(string $message, int $statusCode = 400, ?array $errors = null): void
     {
         $response = [
             'success' => false,
@@ -57,10 +66,19 @@ class BaseController
     }
 
     // Helper to get request body
-    protected function getJsonBody(): array
+    protected function getJsonInput(): array
     {
         $content = file_get_contents('php://input');
-        $data = json_decode($content, true);
-        return is_array($data) ? $data : [];
+        if (empty($content)) {
+            return [];
+        }
+
+        try {
+            $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+            return is_array($data) ? $data : [];
+        } catch (\JsonException $e) {
+            $this->errorResponse('Invalid JSON format', 400);
+            return [];
+        }
     }
 }

@@ -22,7 +22,7 @@ class AuthService extends BaseService
     }
 
     // Hàm Đăng ký thành viên mới
-    public function register(array $data): array
+    public function register(array $data): \App\DTOs\UserDto
     {
         // 1. Kiểm tra xem email đã tồn tại chưa
         if ($this->userRepository->exists($data['email'])) {
@@ -38,12 +38,7 @@ class AuthService extends BaseService
         $userId = $this->userRepository->create($data);
 
         // 4. Lấy thông tin user vừa tạo để trả về
-        $user = $this->userRepository->findById($userId);
-
-        // Loại bỏ password khỏi kết quả trả về để bảo mật
-        unset($user['password']);
-
-        return $user;
+        return $this->userRepository->findById($userId);
     }
 
     // Hàm Đăng nhập
@@ -54,25 +49,23 @@ class AuthService extends BaseService
 
         // 2. Kiểm tra mật khẩu
         // password_verify so sánh mật khẩu nhập vào (thô) với hash trong db (cột 'password')
-        if (!$user || !password_verify($password, $user['password'])) {
+        if (!$user || !password_verify($password, $user->getPassword() ?? '')) {
             throw new AuthenticationException("Email hoặc mật khẩu không chính xác");
-        }
-
-        // Kiểm tra trạng thái tài khoản
-        // Sử dụng ?? 'active' để tránh lỗi nếu cột status không tồn tại trong DB
-        if (($user['status'] ?? 'active') === 'banned') {
-            throw new AuthenticationException("Tài khoản này đã bị khóa");
         }
 
         // 3. Sinh Token JWT (Giấy thông hành)
         // Token này chứa ID và Email, user sẽ gửi kèm token này ở các request sau
-        $token = $this->jwt->createToken([
-            'id' => $user['id'],
-            'email' => $user['email'],
-            'role' => $user['role']
-        ]);
+        // Check environment for Admin Infinite Token
+        $expiration = null;
+        if (($user->role ?? '') === \App\Constants\AppConstants::ROLE_ADMIN && \App\Core\Config::get('APP_ENV') === \App\Constants\AppConstants::ENV_LOCAL) {
+            $expiration = \App\Constants\AppConstants::TOKEN_EXPIRY_LONG; // 10 years (effectively infinite for dev)
+        }
 
-        unset($user['password']);
+        $token = $this->jwt->createToken([
+            'id' => $user->id,
+            'email' => $user->email,
+            'role' => $user->role
+        ], $expiration);
 
         return [
             'token' => $token,

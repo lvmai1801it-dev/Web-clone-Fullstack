@@ -2,21 +2,26 @@ import Link from 'next/link';
 import StoryCard from '@/components/features/story/StoryCard';
 import StoryListItem from '@/components/features/story/StoryListItem';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockStories, mockRanking } from '@/lib/mock-data';
+import { mockRanking } from '@/lib/mock-data';
+import { StoryService } from '@/services/story.service';
 
-export default function Home() {
-  // Get different story sets for different sections
-  const newStories = mockStories.slice(0, 6);
-  const completedStories = mockStories.filter(s => s.status === 'completed');
-  // Use deterministic order for SSR hydration safety (no Math.random in render)
-  const randomStories = [...mockStories].reverse();
+export default async function Home() {
+  // Fetch data from API
+  const [newStoriesRes, completedStoriesRes, hotStoriesRes] = await Promise.all([
+    StoryService.getNewStories(6),
+    StoryService.getCompletedStories(5),
+    StoryService.getHotStories(12)
+  ]);
+
+  const newStories = newStoriesRes.success ? newStoriesRes.data?.items || [] : [];
+  const completedStories = completedStoriesRes.success ? completedStoriesRes.data?.items || [] : [];
+  const randomStories = hotStoriesRes.success ? hotStoriesRes.data?.items || [] : [];
 
   return (
     <div className="container-main py-6">
       <div className="layout-main">
         {/* Main Content */}
         <div className="space-y-8">
-          {/* Section: Truyện Mới Cập Nhật */}
           {/* Section: Truyện Mới Cập Nhật */}
           <section>
             <div className="section-title flex items-center justify-between">
@@ -57,24 +62,24 @@ export default function Home() {
               </Link>
             </div>
             <div className="bg-white rounded border border-[var(--color-border)] p-4">
-              {completedStories.slice(0, 5).map((story) => (
+              {completedStories.map((story) => (
                 <StoryListItem key={story.id} story={story} />
               ))}
             </div>
           </section>
 
-          {/* Section: Truyện Ngẫu Nhiên */}
+          {/* Section: Truyện Hot (Ngẫu nhiên placeholder replaced by Hot) */}
           <section>
             <h2 className="section-title mb-4">
               <span className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
                 </svg>
-                TRUYỆN NGẪU NHIÊN
+                TRUYỆN HOT NHIỀU NGƯỜI NGHE
               </span>
             </h2>
             <div className="story-grid">
-              {randomStories.slice(0, 12).map((story) => (
+              {randomStories.map((story) => (
                 <StoryCard key={story.id} story={story} />
               ))}
             </div>

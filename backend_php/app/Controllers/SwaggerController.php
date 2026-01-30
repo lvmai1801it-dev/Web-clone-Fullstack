@@ -17,8 +17,8 @@ use OpenApi\Annotations as OA;
  *     )
  * )
  * @OA\Server(
- *     description="Local Development Server",
- *     url="http://localhost/backend_php"
+ *     description="Current Server",
+ *     url="/"
  * )
  * @OA\SecurityScheme(
  *     securityScheme="bearerAuth",

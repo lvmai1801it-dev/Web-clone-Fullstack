@@ -3,18 +3,21 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, KeyboardEvent, useEffect, useRef } from 'react';
-import { mockCategories } from '@/lib/mock-data';
+import { CategoryService } from '@/services/category.service';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Story } from '@/lib/types';
 import { MobileMenu } from './MobileMenu';
 import Image from 'next/image';
+import { Category } from '@/lib/types';
+import { StoryService } from '@/services/story.service';
 
 export default function Header() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [results, setResults] = useState<Story[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -31,6 +34,23 @@ export default function Header() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+
+
+    // Fetch categories on mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await CategoryService.getAll();
+                if (response.success && response.data) {
+                    setCategories(response.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
     // Debounced search
     useEffect(() => {
         const fetchResults = async () => {
@@ -44,9 +64,12 @@ export default function Header() {
             setShowDropdown(true);
 
             try {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                const data = await res.json();
-                setResults(data.results);
+                const response = await StoryService.search(searchQuery.trim());
+                if (response.success && response.data?.items) {
+                    setResults(response.data.items);
+                } else {
+                    setResults([]);
+                }
             } catch (error) {
                 console.error('Search error:', error);
                 setResults([]);
@@ -57,6 +80,7 @@ export default function Header() {
 
         const timeoutId = setTimeout(fetchResults, 300);
         return () => clearTimeout(timeoutId);
+
     }, [searchQuery]);
 
     const handleSearch = () => {
@@ -139,7 +163,7 @@ export default function Header() {
                             </button>
                             <div className="absolute top-full left-0 mt-0 pt-2 hidden group-hover:block w-[400px]">
                                 <div className="bg-white border border-[var(--color-border)] rounded-md shadow-lg py-3 px-3 grid grid-cols-2 gap-1">
-                                    {mockCategories.map((category) => (
+                                    {categories.map((category) => (
                                         <Link
                                             key={category.id}
                                             href={`/the-loai/${category.slug}`}
@@ -212,7 +236,7 @@ export default function Header() {
                                                 >
                                                     <div className="relative w-10 h-14 flex-shrink-0 rounded overflow-hidden bg-gray-100">
                                                         <Image
-                                                            src={story.cover || '/covers/cau-ma.jpg'}
+                                                            src={story?.cover_url || '/covers/cau-ma.jpg'}
                                                             alt={story.title}
                                                             fill
                                                             className="object-cover"
@@ -224,10 +248,10 @@ export default function Header() {
                                                             {story.title}
                                                         </h4>
                                                         <p className="text-xs text-[var(--color-text-secondary)] truncate">
-                                                            {story.author || 'Đang cập nhật'}
+                                                            {story.author_name || 'Đang cập nhật'}
                                                         </p>
                                                         <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                                                            {story.totalChapters?.toLocaleString() || 0} chương
+                                                            {story.total_chapters?.toLocaleString() || 0} chương
                                                         </p>
                                                     </div>
                                                 </Link>
@@ -305,7 +329,7 @@ export default function Header() {
                                     >
                                         <div className="relative w-10 h-14 flex-shrink-0 rounded overflow-hidden bg-gray-100">
                                             <Image
-                                                src={story.cover || '/covers/cau-ma.jpg'}
+                                                src={story.cover_url || '/covers/cau-ma.jpg'}
                                                 alt={story.title}
                                                 fill
                                                 className="object-cover"
@@ -313,11 +337,14 @@ export default function Header() {
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+                                            <h4 className="text-sm font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] truncate">
                                                 {story.title}
                                             </h4>
                                             <p className="text-xs text-[var(--color-text-secondary)] truncate">
-                                                {story.author || 'Đang cập nhật'}
+                                                {story.author_name || 'Đang cập nhật'}
+                                            </p>
+                                            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                                                {story.total_chapters?.toLocaleString() || 0} chương
                                             </p>
                                         </div>
                                     </Link>
@@ -344,7 +371,7 @@ export default function Header() {
                 </div>
             )}
 
-            <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+            <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} categories={categories} />
         </header>
     );
 }

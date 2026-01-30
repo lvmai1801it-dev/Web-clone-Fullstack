@@ -3,40 +3,50 @@ import { Story, Category, RankingItem } from './types';
 // Base mock stories for templates
 const baseStories: Story[] = [
     {
-        id: '1',
+        id: 1,
         slug: 'cau-ma',
         title: 'Audio Truyện Cầu Ma',
-        cover: '/covers/cau-ma.jpg',
-        author: 'Nhĩ Căn',
+        cover_url: '/covers/cau-ma.jpg',
+        author_name: 'Nhĩ Căn',
+        author_id: 1,
         narrator: 'Huyền Thoại Gia',
-        genres: ['Tiên Hiệp', 'Huyền Huyễn'],
+        categories: [
+            { id: 1, name: 'Tiên Hiệp', slug: 'tien-hiep' },
+            { id: 2, name: 'Huyền Huyễn', slug: 'huyen-huyen' }
+        ],
         status: 'completed',
-        totalChapters: 189,
-        currentChapter: 189,
+        total_chapters: 189,
+        currentChapter: 189, // This property is optional in interface, but good to keep if used internally
         views: 45233,
-        rating: 4.5,
-        ratingCount: 144,
+        rating_avg: '4.5',
+        rating_count: 144,
         description: 'Cầu Ma là một tác phẩm tiên hiệp xuất sắc của tác giả Nhĩ Căn. Truyện kể về hành trình tu luyện và khám phá thế giới tu tiên đầy bí ẩn...',
         tags: ['Tiên hiệp', 'Tu chân', 'Huyền huyễn'],
-        updatedAt: '2024-01-22',
+        updated_at: '2024-01-22',
+        created_at: '2024-01-01',
     },
     {
-        id: '2',
+        id: 2,
         slug: 'vu-khong-lang',
         title: 'Audio Ma Vũ Không Lang',
-        cover: '/covers/vu-khong-lang.jpg',
-        author: 'Thiên Tằm Thổ Đậu',
+        cover_url: '/covers/vu-khong-lang.jpg',
+        author_name: 'Thiên Tằm Thổ Đậu',
+        author_id: 2,
         narrator: 'MC Audio',
-        genres: ['Tiên Hiệp', 'Kiếm Hiệp'],
+        categories: [
+            { id: 1, name: 'Tiên Hiệp', slug: 'tien-hiep' },
+            { id: 4, name: 'Kiếm Hiệp', slug: 'kiem-hiep' }
+        ],
         status: 'ongoing',
-        totalChapters: 1200,
+        total_chapters: 1200,
         currentChapter: 856,
         views: 32150,
-        rating: 4.8,
-        ratingCount: 256,
+        rating_avg: '4.8',
+        rating_count: 256,
         description: 'Ma Vũ Không Lang - một câu chuyện hấp dẫn về thế giới kiếm khách...',
         tags: ['Kiếm hiệp', 'Hành động'],
-        updatedAt: '2024-01-21',
+        updated_at: '2024-01-21',
+        created_at: '2024-01-05',
     },
     // ... add a few more styles from original manual list if needed, but we can generate variations
 ];
@@ -75,15 +85,21 @@ const generateStories = (count: number): Story[] => {
         const title = `${title1} ${title2} ${title3}`;
 
         const author = authors[Math.floor(seededRandom(seed + 3) * authors.length)];
-        const mainGenre = allGenres[Math.floor(seededRandom(seed + 4) * allGenres.length)];
-        const subGenre = allGenres[Math.floor(seededRandom(seed + 5) * allGenres.length)];
-        const genres = Array.from(new Set([mainGenre, subGenre]));
+        const mainGenreName = allGenres[Math.floor(seededRandom(seed + 4) * allGenres.length)];
+        const subGenreName = allGenres[Math.floor(seededRandom(seed + 5) * allGenres.length)];
+        const genres = Array.from(new Set([mainGenreName, subGenreName]));
+
+        // Map genres to Category objects
+        // const categoryObjects = genres.map(name => {
+        //     const found = mockCategories.find(c => c.name === name);
+        //     return found || { id: 99, name, slug: 'other' };
+        // });
 
         const status = seededRandom(seed + 6) > 0.3 ? 'ongoing' : 'completed';
         const totalChapters = Math.floor(seededRandom(seed + 7) * 5000) + 100;
         const currentChapter = status === 'completed' ? totalChapters : Math.floor(seededRandom(seed + 8) * totalChapters);
 
-        const id = (i + 1).toString();
+        const id = i + 1; // Number
 
         // Deterministic slug
         // using a simple hash of the title for more readable but consistent slugs
@@ -103,51 +119,28 @@ const generateStories = (count: number): Story[] => {
             id,
             slug: `truyen-${id}-${simpleSlug}`,
             title,
-            cover: baseStories[Math.floor(seededRandom(seed) * baseStories.length)].cover,
-            author,
+            cover_url: baseStories[Math.floor(seededRandom(seed) * baseStories.length)].cover_url,
+            author_name: author,
+            author_id: Math.floor(seededRandom(seed + 13) * 1000),
             narrator: 'AI Voice',
-            genres,
+            categories: [],
             status,
-            totalChapters,
+            total_chapters: totalChapters,
             currentChapter,
             views: Math.floor(seededRandom(seed + 9) * 1000000),
-            rating: Number((seededRandom(seed + 10) * 2 + 3).toFixed(1)),
-            ratingCount: Math.floor(seededRandom(seed + 11) * 1000),
+            rating_avg: (seededRandom(seed + 10) * 2 + 3).toFixed(1),
+            rating_count: Math.floor(seededRandom(seed + 11) * 1000),
             description: `Mô tả cho truyện ${title}. Đây là một câu chuyện hấp dẫn thuộc thể loại ${genres.join(', ')}...`,
-            tags: genres.map(g => g.toLowerCase()),
-            updatedAt: new Date(Date.now() - Math.floor(seededRandom(seed + 12) * 10000000000)).toISOString().split('T')[0],
+            tags: genres,
+            updated_at: new Date(Date.now() - Math.floor(seededRandom(seed + 12) * 10000000000)).toISOString().split('T')[0],
+            created_at: new Date(Date.now() - Math.floor(seededRandom(seed + 14) * 10000000000)).toISOString().split('T')[0],
         });
     }
 
     return stories;
 };
 
-export const mockStories = generateStories(1008);
-
-// Update mock Categories with real counts
-export const mockCategories: Category[] = [
-    { id: '1', slug: 'tien-hiep', name: 'Tiên Hiệp', storyCount: 0 },
-    { id: '2', slug: 'huyen-huyen', name: 'Huyền Huyễn', storyCount: 0 },
-    { id: '3', slug: 'do-thi', name: 'Đô Thị', storyCount: 0 },
-    { id: '4', slug: 'kiem-hiep', name: 'Kiếm Hiệp', storyCount: 0 },
-    { id: '5', slug: 'linh-di', name: 'Linh Dị', storyCount: 0 },
-    { id: '6', slug: 'ngon-tinh', name: 'Ngôn Tình', storyCount: 0 },
-    { id: '7', slug: 'xuyen-khong', name: 'Xuyên Không', storyCount: 0 },
-    { id: '8', slug: 'trong-sinh', name: 'Trọng Sinh', storyCount: 0 },
-];
-
-// Calculate story counts
-mockStories.forEach(story => {
-    story.genres.forEach(genre => {
-        const category = mockCategories.find(c =>
-            genre.toLowerCase().includes(c.name.toLowerCase()) ||
-            c.name.toLowerCase().includes(genre.toLowerCase())
-        );
-        if (category) {
-            category.storyCount++;
-        }
-    });
-});
+export const mockStories = generateStories(108);
 
 // Mock Ranking Data (Top 10 highest views)
 export const mockRanking: RankingItem[] = [...mockStories]
@@ -163,20 +156,6 @@ export function getStoryBySlug(slug: string): Story | undefined {
     return mockStories.find(story => story.slug === slug);
 }
 
-// Helper function to get stories by category
-export function getStoriesByCategory(categorySlug: string): Story[] {
-    const category = mockCategories.find(cat => cat.slug === categorySlug);
-    if (!category) return [];
-
-    // Normalize string for better matching
-    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
-    const catName = normalize(category.name);
-
-    return mockStories.filter(story =>
-        story.genres.some(genre => normalize(genre).includes(catName) || catName.includes(normalize(genre)))
-    );
-}
-
 // Helper function to remove accents
 function removeAccents(str: string): string {
     return str.normalize("NFD")
@@ -189,7 +168,7 @@ function removeAccents(str: string): string {
 function getRelevanceScore(story: Story, lowerQuery: string, normalizedQuery: string): number {
     const title = story.title.toLowerCase();
     const normalizedTitle = removeAccents(title);
-    const author = story.author.toLowerCase();
+    const author = story.author_name.toLowerCase();
     const normalizedAuthor = removeAccents(author);
 
     // 1. Title Exact Match (Highest Priority)
@@ -209,7 +188,7 @@ function getRelevanceScore(story: Story, lowerQuery: string, normalizedQuery: st
     if (author.includes(lowerQuery) || normalizedAuthor.includes(normalizedQuery)) return 40;
 
     // 6. Tags Match
-    if (story.tags.some(tag => tag.toLowerCase().includes(lowerQuery))) return 20;
+    if (story.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))) return 20;
 
     return 0;
 }

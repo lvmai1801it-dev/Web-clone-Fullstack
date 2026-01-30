@@ -3,14 +3,15 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { mockCategories } from '@/lib/mock-data';
+import { Category } from '@/lib/types';
 
 interface MobileMenuProps {
     isOpen: boolean;
     onClose: () => void;
+    categories: Category[];
 }
 
-export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
     // Prevent scrolling when menu is open
     useEffect(() => {
         if (isOpen) {
@@ -78,7 +79,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                         Thể loại
                     </div>
                     <div className="grid grid-cols-2 gap-1 px-2">
-                        {mockCategories.map((cat) => (
+                        {categories.map((cat) => (
                             <Link
                                 key={cat.id}
                                 href={`/the-loai/${cat.slug}`}

@@ -17,9 +17,9 @@ export default function StoryListItem({ story, showThumbnail = true }: StoryList
                 {/* Thumbnail */}
                 {showThumbnail && (
                     <div className="w-[50px] h-[70px] flex-shrink-0 relative rounded overflow-hidden shadow-sm">
-                        {story.cover ? (
+                        {story.cover_url ? (
                             <Image
-                                src={story.cover}
+                                src={story.cover_url}
                                 alt={story.title}
                                 fill
                                 className="object-cover transition-transform group-hover:scale-105"
@@ -42,14 +42,14 @@ export default function StoryListItem({ story, showThumbnail = true }: StoryList
                             <Badge variant="full" className="text-[10px] px-1.5 py-0 h-auto">Full</Badge>
                         ) : (
                             <span className="text-[var(--color-primary)] font-medium">
-                                C.{story.currentChapter}/{story.totalChapters}
+                                C.{story.currentChapter}/{story.total_chapters}
                             </span>
                         )}
-                        <span>• {story.updatedAt}</span>
+                        <span>• {story.updated_at}</span>
                     </div>
 
                     <p className="text-xs text-[var(--color-text-secondary)] mt-1 truncate">
-                        {story.author}
+                        {story.author_name}
                     </p>
                 </div>
 

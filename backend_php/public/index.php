@@ -5,7 +5,9 @@ declare(strict_types=1);
 use App\Core\Config;
 use Lib\Router\Router;
 use Lib\Logger\Logger;
-use App\Middleware\CorsMiddleware;
+use Api\V1\Middleware\CorsMiddleware;
+use Api\V1\Middleware\SecurityHeadersMiddleware;
+use Api\V1\Middleware\RateLimitMiddleware;
 use App\Exceptions\AppException;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -38,7 +40,8 @@ set_exception_handler(function (Throwable $e) {
         $response['message'] = 'Dữ liệu đã tồn tại (Email hoặc Username đã được sử dụng)';
     } else {
         // Log unexpected errors
-        Logger::error($e->getMessage(), [
+        $logger = \Lib\Container\ServiceContainer::getInstance()->get(\Lib\Logger\Logger::class);
+        $logger->error($e->getMessage(), [
             'file' => $e->getFile(),
             'line' => $e->getLine(),
             'trace' => $e->getTraceAsString()
@@ -64,11 +67,22 @@ set_exception_handler(function (Throwable $e) {
 });
 
 // Run CORS Middleware
+// Run Security Headers
+(new SecurityHeadersMiddleware())->handle();
+
+// Run Rate Limiting
+(new RateLimitMiddleware())->handle();
+
+// Run CORS Middleware
 CorsMiddleware::handle();
+
+// Initialize Service Container
+use Lib\Container\ServiceContainer;
+$container = ServiceContainer::getInstance();
 
 // Initialize Router
 $router = new Router();
-$routes = require __DIR__ . '/../api/routes.php';
+$routes = require __DIR__ . '/../Api/routes.php';
 $routes($router);
 
 // Dispatch Request
