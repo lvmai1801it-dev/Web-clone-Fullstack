@@ -69,6 +69,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
                     {/* Audio Player Section */}
                     <section>
                         <AudioPlayer
+                            storyId={story.id}
                             title="Nghe Truyện"
                             chapters={chapters}
                             currentChapter={1}

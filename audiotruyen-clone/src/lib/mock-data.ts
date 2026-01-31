@@ -1,4 +1,4 @@
-import { Story, Category, RankingItem } from './types';
+import { Story, RankingItem } from './types';
 
 // Base mock stories for templates
 const baseStories: Story[] = [

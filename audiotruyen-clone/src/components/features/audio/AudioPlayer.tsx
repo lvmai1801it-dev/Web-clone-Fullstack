@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface AudioPlayerProps {
+    storyId: number;
     audioUrl?: string;
     title?: string;
     chapters?: { number: number; title: string; audioUrl: string }[];
@@ -11,7 +12,10 @@ interface AudioPlayerProps {
     onChapterChange?: (chapter: number) => void;
 }
 
+import { PlaybackPersistence, PlaybackProgress } from '@/lib/persistence';
+
 export default function AudioPlayer({
+    storyId,
     audioUrl,
     title = 'Nghe Truyện',
     chapters = [],
@@ -26,7 +30,10 @@ export default function AudioPlayer({
     const [playbackRate, setPlaybackRate] = useState(1);
     const [selectedChapter, setSelectedChapter] = useState(currentChapter);
     const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
+    const [showResumeToast, setShowResumeToast] = useState(false);
+    const [resumeData, setResumeData] = useState<PlaybackProgress | null>(null);
     const shouldAutoPlayRef = useRef(false);
+    const hasRestoredProgressRef = useRef(true); // Default to true (don't auto-restore)
 
     const demoAudioUrl = audioUrl || chapters.find(c => c.number === selectedChapter)?.audioUrl || '';
 
@@ -38,28 +45,76 @@ export default function AudioPlayer({
         shouldAutoPlayRef.current = true;
     }, [onChapterChange]);
 
-    // Handle Auto-play after chapter change
+    // Handle Initial Progress Check
+    useEffect(() => {
+        const progress = PlaybackPersistence.getProgress(storyId);
+        if (progress && (progress.chapterNumber > 1 || progress.timestamp > 10)) {
+            const timer = setTimeout(() => {
+                setResumeData(progress);
+                setShowResumeToast(true);
+            }, 0);
+
+            // Auto-hide after 15s if not acted upon
+            const hideTimer = setTimeout(() => setShowResumeToast(false), 15000);
+            return () => {
+                clearTimeout(timer);
+                clearTimeout(hideTimer);
+            };
+        }
+    }, [storyId]);
+
+    const handleResume = () => {
+        if (!resumeData) return;
+
+        const audio = audioRef.current;
+        setShowResumeToast(false);
+        shouldAutoPlayRef.current = true;
+
+        if (selectedChapter === resumeData.chapterNumber) {
+            // Already on correct chapter, seek directly
+            if (audio) {
+                audio.currentTime = resumeData.timestamp;
+                audio.play().catch(console.error);
+                setIsPlaying(true);
+            }
+        } else {
+            // Change chapter, restoration will happen in loadedmetadata
+            hasRestoredProgressRef.current = false;
+            setSelectedChapter(resumeData.chapterNumber);
+        }
+    };
+
+    // Handle Auto-play and Seeking after chapter change or resume
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio || !shouldAutoPlayRef.current) return;
 
-        // Small timeout to ensure src is picked up by the browser
-        const timeoutId = setTimeout(() => {
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // Ignore AbortError which is expected during rapid switching
-                    if (error.name !== 'AbortError') {
-                        console.error("Playback error:", error);
-                    }
-                });
+        const handleMetadataForAutoPlay = () => {
+            // If we are waiting to restore progress
+            if (!hasRestoredProgressRef.current) {
+                const progress = PlaybackPersistence.getProgress(storyId);
+                if (progress && progress.chapterNumber === selectedChapter) {
+                    audio.currentTime = progress.timestamp;
+                }
+                hasRestoredProgressRef.current = true;
             }
+
+            audio.play().catch(error => {
+                if (error.name !== 'AbortError') console.error("Playback error:", error);
+            });
             setIsPlaying(true);
             shouldAutoPlayRef.current = false;
-        }, 100);
+        };
 
-        return () => clearTimeout(timeoutId);
-    }, [demoAudioUrl]);
+        // If metadata already loaded, just play (and seek if needed)
+        if (audio.readyState >= 1) {
+            handleMetadataForAutoPlay();
+        } else {
+            audio.addEventListener('loadedmetadata', handleMetadataForAutoPlay, { once: true });
+        }
+
+        return () => audio.removeEventListener('loadedmetadata', handleMetadataForAutoPlay);
+    }, [demoAudioUrl, selectedChapter, storyId]);
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -94,11 +149,40 @@ export default function AudioPlayer({
 
         if (isPlaying) {
             audio.pause();
+            // Save immediately on pause
+            if (audio.currentTime > 5) {
+                PlaybackPersistence.saveProgress({
+                    storyId,
+                    chapterId: 0,
+                    chapterNumber: selectedChapter,
+                    timestamp: audio.currentTime
+                });
+            }
         } else {
             audio.play();
         }
         setIsPlaying(!isPlaying);
     };
+
+    // Periodically save progress (More stable dependency)
+    useEffect(() => {
+        if (!isPlaying || !storyId) return;
+
+        const interval = setInterval(() => {
+            const audio = audioRef.current;
+            if (audio && audio.currentTime > 5) {
+                PlaybackPersistence.saveProgress({
+                    storyId,
+                    chapterId: 0,
+                    chapterNumber: selectedChapter,
+                    timestamp: audio.currentTime
+                });
+                console.log('Saved progress:', audio.currentTime);
+            }
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [isPlaying, storyId, selectedChapter]);
 
     const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
         const audio = audioRef.current;
@@ -148,6 +232,39 @@ export default function AudioPlayer({
                 </svg>
                 {title}
             </h3>
+
+            {/* Resume Playback Toast */}
+            {showResumeToast && resumeData && (
+                <div className="absolute top-12 left-6 right-6 z-20 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="bg-blue-600 text-white p-3 rounded-lg shadow-xl flex items-center justify-between gap-3 border border-blue-400">
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-white/20 rounded-full">
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                                </svg>
+                            </div>
+                            <div className="text-xs">
+                                <p className="font-bold">Tiếp tục nghe?</p>
+                                <p className="opacity-90">Chương {resumeData.chapterNumber} lúc {formatTime(resumeData.timestamp)}</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setShowResumeToast(false)}
+                                className="px-2 py-1 text-[10px] h-auto font-medium hover:bg-white/10 rounded"
+                            >
+                                Bỏ qua
+                            </button>
+                            <button
+                                onClick={handleResume}
+                                className="px-3 py-1 text-[10px] h-auto font-bold bg-white text-blue-600 hover:bg-blue-50 rounded shadow-sm"
+                            >
+                                Nghe tiếp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Audio Element */}
             <audio ref={audioRef} src={demoAudioUrl || undefined} preload="metadata" />

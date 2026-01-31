@@ -44,24 +44,48 @@ class AuthorController extends BaseController
      * @OA\Post(
      *     path="/api/v1/admin/authors",
      *     tags={"Admin Authors"},
-     *     summary="Create new author",
+     *     summary="Create or Update author (Supports Batch)",
+     *     description="Save a single author or a list of authors (batch).",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(ref="#/components/schemas/AuthorCreateRequest")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             oneOf={
+     *                 @OA\Schema(ref="#/components/schemas/AuthorCreateRequest"),
+     *                 @OA\Schema(type="array", @OA\Items(ref="#/components/schemas/AuthorCreateRequest"))
+     *             }
+     *         )
+     *     ),
      *     @OA\Response(response=201, description="Author created")
      * )
      */
     public function store()
     {
         $data = $this->getJsonInput();
-        $errors = AuthorCreateRequest::validate($data);
-        if ($errors) {
-            $this->errorResponse('Validation failed', 422, $errors);
+        if (!$data) {
+            ErrorHandler::validationFailed($this, ['json' => 'Invalid JSON Data']);
             return;
         }
 
-        $author = $this->authorService->saveAuthor($data);
-
-        $this->successResponse($author, 'Author saved successfully', 201);
+        try {
+            if (array_is_list($data)) {
+                $results = [];
+                foreach ($data as $item) {
+                    $results[] = $this->authorService->saveAuthor($item);
+                }
+                $this->successResponse($results, count($results) . ' authors processed');
+            } else {
+                $errors = AuthorCreateRequest::validate($data);
+                if ($errors) {
+                    $this->errorResponse('Validation failed', 422, $errors);
+                    return;
+                }
+                $author = $this->authorService->saveAuthor($data);
+                $this->successResponse($author, 'Author saved successfully', 201);
+            }
+        } catch (\Exception $e) {
+            ErrorHandler::internalError($this, $e->getMessage());
+        }
     }
 
     /**
@@ -131,7 +155,17 @@ class AuthorController extends BaseController
      *     tags={"Admin Authors"},
      *     summary="Bulk create authors",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/AuthorCreateRequest"))),
+     *     @OA\RequestBody(
+     *         required=true, 
+     *         @OA\JsonContent(
+     *             type="array", 
+     *             @OA\Items(ref="#/components/schemas/AuthorCreateRequest"),
+     *             example={
+     *                 {"name": "Ernest Hemingway", "slug": "ernest-hemingway"},
+     *                 {"name": "Mark Twain", "slug": "mark-twain"}
+     *             }
+     *         )
+     *     ),
      *     @OA\Response(response=200, description="Authors created")
      * )
      */

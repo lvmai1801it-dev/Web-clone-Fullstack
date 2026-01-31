@@ -3,7 +3,7 @@ import { CategoryService } from '@/services/category.service';
 
 export default async function CategoriesPage() {
     const response = await CategoryService.getAll();
-    const categories = response.success ? response.data : [];
+    const categories = response.success ? response.data?.items || [] : [];
 
     return (
         <div className="min-h-screen bg-gray-50 pb-12">

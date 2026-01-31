@@ -11,6 +11,7 @@ use App\DTOs\BaseDto;
  *     schema="AuthorCreateRequest",
  *     title="Author Create Request",
  *     required={"name", "slug"},
+ *     @OA\Property(property="id", type="integer", example=11667, description="Optional ID for upsert"),
  *     @OA\Property(property="name", type="string", example="J.K. Rowling"),
  *     @OA\Property(property="slug", type="string", example="j-k-rowling")
  * )

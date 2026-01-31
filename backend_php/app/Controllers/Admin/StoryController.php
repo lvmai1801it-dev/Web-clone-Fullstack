@@ -23,9 +23,18 @@ class StoryController extends BaseController
      * @OA\Post(
      *     path="/api/v1/admin/stories/save",
      *     tags={"Admin Stories"},
-     *     summary="Create or Update story",
+     *     summary="Create or Update story (Supports Batch)",
+     *     description="Save a single story or a list of stories (batch). Use 'category_ids' for categories.",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(type="object")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             oneOf={
+     *                 @OA\Schema(ref="#/components/schemas/StorySaveRequest"),
+     *                 @OA\Schema(type="array", @OA\Items(ref="#/components/schemas/StorySaveRequest"))
+     *             }
+     *         )
+     *     ),
      *     @OA\Response(response=200, description="Story saved")
      * )
      */

@@ -42,7 +42,7 @@ export default function Header() {
             try {
                 const response = await CategoryService.getAll();
                 if (response.success && response.data) {
-                    setCategories(response.data);
+                    setCategories(response.data.items);
                 }
             } catch (error) {
                 console.error('Failed to fetch categories:', error);

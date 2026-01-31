@@ -43,21 +43,14 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const currentPage = Number(page) || 1;
     const itemsPerPage = 24;
 
-    // 1. Fetch all categories (User modified service to return list)
-    const response = await CategoryService.getBySlug(slug); // Note: This now calls /public/categories
+    // 1. Fetch current category by slug
+    const response = await CategoryService.getBySlug(slug);
 
     if (!response.success || !response.data) {
         notFound();
     }
 
-    // response.data is Category[] (Array of categories)
-    // We need to find the specific category matching the slug
-    const categories = Array.isArray(response.data) ? response.data : [response.data];
-    const category = categories.find((cat: any) => cat.slug === slug); // Use temporary any if type mismatch, but likely Category type is fine if it has slug
-
-    if (!category) {
-        notFound();
-    }
+    const category = response.data;
 
     // 2. Fetch stories by category_id
     const storiesRes = await StoryService.getAll({
@@ -71,11 +64,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const currentStories = storiesRes.success ? storiesRes.data?.items || [] : [];
     const pagination = storiesRes.success ? storiesRes.data?.pagination : null;
     const totalPages = pagination ? pagination.total_pages : 1;
-    const totalItems = pagination ? pagination.total : 0;
 
     // 3. Fetch all categories for sidebar
     const allCategoriesRes = await CategoryService.getAll();
-    const allCategories = allCategoriesRes.success ? allCategoriesRes.data || [] : [];
+    const allCategories = allCategoriesRes.success ? allCategoriesRes.data?.items || [] : [];
 
     return (
         <div className="min-h-screen bg-gray-50/50 pb-12">

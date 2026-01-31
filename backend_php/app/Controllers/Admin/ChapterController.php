@@ -22,9 +22,18 @@ class ChapterController extends BaseController
      * @OA\Post(
      *     path="/api/v1/admin/chapters/save",
      *     tags={"Admin Chapters"},
-     *     summary="Create or Update chapter",
+     *     summary="Create or Update chapter (Supports Batch)",
+     *     description="Save a single chapter or a list of chapters (batch).",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(type="object")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             oneOf={
+     *                 @OA\Schema(ref="#/components/schemas/ChapterSaveRequest"),
+     *                 @OA\Schema(type="array", @OA\Items(ref="#/components/schemas/ChapterSaveRequest"))
+     *             }
+     *         )
+     *     ),
      *     @OA\Response(response=200, description="Chapter saved")
      * )
      */

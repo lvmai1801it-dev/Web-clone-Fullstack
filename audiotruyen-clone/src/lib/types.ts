@@ -19,6 +19,27 @@ export interface Story {
   created_at: string;
   updated_at: string; // Changed from updatedAt
   chapters?: Chapter[]; // Added for eager loading
+  author?: Author; // Added
+}
+
+// Author Interface
+export interface Author {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  story_count?: number;
+}
+
+// User Interface
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  full_name?: string;
+  role: 'admin' | 'user';
+  avatar_url?: string;
+  created_at: string;
 }
 
 // Chapter Interface
@@ -39,6 +60,7 @@ export interface Category {
   slug: string;
   name: string;
   story_count?: number; // Changed from storyCount
+  items?: Category[];
 }
 
 // Comment Interface

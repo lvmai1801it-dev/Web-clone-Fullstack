@@ -84,7 +84,8 @@ def run_linter(linter: dict, cwd: Path) -> dict:
             text=True,
             encoding='utf-8',
             errors='replace',
-            timeout=120
+            timeout=120,
+            shell=True # Needed for Windows commands like npm/npx
         )
         
         result["output"] = proc.stdout[:2000] if proc.stdout else ""

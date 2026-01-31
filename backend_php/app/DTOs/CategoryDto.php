@@ -10,7 +10,8 @@ namespace App\DTOs;
  *     title="Category DTO",
  *     @OA\Property(property="id", type="integer"),
  *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="slug", type="string")
+ *     @OA\Property(property="slug", type="string"),
+ *     @OA\Property(property="story_count", type="integer")
  * )
  */
 class CategoryDto extends BaseDto
@@ -18,7 +19,8 @@ class CategoryDto extends BaseDto
     public function __construct(
         public readonly ?int $id,
         public readonly string $name,
-        public readonly string $slug
+        public readonly string $slug,
+        public readonly int $story_count = 0
     ) {
     }
 
@@ -27,7 +29,8 @@ class CategoryDto extends BaseDto
         return new self(
             id: isset($data['id']) ? (int) $data['id'] : null,
             name: (string) ($data['name'] ?? ''),
-            slug: (string) ($data['slug'] ?? '')
+            slug: (string) ($data['slug'] ?? ''),
+            story_count: (int) ($data['story_count'] ?? 0)
         );
     }
 
@@ -37,6 +40,7 @@ class CategoryDto extends BaseDto
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'story_count' => $this->story_count,
         ];
     }
 

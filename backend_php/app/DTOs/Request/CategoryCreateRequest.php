@@ -11,6 +11,7 @@ use App\DTOs\BaseDto;
  *     schema="CategoryCreateRequest",
  *     title="Category Create Request",
  *     required={"name", "slug"},
+ *     @OA\Property(property="id", type="integer", example=9, description="Optional ID for upsert"),
  *     @OA\Property(property="name", type="string", example="Action"),
  *     @OA\Property(property="slug", type="string", example="action")
  * )

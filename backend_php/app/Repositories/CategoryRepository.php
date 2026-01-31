@@ -32,7 +32,12 @@ class CategoryRepository extends BaseRepository
 
     public function findBySlug(string $slug): ?\App\DTOs\CategoryDto
     {
-        $sql = "SELECT id, name, slug FROM categories WHERE slug = :slug LIMIT 1";
+        $sql = "SELECT c.id, c.name, c.slug, COUNT(sg.story_id) as story_count 
+                FROM categories c
+                LEFT JOIN story_genres sg ON c.id = sg.category_id
+                WHERE c.slug = :slug
+                GROUP BY c.id
+                LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':slug' => $slug]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -41,7 +46,12 @@ class CategoryRepository extends BaseRepository
 
     public function findById(int $id): ?\App\DTOs\CategoryDto
     {
-        $sql = "SELECT id, name, slug FROM categories WHERE id = :id LIMIT 1";
+        $sql = "SELECT c.id, c.name, c.slug, COUNT(sg.story_id) as story_count 
+                FROM categories c
+                LEFT JOIN story_genres sg ON c.id = sg.category_id
+                WHERE c.id = :id
+                GROUP BY c.id
+                LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

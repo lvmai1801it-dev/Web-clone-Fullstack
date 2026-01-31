@@ -23,6 +23,11 @@ class RateLimitMiddleware
 
     public function handle(): void
     {
+        // Bypass for local development
+        if (\App\Core\Config::get('APP_ENV') === 'local') {
+            return;
+        }
+
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $file = $this->storageDir . '/' . md5($ip) . '.json';
 

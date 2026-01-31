@@ -54,7 +54,7 @@ class AuthController extends BaseController
     public function register()
     {
         // 1. Lấy dữ liệu JSON từ client gửi lên
-        $data = $this->getJsonBody();
+        $data = $this->getJsonInput();
 
         // 2. Định nghĩa luật validation (Ràng buộc dữ liệu)
         $rules = [
@@ -114,7 +114,7 @@ class AuthController extends BaseController
      */
     public function login()
     {
-        $data = $this->getJsonBody();
+        $data = $this->getJsonInput();
 
         // Validate cơ bản
         $rules = [

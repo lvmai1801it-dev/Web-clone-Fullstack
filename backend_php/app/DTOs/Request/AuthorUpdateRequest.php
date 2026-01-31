@@ -10,8 +10,8 @@ use App\DTOs\BaseDto;
  * @OA\Schema(
  *     schema="AuthorUpdateRequest",
  *     title="Author Update Request",
- *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="slug", type="string")
+ *     @OA\Property(property="name", type="string", example="Stephen King"),
+ *     @OA\Property(property="slug", type="string", example="stephen-king")
  * )
  */
 class AuthorUpdateRequest extends BaseDto

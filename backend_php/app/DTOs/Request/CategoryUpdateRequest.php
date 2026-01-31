@@ -10,8 +10,8 @@ use App\DTOs\BaseDto;
  * @OA\Schema(
  *     schema="CategoryUpdateRequest",
  *     title="Category Update Request",
- *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="slug", type="string")
+ *     @OA\Property(property="name", type="string", example="Horror"),
+ *     @OA\Property(property="slug", type="string", example="horror")
  * )
  */
 class CategoryUpdateRequest extends BaseDto

@@ -44,11 +44,17 @@ class CategoryController extends BaseController
      * @OA\Post(
      *     path="/api/v1/admin/categories",
      *     tags={"Admin Categories"},
-     *     summary="Create new category",
+     *     summary="Create or Update category (Supports Batch)",
+     *     description="Save a single category or a list of categories (batch).",
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CategoryCreateRequest")
+     *         @OA\JsonContent(
+     *             oneOf={
+     *                 @OA\Schema(ref="#/components/schemas/CategoryCreateRequest"),
+     *                 @OA\Schema(type="array", @OA\Items(ref="#/components/schemas/CategoryCreateRequest"))
+     *             }
+     *         )
      *     ),
      *     @OA\Response(response=201, description="Category created")
      * )
@@ -56,15 +62,30 @@ class CategoryController extends BaseController
     public function store()
     {
         $data = $this->getJsonInput();
-        $errors = CategoryCreateRequest::validate($data);
-        if ($errors) {
-            $this->errorResponse('Validation failed', 422, $errors);
+        if (!$data) {
+            ErrorHandler::validationFailed($this, ['json' => 'Invalid JSON Data']);
             return;
         }
 
-        $category = $this->categoryService->saveCategory($data);
-
-        $this->successResponse($category, 'Category saved successfully', 201);
+        try {
+            if (array_is_list($data)) {
+                $results = [];
+                foreach ($data as $item) {
+                    $results[] = $this->categoryService->saveCategory($item);
+                }
+                $this->successResponse($results, count($results) . ' categories processed');
+            } else {
+                $errors = CategoryCreateRequest::validate($data);
+                if ($errors) {
+                    $this->errorResponse('Validation failed', 422, $errors);
+                    return;
+                }
+                $category = $this->categoryService->saveCategory($data);
+                $this->successResponse($category, 'Category saved successfully', 201);
+            }
+        } catch (\Exception $e) {
+            ErrorHandler::internalError($this, $e->getMessage());
+        }
     }
 
     /**
@@ -134,7 +155,17 @@ class CategoryController extends BaseController
      *     tags={"Admin Categories"},
      *     summary="Bulk create categories",
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CategoryCreateRequest"))),
+     *     @OA\RequestBody(
+     *         required=true, 
+     *         @OA\JsonContent(
+     *             type="array", 
+     *             @OA\Items(ref="#/components/schemas/CategoryCreateRequest"),
+     *             example={
+     *                 {"name": "Action", "slug": "action"},
+     *                 {"name": "Comedy", "slug": "comedy"}
+     *             }
+     *         )
+     *     ),
      *     @OA\Response(response=200, description="Categories created")
      * )
      */

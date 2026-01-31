@@ -37,7 +37,7 @@ set_exception_handler(function (Throwable $e) {
     } elseif ($e instanceof \PDOException && $e->getCode() == 23000) {
         // Xử lý lỗi trùng lặp dữ liệu (Duplicate Entry)
         $statusCode = 409; // Conflict
-        $response['message'] = 'Dữ liệu đã tồn tại (Email hoặc Username đã được sử dụng)';
+        $response['message'] = 'Dữ liệu đã tồn tại (Email, Username hoặc Slug đã được sử dụng)';
     } else {
         // Log unexpected errors
         $logger = \Lib\Container\ServiceContainer::getInstance()->get(\Lib\Logger\Logger::class);
