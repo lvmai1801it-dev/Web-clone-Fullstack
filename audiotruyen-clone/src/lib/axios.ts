@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://backend_php.test:8888/api/v1',
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://api.audiotruyenfree.site/api/v1',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
