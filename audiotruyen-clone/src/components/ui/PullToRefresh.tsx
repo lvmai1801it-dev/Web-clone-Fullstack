@@ -19,15 +19,18 @@ export function PullToRefresh({ onRefresh, children, className = '' }: PullToRef
     const maxPull = 120; // Max pull distance
 
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        if (containerRef.current?.scrollTop === 0) {
-            startY.current = e.touches[0].clientY;
+        const touch = e.touches[0];
+        if (containerRef.current?.scrollTop === 0 && touch) {
+            startY.current = touch.clientY;
         }
     }, []);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         if (startY.current === null || isRefreshing) return;
 
-        const currentY = e.touches[0].clientY;
+        const touch = e.touches[0];
+        if (!touch) return;
+        const currentY = touch.clientY;
         const distance = Math.max(0, currentY - startY.current);
 
         if (distance > 0 && containerRef.current?.scrollTop === 0) {

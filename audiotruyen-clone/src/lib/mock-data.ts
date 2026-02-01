@@ -79,15 +79,15 @@ const generateStories = (count: number): Story[] => {
         const r2 = seededRandom(seed + 1);
         const r3 = seededRandom(seed + 2);
 
-        const title1 = titles[Math.floor(r1 * titles.length)];
-        const title2 = titles2[Math.floor(r2 * titles2.length)];
-        const title3 = titles3[Math.floor(r3 * titles3.length)];
+        const title1 = titles[Math.floor(r1 * titles.length)] ?? 'Đại';
+        const title2 = titles2[Math.floor(r2 * titles2.length)] ?? 'Đạo';
+        const title3 = titles3[Math.floor(r3 * titles3.length)] ?? 'Chi Chủ';
         const title = `${title1} ${title2} ${title3}`;
 
-        const author = authors[Math.floor(seededRandom(seed + 3) * authors.length)];
+        const author = authors[Math.floor(seededRandom(seed + 3) * authors.length)] ?? 'Unknown';
         const mainGenreName = allGenres[Math.floor(seededRandom(seed + 4) * allGenres.length)];
         const subGenreName = allGenres[Math.floor(seededRandom(seed + 5) * allGenres.length)];
-        const genres = Array.from(new Set([mainGenreName, subGenreName]));
+        const genres = Array.from(new Set([mainGenreName, subGenreName].filter((g): g is string => g !== undefined)));
 
         // Map genres to Category objects
         // const categoryObjects = genres.map(name => {
@@ -119,8 +119,8 @@ const generateStories = (count: number): Story[] => {
             id,
             slug: `truyen-${id}-${simpleSlug}`,
             title,
-            cover_url: baseStories[Math.floor(seededRandom(seed) * baseStories.length)].cover_url,
-            author_name: author,
+            cover_url: baseStories[Math.floor(seededRandom(seed) * baseStories.length)]?.cover_url ?? '/covers/default.jpg',
+            author_name: author ?? 'Unknown',
             author_id: Math.floor(seededRandom(seed + 13) * 1000),
             narrator: 'AI Voice',
             categories: [],
@@ -132,8 +132,8 @@ const generateStories = (count: number): Story[] => {
             rating_count: Math.floor(seededRandom(seed + 11) * 1000),
             description: `Mô tả cho truyện ${title}. Đây là một câu chuyện hấp dẫn thuộc thể loại ${genres.join(', ')}...`,
             tags: genres,
-            updated_at: new Date(Date.now() - Math.floor(seededRandom(seed + 12) * 10000000000)).toISOString().split('T')[0],
-            created_at: new Date(Date.now() - Math.floor(seededRandom(seed + 14) * 10000000000)).toISOString().split('T')[0],
+            updated_at: new Date(Date.now() - Math.floor(seededRandom(seed + 12) * 10000000000)).toISOString().split('T')[0] ?? '',
+            created_at: new Date(Date.now() - Math.floor(seededRandom(seed + 14) * 10000000000)).toISOString().split('T')[0] ?? '',
         });
     }
 

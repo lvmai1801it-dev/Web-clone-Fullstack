@@ -34,22 +34,28 @@ export function useKeyboardShortcuts({
             return;
         }
 
-        switch (e.key.toLowerCase()) {
-            case ' ':
+        const key = e.key.toLowerCase();
+        const ctrl = e.ctrlKey || e.metaKey;
+        const alt = e.altKey;
+
+        switch (true) {
+            case key === ' ' && !ctrl && !alt:
                 e.preventDefault();
                 onTogglePlay();
                 break;
-            case 'arrowright':
+            case key === 'arrowright' && !alt:
                 onSkip(skipTime);
                 break;
-            case 'arrowleft':
+            case key === 'arrowleft' && !alt:
                 onSkip(-skipTime);
                 break;
-            case 'm':
-                if (e.ctrlKey) {
-                    e.preventDefault();
-                    onToggleMute();
-                }
+            case key === 'arrowup' && alt:
+                // Need volume control in hook args if we want to support this fully
+                // For now, these are placeholders or need to be passed in
+                break;
+            case key === 'm' && ctrl:
+                e.preventDefault();
+                onToggleMute();
                 break;
         }
     }, [onTogglePlay, onSkip, onToggleMute, skipTime]);

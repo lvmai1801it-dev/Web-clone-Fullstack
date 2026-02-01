@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { PlaybackPersistence } from '@/lib/persistence';
 
@@ -9,32 +9,28 @@ interface FABProps {
 }
 
 export function FloatingActionButton({ className = '' }: FABProps) {
-    const [lastPlayed, setLastPlayed] = useState<{
+    const [lastPlayed] = useState<{
         storyId: number;
         storySlug: string;
         storyTitle: string;
-    } | null>(null);
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    useEffect(() => {
+    } | null>(() => {
+        if (typeof window === 'undefined') return null;
+        const isOnStoryPage = window.location.pathname.startsWith('/truyen/');
+        if (isOnStoryPage) return null;
         const progress = PlaybackPersistence.getLastPlayed();
         if (progress && progress.storySlug && progress.storyTitle) {
-            setLastPlayed({
+            return {
                 storyId: progress.storyId,
                 storySlug: progress.storySlug,
                 storyTitle: progress.storyTitle,
-            });
+            };
         }
-    }, []);
+        return null;
+    });
+    const [isExpanded, setIsExpanded] = useState(false);
 
-    // Hide on story pages
-    useEffect(() => {
-        const isOnStoryPage = window.location.pathname.startsWith('/truyen/');
-        if (isOnStoryPage) {
-            setLastPlayed(null);
-        }
-    }, []);
-
+    
+    
     if (!lastPlayed) return null;
 
     return (

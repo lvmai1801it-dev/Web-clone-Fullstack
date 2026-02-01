@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Story } from '@/lib/types';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
@@ -26,20 +26,14 @@ const StoryCard = memo(function StoryCard({ story, showBadge = true, className }
             <div className="relative h-full overflow-hidden rounded-lg bg-[var(--color-background-card)] shadow-sm transition-all duration-300 active:scale-[0.98] md:hover:-translate-y-1 md:hover:shadow-lg border border-[var(--color-border-light)]">
                 {/* Cover Image Container */}
                 <div className="relative aspect-[2/3] w-full overflow-hidden bg-gray-200">
-                    {story.cover_url ? (
-                        <Image
-                            src={story.cover_url}
-                            alt={story.title}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                            sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                            loading="lazy"
-                        />
-                    ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-[var(--color-primary)] opacity-10">
-                            <span className="text-xs text-[var(--color-primary)]">No Image</span>
-                        </div>
-                    )}
+                    <OptimizedImage
+                        src={story.cover_url || ''}
+                        alt={story.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                        containerClassName="h-full w-full"
+                    />
 
                     {/* Gradient Overlay */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />

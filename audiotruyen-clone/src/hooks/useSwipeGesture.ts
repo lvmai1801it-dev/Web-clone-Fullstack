@@ -14,11 +14,13 @@ export function useSwipeGesture({ onSwipeLeft, onSwipeRight, threshold = 50 }: S
 
     const onTouchStart = useCallback((e: React.TouchEvent) => {
         touchEndX.current = null;
-        touchStartX.current = e.targetTouches[0].clientX;
+        const touch = e.targetTouches[0];
+        if (touch) touchStartX.current = touch.clientX;
     }, []);
 
     const onTouchMove = useCallback((e: React.TouchEvent) => {
-        touchEndX.current = e.targetTouches[0].clientX;
+        const touch = e.targetTouches[0];
+        if (touch) touchEndX.current = touch.clientX;
     }, []);
 
     const onTouchEnd = useCallback(() => {

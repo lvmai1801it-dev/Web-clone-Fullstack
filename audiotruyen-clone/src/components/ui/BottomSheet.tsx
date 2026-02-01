@@ -47,12 +47,15 @@ export function BottomSheet({
     const currentY = useRef<number>(0);
 
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        dragStartY.current = e.touches[0].clientY;
+        const touch = e.touches[0];
+        if (touch) dragStartY.current = touch.clientY;
     }, []);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         if (dragStartY.current === null) return;
-        const deltaY = e.touches[0].clientY - dragStartY.current;
+        const touch = e.touches[0];
+        if (!touch) return;
+        const deltaY = touch.clientY - dragStartY.current;
         if (deltaY > 0 && sheetRef.current) {
             currentY.current = deltaY;
             sheetRef.current.style.transform = `translateY(${deltaY}px)`;
