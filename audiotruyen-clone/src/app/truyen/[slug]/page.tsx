@@ -5,9 +5,31 @@ import StoryHero from '@/components/features/story/StoryHero';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
 import { mockRanking } from '@/lib/mock-data';
 import { StoryService } from '@/services/story.service';
+import { Metadata } from 'next';
+import { generateStoryStructuredData } from '@/lib/structuredData';
 
 interface StoryPageProps {
     params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
+    const { slug } = await params;
+    const response = await StoryService.getById(slug);
+
+    if (!response.success || !response.data) {
+        return { title: 'Không tìm thấy truyện' };
+    }
+
+    const story = response.data;
+    return {
+        title: `${story.title} - Nghe Audio Truyện Online Miễn Phí`,
+        description: `Nghe truyện ${story.title} audio online. ${story.description.substring(0, 150)}... Tác giả: ${story.author_name}`,
+        openGraph: {
+            title: story.title,
+            description: story.description.substring(0, 160),
+            images: [{ url: story.cover_url }],
+        }
+    };
 }
 
 export default async function StoryPage({ params }: StoryPageProps) {
@@ -25,12 +47,18 @@ export default async function StoryPage({ params }: StoryPageProps) {
     // Use actual chapters from API
     const chapters = story.chapters?.map(chap => ({
         number: chap.number,
-        title: `Chương ${chap.number}: ${chap.title}`,
+        title: chap.title,
         audioUrl: chap.audio_url,
     })) || [];
 
+    const jsonLd = generateStoryStructuredData(story);
+
     return (
         <div className="min-h-screen bg-gray-50/50">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: jsonLd }}
+            />
             {/* NEW: Story Hero (Pro Max) */}
             <div className="-mt-6 mb-8">
                 <StoryHero story={story} />
@@ -70,11 +98,15 @@ export default async function StoryPage({ params }: StoryPageProps) {
                     <section>
                         <AudioPlayer
                             storyId={story.id}
+                            storyTitle={story.title}
+                            storySlug={story.slug}
+                            coverUrl={story.cover_url}
                             title="Nghe Truyện"
                             chapters={chapters}
                             currentChapter={1}
                         />
                     </section>
+
 
                     {/* Comments Section */}
                     <section className="bg-white rounded-lg border border-gray-100 p-6 shadow-sm">

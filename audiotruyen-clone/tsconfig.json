@@ -37,8 +37,6 @@
     "**/*.mts"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.stories.tsx",
-    "**/*.test.tsx"
+    "node_modules"
   ]
 }

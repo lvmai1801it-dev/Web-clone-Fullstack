@@ -140,7 +140,9 @@ const generateStories = (count: number): Story[] => {
     return stories;
 };
 
-export const mockStories = generateStories(108);
+export const mockStories = process.env.NODE_ENV === 'development'
+    ? generateStories(108)
+    : [];
 
 // Mock Ranking Data (Top 10 highest views)
 export const mockRanking: RankingItem[] = [...mockStories]

@@ -9,9 +9,14 @@ export interface PlaybackProgress {
     chapterNumber: number;
     timestamp: number; // in seconds
     updatedAt: number; // Date.now()
+    // Story metadata for MiniPlayer/FAB
+    storyTitle?: string;
+    storySlug?: string;
+    coverUrl?: string;
 }
 
 const STORAGE_PREFIX = 'audiotruyen_progress_';
+const LAST_PLAYED_KEY = 'audiotruyen_last_played';
 
 export const PlaybackPersistence = {
     /**
@@ -26,6 +31,9 @@ export const PlaybackPersistence = {
         };
 
         localStorage.setItem(`${STORAGE_PREFIX}${progress.storyId}`, JSON.stringify(data));
+
+        // Also save as last played for MiniPlayer/FAB
+        localStorage.setItem(LAST_PLAYED_KEY, JSON.stringify(data));
     },
 
     /**
@@ -46,6 +54,23 @@ export const PlaybackPersistence = {
     },
 
     /**
+     * Get the last played story for MiniPlayer/FAB
+     */
+    getLastPlayed: (): PlaybackProgress | null => {
+        if (typeof window === 'undefined') return null;
+
+        const saved = localStorage.getItem(LAST_PLAYED_KEY);
+        if (!saved) return null;
+
+        try {
+            return JSON.parse(saved) as PlaybackProgress;
+        } catch (e) {
+            console.error('Failed to parse last played', e);
+            return null;
+        }
+    },
+
+    /**
      * Clear progress for a specific story or all progress
      */
     clearProgress: (storyId?: number): void => {
@@ -58,6 +83,7 @@ export const PlaybackPersistence = {
             Object.keys(localStorage)
                 .filter(key => key.startsWith(STORAGE_PREFIX))
                 .forEach(key => localStorage.removeItem(key));
+            localStorage.removeItem(LAST_PLAYED_KEY);
         }
     },
 
@@ -73,3 +99,4 @@ export const PlaybackPersistence = {
             .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
     }
 };
+

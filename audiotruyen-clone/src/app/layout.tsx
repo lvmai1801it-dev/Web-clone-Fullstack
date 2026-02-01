@@ -3,6 +3,9 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
+import { MobileComponents } from "@/components/mobile/MobileComponents";
+
+
 
 const openSans = Open_Sans({
   subsets: ["latin", "vietnamese"],
@@ -62,6 +65,9 @@ export const metadata: Metadata = {
   },
 };
 
+import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
+import { AudioProvider } from "@/contexts/AudioContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -77,12 +83,22 @@ export default function RootLayout({
         >
           Chuyển đến nội dung chính
         </a>
-        <Header />
-        <main id="main-content" className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <AudioProvider>
+          <Header />
+          <main id="main-content" className="min-h-screen pb-16 md:pb-0">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
+
+          {/* Mobile-only components (dynamic loaded) */}
+          <MobileComponents />
+
+          <Footer />
+        </AudioProvider>
+
       </body>
     </html>
   );
 }
+
