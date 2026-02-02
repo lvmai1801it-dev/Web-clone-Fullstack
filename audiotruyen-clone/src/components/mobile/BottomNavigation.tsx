@@ -56,7 +56,10 @@ export function BottomNavigation() {
                         aria-current={isActive ? 'page' : undefined}
                     >
                         {isActive && (
-                            <span className="absolute top-0 w-12 h-1 bg-primary rounded-full animate-in fade-in zoom-in duration-500" />
+                            <span
+                                className="absolute top-0 w-12 h-1 bg-primary rounded-full opacity-100 transition-opacity duration-300"
+                                style={{ willChange: 'opacity' }}
+                            />
                         )}
                         <Icon
                             size={20}

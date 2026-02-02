@@ -14,9 +14,10 @@ interface StoryCardProps {
     story: Story;
     showBadge?: boolean;
     className?: string;
+    priority?: boolean;
 }
 
-const StoryCard = memo(function StoryCard({ story, showBadge = true, className }: StoryCardProps) {
+const StoryCard = memo(function StoryCard({ story, showBadge = true, className, priority = false }: StoryCardProps) {
     const { progressText, badges } = useStoryDisplay(story);
 
     return (
@@ -31,6 +32,7 @@ const StoryCard = memo(function StoryCard({ story, showBadge = true, className }
                         src={story.cover_url || ''}
                         alt={story.title}
                         fill
+                        priority={priority}
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                         sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
                         containerClassName="h-full w-full"

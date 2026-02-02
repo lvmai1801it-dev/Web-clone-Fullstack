@@ -47,8 +47,8 @@ export default async function Home() {
             </div>
 
             <div className="story-grid">
-              {newStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
+              {newStories.map((story, index) => (
+                <StoryCard key={story.id} story={story} priority={index < 2} />
               ))}
             </div>
           </section>

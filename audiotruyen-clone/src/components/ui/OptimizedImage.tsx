@@ -41,6 +41,7 @@ export function OptimizedImage({
                     className
                 )}
                 priority={priority}
+                fetchPriority={priority ? "high" : "auto"}
                 onLoad={handleLoad}
                 onError={handleError}
                 {...props}
