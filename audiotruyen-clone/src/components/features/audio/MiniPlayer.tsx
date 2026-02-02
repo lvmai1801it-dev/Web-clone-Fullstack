@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { Paper, Box, Typography, IconButton, LinearProgress } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 import { useAudio } from '@/contexts/AudioContext';
 import { usePathname } from 'next/navigation';
 
@@ -23,12 +26,32 @@ export function MiniPlayer({ className = '' }: MiniPlayerProps) {
     const progressPercent = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
 
     return (
-        <div className={`fixed bottom-[60px] left-0 right-0 z-30 md:hidden animate-in slide-in-from-bottom duration-300 ${className}`}>
-            <div className="mx-2 bg-white border border-[var(--color-border)] rounded-xl shadow-lg overflow-hidden">
-                <div className="flex items-center gap-3 p-2">
+        <Box
+            sx={{
+                position: 'fixed',
+                bottom: 60,
+                left: 0,
+                right: 0,
+                zIndex: 30,
+                display: { xs: 'block', md: 'none' },
+                animation: 'slide-in-from-bottom 0.3s ease-out',
+                ...className as any
+            }}
+        >
+            <Paper
+                elevation={4}
+                sx={{
+                    mx: 2,
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                }}
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1 }}>
                     {/* Cover */}
-                    <Link href={`/truyen/${state.storySlug}`} className="flex-shrink-0">
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-[var(--color-background)]">
+                    <Link href={`/truyen/${state.storySlug}`} style={{ flexShrink: 0 }}>
+                        <Box sx={{ position: 'relative', width: 48, height: 48, borderRadius: 2, overflow: 'hidden', bgcolor: 'action.hover' }}>
                             <Image
                                 src={state.coverUrl || '/covers/placeholder.jpg'}
                                 alt={state.storyTitle}
@@ -36,47 +59,41 @@ export function MiniPlayer({ className = '' }: MiniPlayerProps) {
                                 className="object-cover"
                                 sizes="48px"
                             />
-                        </div>
+                        </Box>
                     </Link>
 
                     {/* Info */}
-                    <Link href={`/truyen/${state.storySlug}`} className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
+                    <Link href={`/truyen/${state.storySlug}`} style={{ flex: 1, minWidth: 0, textDecoration: 'none' }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {state.storyTitle}
-                        </h4>
-                        <p className="text-xs text-[var(--color-text-muted)]">
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
                             Chương {state.selectedChapter} • {formatTime(state.currentTime)}
-                        </p>
+                        </Typography>
                     </Link>
 
                     {/* Controls */}
-                    <div className="flex items-center gap-1">
-                        <button
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <IconButton
                             onClick={togglePlay}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white active:scale-95 transition-transform"
+                            color="primary"
+                            sx={{
+                                width: 40,
+                                height: 40,
+                                bgcolor: 'primary.main',
+                                color: 'white',
+                                '&:hover': { bgcolor: 'primary.dark' }
+                            }}
                             aria-label={state.isPlaying ? 'Tạm dừng' : 'Phát'}
                         >
-                            {state.isPlaying ? (
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                                </svg>
-                            ) : (
-                                <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
-                </div>
+                            {state.isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+                        </IconButton>
+                    </Box>
+                </Box>
 
                 {/* Progress bar */}
-                <div className="h-1 bg-[var(--color-background)]">
-                    <div
-                        className="h-full bg-[var(--color-primary)] transition-all duration-300"
-                        style={{ width: `${progressPercent}%` }}
-                    />
-                </div>
-            </div>
-        </div>
+                <LinearProgress variant="determinate" value={progressPercent} sx={{ height: 4, bgcolor: 'action.hover' }} />
+            </Paper>
+        </Box>
     );
 }

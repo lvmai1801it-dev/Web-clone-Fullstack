@@ -1,6 +1,7 @@
 'use client';
 
 import { memo } from 'react';
+import { Select, MenuItem, SelectChangeEvent, FormControl } from '@mui/material';
 
 interface Chapter {
     number: number;
@@ -21,22 +22,31 @@ export const ChapterSelector = memo(function ChapterSelector({
 }: ChapterSelectorProps) {
     if (chapters.length === 0) return null;
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onChapterChange(Number(e.target.value));
+    const handleChange = (event: SelectChangeEvent<number>) => {
+        onChapterChange(Number(event.target.value));
     };
 
     return (
-        <select
-            value={selectedChapter}
-            onChange={handleChange}
-            className="flex-1 px-3 py-1.5 border border-[var(--color-border)] rounded-md text-sm focus:outline-none focus:border-[var(--color-primary)] bg-white max-w-[180px] sm:max-w-[220px] h-11"
-            aria-label="Chọn chương"
-        >
-            {chapters.map((chapter) => (
-                <option key={chapter.number} value={chapter.number}>
-                    Chương {chapter.number}: {chapter.title}
-                </option>
-            ))}
-        </select>
+        <FormControl size="small" sx={{ minWidth: 120, flex: 1, maxWidth: { xs: 180, sm: 220 } }}>
+            <Select
+                value={selectedChapter}
+                onChange={handleChange}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Chọn chương' }}
+                sx={{
+                    height: 44,
+                    bgcolor: 'background.paper',
+                    '& .MuiSelect-select': {
+                        py: 1.5,
+                    }
+                }}
+            >
+                {chapters.map((chapter) => (
+                    <MenuItem key={chapter.number} value={chapter.number}>
+                        Chương {chapter.number}: {chapter.title}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
     );
 });

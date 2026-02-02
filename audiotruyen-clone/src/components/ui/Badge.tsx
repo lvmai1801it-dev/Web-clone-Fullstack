@@ -1,33 +1,65 @@
+'use client';
+
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import { Chip, ChipProps } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-const badgeVariants = cva(
-    "inline-flex items-center rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-    {
-        variants: {
-            variant: {
-                default: "bg-blue-600",
-                full: "bg-gradient-to-br from-emerald-500 to-emerald-600",
-                hot: "bg-gradient-to-br from-amber-500 to-amber-600",
-                translate: "bg-gradient-to-br from-cyan-500 to-cyan-600",
-                convert: "bg-gradient-to-br from-orange-500 to-orange-600",
-            },
+const StyledChip = styled(Chip, {
+    shouldForwardProp: (prop) => prop !== 'customVariant',
+})<{ customVariant?: 'default' | 'full' | 'hot' | 'translate' | 'convert' }>(({ theme, customVariant }) => {
+    const variants = {
+        default: {
+            backgroundColor: '#2563EB', // blue-600
+            color: '#fff',
         },
-        defaultVariants: {
-            variant: "default",
+        full: {
+            background: 'linear-gradient(to bottom right, #10B981, #059669)', // emerald-500 to emerald-600
+            color: '#fff',
         },
-    }
-)
+        hot: {
+            background: 'linear-gradient(to bottom right, #F59E0B, #D97706)', // amber-500 to amber-600
+            color: '#fff',
+        },
+        translate: {
+            background: 'linear-gradient(to bottom right, #06B6D4, #0891B2)', // cyan-500 to cyan-600
+            color: '#fff',
+        },
+        convert: {
+            background: 'linear-gradient(to bottom right, #F97316, #EA580C)', // orange-500 to orange-600
+            color: '#fff',
+        },
+    };
 
-export interface BadgeProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> { }
+    const selectedVariant = variants[customVariant || 'default'];
 
-function Badge({ className, variant, ...props }: BadgeProps) {
+    return {
+        ...selectedVariant,
+        height: '20px',
+        fontSize: '0.75rem', // text-xs
+        fontWeight: 700, // font-bold
+        textTransform: 'uppercase',
+        '& .MuiChip-label': {
+            paddingLeft: '8px',
+            paddingRight: '8px',
+        },
+    };
+});
+
+export interface BadgeProps extends Omit<ChipProps, 'variant' | 'children'> {
+    variant?: 'default' | 'full' | 'hot' | 'translate' | 'convert';
+    children?: React.ReactNode;
+}
+
+function Badge({ className, variant = 'default', children, ...props }: BadgeProps) {
     return (
-        <div className={cn(badgeVariants({ variant }), className)} {...props} />
+        <StyledChip
+            customVariant={variant}
+            size="small"
+            className={className}
+            label={children}
+            {...props}
+        />
     )
 }
 
-export { Badge, badgeVariants }
+export { Badge }

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useCallback, ReactNode } from 'react';
-import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { ReactNode } from 'react';
+import { SwipeableDrawer, Box, IconButton, Typography } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface BottomSheetProps {
     isOpen: boolean;
@@ -18,108 +19,61 @@ export function BottomSheet({
     children,
     maxHeight = '80vh'
 }: BottomSheetProps) {
-    const sheetRef = useRef<HTMLDivElement>(null);
-
-    // Close on swipe down
-    const swipeHandlers = useSwipeGesture({
-        onSwipeLeft: undefined,
-        onSwipeRight: undefined,
-        threshold: 50,
-    });
-
-    // Close on escape key
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = '';
-        };
-    }, [isOpen, onClose]);
-
-    // Handle drag to close
-    const dragStartY = useRef<number | null>(null);
-    const currentY = useRef<number>(0);
-
-    const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        const touch = e.touches[0];
-        if (touch) dragStartY.current = touch.clientY;
-    }, []);
-
-    const handleTouchMove = useCallback((e: React.TouchEvent) => {
-        if (dragStartY.current === null) return;
-        const touch = e.touches[0];
-        if (!touch) return;
-        const deltaY = touch.clientY - dragStartY.current;
-        if (deltaY > 0 && sheetRef.current) {
-            currentY.current = deltaY;
-            sheetRef.current.style.transform = `translateY(${deltaY}px)`;
-        }
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        if (currentY.current > 100) {
-            onClose();
-        }
-        if (sheetRef.current) {
-            sheetRef.current.style.transform = '';
-        }
-        dragStartY.current = null;
-        currentY.current = 0;
-    }, [onClose]);
-
-    if (!isOpen) return null;
+    // Puller styling
+    const Puller = (
+        <Box
+            sx={{
+                width: 40,
+                height: 4,
+                bgcolor: 'grey.300',
+                borderRadius: 2,
+                mx: 'auto', // margin auto for horizontal center
+                mt: 1,
+                mb: 1
+            }}
+        />
+    );
 
     return (
-        <>
-            {/* Backdrop */}
-            <div
-                className="fixed inset-0 bg-black/50 z-50 animate-in fade-in duration-200"
-                onClick={onClose}
-            />
-
-            {/* Sheet */}
-            <div
-                ref={sheetRef}
-                className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-300"
-                style={{ maxHeight }}
-                {...swipeHandlers}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-            >
-                {/* Handle */}
-                <div className="sticky top-0 bg-white rounded-t-2xl pt-3 pb-2 px-4 border-b border-[var(--color-border)]">
-                    <div className="w-10 h-1 bg-[var(--color-border)] rounded-full mx-auto mb-3" />
-
-                    {/* Header */}
+        <SwipeableDrawer
+            anchor="bottom"
+            open={isOpen}
+            onClose={onClose}
+            onOpen={() => { }} // Required prop for SwipeableDrawer
+            disableSwipeToOpen={true}
+            PaperProps={{
+                sx: {
+                    borderTopLeftRadius: 16,
+                    borderTopRightRadius: 16,
+                    maxHeight: maxHeight,
+                }
+            }}
+        >
+            <div className="bg-white">
+                <Box
+                    className="sticky top-0 bg-white z-10 border-b border-[var(--color-border)]"
+                    sx={{ px: 2, pb: 1 }}
+                >
+                    {Puller}
                     <div className="flex items-center justify-between">
                         {title && (
-                            <h3 className="text-lg font-bold text-[var(--color-text-primary)]">
+                            <Typography variant="h6" fontWeight="bold" color="text.primary">
                                 {title}
-                            </h3>
+                            </Typography>
                         )}
-                        <button
+                        <IconButton
                             onClick={onClose}
-                            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-background)] text-[var(--color-text-muted)]"
+                            size="small"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                            <CloseIcon />
+                        </IconButton>
                     </div>
-                </div>
+                </Box>
 
-                {/* Content */}
-                <div className="overflow-y-auto" style={{ maxHeight: `calc(${maxHeight} - 80px)` }}>
+                <Box sx={{ overflowY: 'auto', maxHeight: `calc(${maxHeight} - 60px)`, p: 0 }}>
                     {children}
-                </div>
+                </Box>
             </div>
-        </>
+        </SwipeableDrawer>
     );
 }

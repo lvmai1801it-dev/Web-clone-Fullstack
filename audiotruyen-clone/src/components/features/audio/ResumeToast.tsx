@@ -1,6 +1,8 @@
 'use client';
 
 import { memo } from 'react';
+import { Snackbar, Alert, Button, Typography, Box } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 interface ResumeToastProps {
     show: boolean;
@@ -19,37 +21,48 @@ export const ResumeToast = memo(function ResumeToast({
     onResume,
     onDismiss,
 }: ResumeToastProps) {
-    if (!show) return null;
-
     return (
-        <div className="absolute top-12 left-6 right-6 z-20 animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="bg-blue-600 text-white p-3 rounded-lg shadow-xl flex items-center justify-between gap-3 border border-blue-400">
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-white/20 rounded-full">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-                        </svg>
-                    </div>
-                    <div className="text-xs">
-                        <p className="font-bold">Tiếp tục nghe?</p>
-                        <p className="opacity-90">Chương {chapterNumber} lúc {formatTime(timestamp)}</p>
-                    </div>
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={onDismiss}
-                        className="px-2 py-1 text-[10px] h-auto font-medium hover:bg-white/10 rounded"
-                    >
-                        Bỏ qua
-                    </button>
-                    <button
-                        onClick={onResume}
-                        className="px-3 py-1 text-[10px] h-auto font-bold bg-white text-blue-600 hover:bg-blue-50 rounded shadow-sm"
-                    >
-                        Nghe tiếp
-                    </button>
-                </div>
-            </div>
-        </div>
+        <Snackbar
+            open={show}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            sx={{
+                top: { xs: 80, sm: 24 }, // Adjust top position
+                width: '100%',
+                maxWidth: 600,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                position: 'absolute' // Relative to parent container usually
+            }}
+        >
+            <Alert
+                severity="info"
+                icon={<PlayArrowIcon fontSize="inherit" />}
+                action={
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button color="inherit" size="small" onClick={onDismiss}>
+                            Bỏ qua
+                        </Button>
+                        <Button color="primary" variant="contained" size="small" onClick={onResume} disableElevation>
+                            Nghe tiếp
+                        </Button>
+                    </Box>
+                }
+                sx={{
+                    width: '100%',
+                    alignItems: 'center',
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'primary.main',
+                    boxShadow: 3
+                }}
+            >
+                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    Tiếp tục nghe?
+                </Typography>
+                <Typography variant="caption" display="block">
+                    Chương {chapterNumber} lúc {formatTime(timestamp)}
+                </Typography>
+            </Alert>
+        </Snackbar>
     );
 });

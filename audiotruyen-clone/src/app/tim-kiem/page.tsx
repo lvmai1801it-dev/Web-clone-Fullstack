@@ -1,7 +1,7 @@
 import { searchStories, mockRanking } from '@/lib/mock-data';
 import StoryCard from '@/components/features/story/StoryCard';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { Button } from '@/components/ui/button';
+import { Button } from '@mui/material';
 import Link from 'next/link';
 
 interface SearchPageProps {
@@ -76,8 +76,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                                 <br className="hidden md:block" />
                                 Hãy thử sử dụng các từ khóa chung hơn hoặc kiểm tra lại lỗi chính tả.
                             </p>
-                            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-10 py-6 h-auto text-base shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98]">
-                                <Link href="/">Khám phá truyện mới</Link>
+                            <Button
+                                component={Link}
+                                href="/"
+                                variant="contained"
+                                size="large"
+                                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-10 py-6 h-auto text-base shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98]"
+                            >
+                                Khám phá truyện mới
                             </Button>
                         </div>
                     </div>

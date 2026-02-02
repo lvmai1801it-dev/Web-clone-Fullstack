@@ -1,5 +1,5 @@
-export * from './button';
-export * from './input';
+export * from './MuiButton';
+export * from './MuiInput';
 export * from './Badge';
 export * from './BottomSheet';
 export * from './FloatingActionButton';

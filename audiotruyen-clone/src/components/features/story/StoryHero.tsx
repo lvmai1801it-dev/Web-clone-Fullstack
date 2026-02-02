@@ -1,7 +1,15 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { Box, Typography, Chip, Stack, Rating, Container, Grid, CardMedia } from '@mui/material';
 import { Story } from '@/lib/types';
 import { Badge } from '@/components/ui/Badge';
+import PersonIcon from '@mui/icons-material/Person';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface StoryHeroProps {
     story: Story;
@@ -10,12 +18,31 @@ interface StoryHeroProps {
 export default function StoryHero({ story }: StoryHeroProps) {
 
     return (
-        <div className="relative w-full overflow-hidden bg-gradient-to-b from-blue-50/40 to-white pb-8 pt-6">
-            <div className="container-main relative z-10">
-                <div className="flex flex-col gap-8 md:flex-row">
+        <Box
+            sx={{
+                width: '100%',
+                overflow: 'hidden',
+                background: 'linear-gradient(to bottom, rgba(37, 99, 235, 0.08), #ffffff)',
+                pb: 4,
+                pt: 3
+            }}
+        >
+            <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
                     {/* Cover Column */}
-                    <div className="shrink-0 md:w-[240px]">
-                        <div className="group relative aspect-[2/3] w-full overflow-hidden rounded-[var(--radius-card)] shadow-xl ring-1 ring-black/5 transition-transform hover:scale-[1.02]">
+                    <Box sx={{ width: { xs: '100%', md: 240 }, flexShrink: 0 }}>
+                        <CardMedia
+                            sx={{
+                                position: 'relative',
+                                width: '100%',
+                                aspectRatio: '2/3',
+                                borderRadius: 2,
+                                overflow: 'hidden',
+                                boxShadow: 6,
+                                transition: 'transform 0.3s',
+                                '&:hover': { transform: 'scale(1.02)' }
+                            }}
+                        >
                             {story.cover_url ? (
                                 <Image
                                     src={story.cover_url}
@@ -26,84 +53,121 @@ export default function StoryHero({ story }: StoryHeroProps) {
                                     sizes="(max-width: 768px) 100vw, 240px"
                                 />
                             ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white">
-                                    <span className="p-4 text-center font-bold">{story.title}</span>
-                                </div>
+                                <Box sx={{
+                                    height: '100%',
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    background: 'linear-gradient(to bottom right, primary.main, primary.dark)',
+                                    color: 'white'
+                                }}>
+                                    <Typography variant="body1" align="center" fontWeight="bold" p={2}>
+                                        {story.title}
+                                    </Typography>
+                                </Box>
                             )}
 
                             {/* Mobile visual effect */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                        </div>
-                    </div>
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)',
+                                    opacity: 0,
+                                    transition: 'opacity 0.3s',
+                                    '&:hover': { opacity: 1 },
+                                    zIndex: 1
+                                }}
+                            />
+                        </CardMedia>
+                    </Box>
 
                     {/* Info Column */}
-                    <div className="flex flex-1 flex-col justify-start space-y-4">
-                        {/* Status & Genres */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant={story.status === 'completed' ? 'full' : 'hot'}>
-                                {story.status === 'completed' ? 'Full' : 'Đang ra'}
-                            </Badge>
-                            {story.categories.map(genre => (
-                                <Link
-                                    key={genre.id}
-                                    href={`/the-loai/${genre.slug}`}
-                                    className="rounded-full border border-[var(--color-border)] bg-white px-3 py-0.5 text-xs font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
-                                >
-                                    {genre.name}
-                                </Link>
-                            ))}
+                    <Box sx={{ flex: 1 }}>
+                        <Stack spacing={2}>
+                            {/* Status & Genres */}
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}>
+                                <Badge variant={story.status === 'completed' ? 'full' : 'hot'}>
+                                    {story.status === 'completed' ? 'Full' : 'Đang ra'}
+                                </Badge>
+                                {story.categories.map(genre => (
+                                    <Chip
+                                        key={genre.id}
+                                        label={genre.name}
+                                        component={Link}
+                                        href={`/the-loai/${genre.slug}`}
+                                        clickable
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{
+                                            fontWeight: 500,
+                                            color: 'text.secondary',
+                                            '&:hover': {
+                                                borderColor: 'primary.main',
+                                                color: 'primary.main'
+                                            }
+                                        }}
+                                    />
+                                ))}
+                            </Box>
 
-                        </div>
+                            {/* Title */}
+                            <Typography variant="h3" component="h1" fontWeight="bold" sx={{ fontSize: { xs: '1.5rem', md: '2.25rem' } }}>
+                                {story.title}
+                            </Typography>
 
-                        {/* Title */}
-                        <h1 className="text-2xl font-bold leading-tight text-[var(--color-text-primary)] md:text-3xl lg:text-4xl">
-                            {story.title}
-                        </h1>
+                            {/* Metadata Grid (using CSS Grid via Box) */}
+                            <Box sx={{
+                                display: 'grid',
+                                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                                gap: 2,
+                                maxWidth: '600px'
+                            }}>
+                                <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                                    <PersonIcon fontSize="small" />
+                                    <Typography variant="body2" width={80} fontWeight={500}>Tác giả:</Typography>
+                                    <Typography variant="body2" fontWeight={600} color="primary.main">{story.author_name}</Typography>
+                                </Stack>
 
-                        {/* Metadata Grid */}
-                        <div className="grid grid-cols-1 gap-y-2 gap-x-8 text-sm sm:grid-cols-2 lg:max-w-2xl">
-                            <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
-                                <span className="w-20 font-medium">Tác giả:</span>
-                                <span className="font-semibold text-[var(--color-primary)]">{story.author_name}</span>
-                            </div>
+                                {story.narrator && (
+                                    <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                                        <RecordVoiceOverIcon fontSize="small" />
+                                        <Typography variant="body2" width={80} fontWeight={500}>Giọng đọc:</Typography>
+                                        <Typography variant="body2" color="text.primary">{story.narrator}</Typography>
+                                    </Stack>
+                                )}
 
-                            {story.narrator && (
-                                <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
-                                    <span className="w-20 font-medium">Giọng đọc:</span>
-                                    <span className="text-[var(--color-text-primary)]">{story.narrator}</span>
-                                </div>
-                            )}
+                                <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                                    <MenuBookIcon fontSize="small" />
+                                    <Typography variant="body2" width={80} fontWeight={500}>Số chương:</Typography>
+                                    <Typography variant="body2">{story.total_chapters}</Typography>
+                                </Stack>
 
-                            <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
-                                <span className="w-20 font-medium">Số chương:</span>
-                                <span>{story.total_chapters}</span>
-                            </div>
+                                <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                                    <VisibilityIcon fontSize="small" />
+                                    <Typography variant="body2" width={80} fontWeight={500}>Lượt xem:</Typography>
+                                    <Typography variant="body2">{story.views.toLocaleString()}</Typography>
+                                </Stack>
+                            </Box>
 
-                            <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
-                                <span className="w-20 font-medium">Lượt xem:</span>
-                                <span>{story.views.toLocaleString()}</span>
-                            </div>
-                        </div>
-
-                        {/* Rating */}
-                        <div className="flex items-center gap-4 border-t border-[var(--color-border-light)] pt-3">
-                            <div className="flex items-center gap-1">
-                                <span className="text-2xl font-bold text-[var(--color-text-primary)]">{story.rating_avg}</span>
-                                <div className="flex text-amber-400">
-                                    {Array.from({ length: 5 }).map((_, i) => (
-                                        <svg key={i} className={`h-5 w-5 ${i < Math.floor(parseFloat(story.rating_avg)) ? 'fill-current' : 'text-slate-200 fill-current'}`} viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="h-8 w-px bg-[var(--color-border)]"></div>
-                            <span className="text-sm text-[var(--color-text-muted)]">{story.rating_count} đánh giá</span>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+                            {/* Rating */}
+                            <Box sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Typography variant="h5" fontWeight="bold">
+                                        {story.rating_avg}
+                                    </Typography>
+                                    <Rating value={parseFloat(story.rating_avg)} precision={0.5} readOnly size="small" />
+                                </Box>
+                                <Box sx={{ width: 1, height: 24, bgcolor: 'divider' }} />
+                                <Typography variant="body2" color="text.secondary">
+                                    {story.rating_count} đánh giá
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </Box>
+                </Box>
+            </Container>
+        </Box>
     );
 }

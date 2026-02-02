@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@/components/ui';
+import { MuiButton as Button } from '@/components/ui';
 
 interface Props {
     children?: ReactNode;
@@ -40,8 +40,8 @@ export class ErrorBoundary extends Component<Props, State> {
                         Rất tiếc, đã có lỗi kỹ thuật xảy ra. Vui lòng thử tải lại trang hoặc quay lại sau.
                     </p>
                     <div className="flex gap-3">
-                        <Button onClick={() => window.location.reload()}>Tải lại trang</Button>
-                        <Button variant="outline" onClick={() => window.location.href = '/'}>Về trang chủ</Button>
+                        <Button variant="contained" onClick={() => window.location.reload()}>Tải lại trang</Button>
+                        <Button variant="outlined" onClick={() => window.location.href = '/'}>Về trang chủ</Button>
                     </div>
                     {process.env.NODE_ENV === 'development' && (
                         <div className="mt-8 p-4 bg-gray-50 rounded text-left overflow-auto max-w-full">

@@ -1,6 +1,7 @@
 'use client';
 
 import { memo } from 'react';
+import { Slider, Box, Typography } from '@mui/material';
 
 interface AudioProgressBarProps {
     currentTime: number;
@@ -15,25 +16,50 @@ export const AudioProgressBar = memo(function AudioProgressBar({
     onSeek,
     formatTime,
 }: AudioProgressBarProps) {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onSeek(Number(e.target.value));
+    const handleChange = (event: Event, newValue: number | number[]) => {
+        onSeek(newValue as number);
     };
 
     return (
-        <div className="mb-4">
-            <input
-                type="range"
-                min="0"
+        <Box sx={{ mb: 2, width: '100%' }}>
+            <Slider
+                size="small"
+                min={0}
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleChange}
-                className="w-full h-2 bg-[var(--color-background)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)]"
                 aria-label="Thanh tiến trình audio"
+                sx={{
+                    color: 'primary.main',
+                    height: 4,
+                    '& .MuiSlider-thumb': {
+                        width: 12,
+                        height: 12,
+                        transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                        '&:before': {
+                            boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                        },
+                        '&:hover, &.Mui-focusVisible': {
+                            boxShadow: '0px 0px 0px 8px rgb(0 0 0 / 16%)',
+                        },
+                        '&.Mui-active': {
+                            width: 20,
+                            height: 20,
+                        },
+                    },
+                    '& .MuiSlider-rail': {
+                        opacity: 0.28,
+                    },
+                }}
             />
-            <div className="flex justify-between text-xs text-[var(--color-text-muted)] mt-1">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-            </div>
-        </div>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    {formatTime(currentTime)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    {formatTime(duration)}
+                </Typography>
+            </Box>
+        </Box>
     );
 });

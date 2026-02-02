@@ -17,6 +17,11 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.7",
+    "@mui/material": "^7.3.7",
+    "@mui/material-nextjs": "^7.3.7",
     "@next/bundle-analyzer": "^16.1.6",
     "@radix-ui/react-slot": "^1.2.4",
     "axios": "^1.13.3",

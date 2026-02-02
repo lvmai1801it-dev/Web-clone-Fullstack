@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { IconButton, Button } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { Category } from '@/lib/types';
 
 interface MobileMenuProps {
@@ -41,11 +42,9 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                     <span className="text-xl font-bold text-[var(--color-primary)] font-serif">
                         MENU
                     </span>
-                    <Button variant="ghost" size="icon" onClick={onClose} aria-label="Đóng menu">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </Button>
+                    <IconButton onClick={onClose} aria-label="Đóng menu">
+                        <CloseIcon />
+                    </IconButton>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-2">
@@ -93,8 +92,15 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                 </nav>
 
                 <div className="p-4 border-t border-[var(--color-border)]">
-                    <Button className="w-full" asChild>
-                        <Link href="/login" onClick={onClose}>Đăng nhập</Link>
+                    <Button
+                        component={Link}
+                        href="/login"
+                        onClick={onClose}
+                        variant="contained"
+                        fullWidth
+                        className="bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90"
+                    >
+                        Đăng nhập
                     </Button>
                 </div>
             </div>

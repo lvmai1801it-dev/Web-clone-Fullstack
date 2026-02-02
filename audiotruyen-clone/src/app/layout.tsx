@@ -68,6 +68,7 @@ export const metadata: Metadata = {
 import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
 import { AudioProvider } from "@/contexts/AudioContext";
 import { AppProvider } from "@/contexts/AppContext";
+import ThemeRegistry from "@/components/theme/ThemeRegistry";
 
 export default function RootLayout({
   children,
@@ -86,17 +87,19 @@ export default function RootLayout({
         </a>
         <AppProvider>
           <AudioProvider>
-            <Header />
-            <main id="main-content" className="min-h-screen pb-16 md:pb-0">
-              <ErrorBoundary>
-                {children}
-              </ErrorBoundary>
-            </main>
+            <ThemeRegistry>
+              <Header />
+              <main id="main-content" className="min-h-screen pb-16 md:pb-0">
+                <ErrorBoundary>
+                  {children}
+                </ErrorBoundary>
+              </main>
 
-            {/* Mobile-only components (dynamic loaded) */}
-            <MobileComponents />
+              {/* Mobile-only components (dynamic loaded) */}
+              <MobileComponents />
 
-            <Footer />
+              <Footer />
+            </ThemeRegistry>
           </AudioProvider>
         </AppProvider>
 

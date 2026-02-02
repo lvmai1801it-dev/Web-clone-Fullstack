@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Button } from '@/components/ui';
+import { useEffect, useState } from 'react';
+import { Button, Paper, Box, Typography, TextField, IconButton } from '@mui/material';
+import HeadsetIcon from '@mui/icons-material/Headset';
 import { useAudio } from '@/contexts/AudioContext';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 
@@ -79,17 +80,34 @@ export default function AudioPlayer({
     if (state.storyId !== storyId) return null;
 
     return (
-        <div className="bg-white border border-[var(--color-border)] rounded-[var(--radius-card)] p-4 md:p-6 shadow-sm relative overflow-hidden">
+        <Paper
+            elevation={0}
+            sx={{
+                p: { xs: 2, md: 3 },
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'divider',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
             {/* Gradient Border Top */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-light)]" />
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 4,
+                    background: 'linear-gradient(to right, primary.main, primary.light)',
+                }}
+            />
 
             {/* Title */}
-            <h3 className="text-lg font-bold text-[var(--color-primary)] mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <HeadsetIcon />
                 {title}
-            </h3>
+            </Typography>
 
             {/* Resume Toast */}
             <ResumeToast
@@ -110,18 +128,22 @@ export default function AudioPlayer({
             />
 
             {/* Controls */}
-            <div className="flex flex-col gap-6 mb-4">
-                <div className="grid grid-cols-[48px_1fr_48px] sm:grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4 min-h-[64px]">
-                    <div className="flex justify-start">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
+                <Box sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '48px 1fr 48px', sm: '1fr auto 1fr' },
+                    alignItems: 'center',
+                    gap: { xs: 1, sm: 2 },
+                    minHeight: 64
+                }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                         <SpeedControl
                             playbackRate={state.playbackRate}
-                            isOpen={state.isSpeedMenuOpen}
-                            onToggle={toggleSpeedMenu}
                             onSpeedChange={setPlaybackRate}
                         />
-                    </div>
+                    </Box>
 
-                    <div className="flex justify-center w-full overflow-hidden">
+                    <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
                         <AudioControls
                             isPlaying={state.isPlaying}
                             canGoPrev={state.selectedChapter > 1}
@@ -139,13 +161,13 @@ export default function AudioPlayer({
                                 if (onChapterChange) onChapterChange(next);
                             }}
                         />
-                    </div>
+                    </Box>
 
-                    <div className="hidden sm:block" aria-hidden="true" />
-                </div>
+                    <Box sx={{ display: { xs: 'none', sm: 'block' } }} aria-hidden="true" />
+                </Box>
 
                 {/* Volume & Chapter */}
-                <div className="flex items-center gap-4 justify-between border-t border-[var(--color-border-light)] pt-4">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'space-between', borderTop: '1px solid', borderColor: 'divider', pt: 2 }}>
                     <VolumeControl volume={state.volume} onVolumeChange={setVolume} />
                     <ChapterSelector
                         chapters={state.chapters}
@@ -155,28 +177,33 @@ export default function AudioPlayer({
                             if (onChapterChange) onChapterChange(chapter);
                         }}
                     />
-                </div>
-            </div>
+                </Box>
+            </Box>
 
             {/* Background Music (Feature) */}
-            <div className="border-t border-[var(--color-border-light)] pt-4 mt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <label htmlFor="bg-music-url" className="text-sm font-medium text-[var(--color-text-secondary)] whitespace-nowrap">
+            <Box sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 2, mt: 1 }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'center' }, gap: 1.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', whiteSpace: 'nowrap' }}>
                         Nhạc nền:
-                    </label>
-                    <div className="flex items-center gap-2 flex-1">
-                        <input
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
+                        <TextField
                             id="bg-music-url"
-                            type="url"
                             placeholder="URL nhạc nền (Youtube, MP3...)"
-                            className="flex-1 min-w-0 px-3 py-2 text-sm border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] transition-all"
+                            size="small"
+                            fullWidth
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                }
+                            }}
                         />
-                        <Button size="sm" className="whitespace-nowrap flex-shrink-0 shadow-sm">
+                        <Button variant="outlined" size="small" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
                             Phát nhạc
                         </Button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </Box>
+                </Box>
+            </Box>
+        </Paper>
     );
 }

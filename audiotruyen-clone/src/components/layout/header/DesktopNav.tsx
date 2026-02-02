@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Category } from '@/lib/types';
+import FacebookIcon from '@mui/icons-material/Facebook';
 
 interface DesktopNavProps {
     categories: Category[];
@@ -62,6 +63,18 @@ export function DesktopNav({ categories }: DesktopNavProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Facebook Link */}
+            <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-sm font-medium text-[var(--color-text-primary)] hover:text-[#1877F2] py-2"
+                aria-label="Facebook"
+            >
+                <FacebookIcon className="w-5 h-5 text-[#1877F2]" />
+                <span className="hidden lg:inline">Facebook</span>
+            </a>
         </nav>
     );
 }

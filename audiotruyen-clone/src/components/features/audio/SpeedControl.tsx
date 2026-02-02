@@ -1,53 +1,95 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState, MouseEvent } from 'react';
+import { Button, Menu, MenuItem, Typography } from '@mui/material';
+import SpeedIcon from '@mui/icons-material/Speed';
 
 interface SpeedControlProps {
     playbackRate: number;
-    isOpen: boolean;
-    onToggle: () => void;
     onSpeedChange: (rate: number) => void;
+    // isOpen and onToggle are no longer needed as Menu handles its own state
+    isOpen?: boolean;
+    onToggle?: () => void;
 }
 
 const SPEED_OPTIONS = [0.75, 1, 1.25, 1.5, 1.75, 2];
 
 export const SpeedControl = memo(function SpeedControl({
     playbackRate,
-    isOpen,
-    onToggle,
     onSpeedChange,
 }: SpeedControlProps) {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSelect = (rate: number) => {
+        onSpeedChange(rate);
+        handleClose();
+    };
+
     return (
-        <div className="relative">
-            <button
-                onClick={onToggle}
-                className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] touch-target rounded-full hover:bg-[var(--color-background)] transition-colors"
-                aria-label={`Tốc độ phát: ${playbackRate}x`}
-                aria-expanded={isOpen}
+        <>
+            <Button
+                onClick={handleClick}
+                color="inherit"
+                size="small"
+                startIcon={<SpeedIcon sx={{ fontSize: 18 }} />}
+                sx={{
+                    minWidth: 'auto',
+                    borderRadius: 20,
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    color: 'text.secondary',
+                    '&:hover': {
+                        bgcolor: 'action.hover',
+                        color: 'primary.main',
+                    }
+                }}
             >
                 {playbackRate}x
-            </button>
-
-            {isOpen && (
-                <div
-                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white border border-[var(--color-border)] rounded-lg shadow-lg py-1 min-w-[80px] z-10 animate-in fade-in zoom-in-95 duration-100"
-                    role="menu"
-                >
-                    {SPEED_OPTIONS.map((rate) => (
-                        <button
-                            key={rate}
-                            onClick={() => onSpeedChange(rate)}
-                            className={`block w-full px-3 py-1.5 text-sm text-left hover:bg-[var(--color-background)] ${playbackRate === rate
-                                    ? 'text-[var(--color-primary)] font-bold'
-                                    : 'text-[var(--color-text-primary)]'
-                                }`}
-                            role="menuitem"
-                        >
+            </Button>
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            mt: -1,
+                            minWidth: 100,
+                            borderRadius: 2,
+                        }
+                    }
+                }}
+            >
+                {SPEED_OPTIONS.map((rate) => (
+                    <MenuItem
+                        key={rate}
+                        selected={playbackRate === rate}
+                        onClick={() => handleSelect(rate)}
+                        dense
+                    >
+                        <Typography variant="body2" fontWeight={playbackRate === rate ? 700 : 400}>
                             {rate}x
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
+                        </Typography>
+                    </MenuItem>
+                ))}
+            </Menu>
+        </>
     );
 });

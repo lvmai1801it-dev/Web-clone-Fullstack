@@ -2,7 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, KeyboardEvent, useEffect, useRef } from 'react';
-import { Button, Input } from '@/components/ui';
+import { IconButton, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import { MuiInput } from '@/components/ui/MuiInput';
 import { Category } from '@/lib/types';
 import { CategoryService } from '@/services';
 import { Logo } from './Logo';
@@ -69,22 +73,19 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-white border-b border-[var(--color-border)] sticky top-0 z-40">
+        <header className="bg-white border-b border-[var(--color-border)] sticky top-0 z-40 shadow-sm">
             <div className="container-main">
                 {/* Top Row - Logo & Search */}
-                <div className="flex items-center justify-between py-3 gap-2">
-                    {/* Mobile Menu Button - Left */}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="md:hidden -ml-2 text-[var(--color-text-primary)] touch-target"
+                <div className="flex items-center justify-between py-2 gap-2">
+                    {/* Menu Button - Left */}
+                    <IconButton
+                        className="-ml-2 text-[var(--color-text-primary)]"
                         onClick={() => setIsMobileMenuOpen(true)}
                         aria-label="Mở menu"
+                        size="large"
                     >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </Button>
+                        <MenuIcon />
+                    </IconButton>
 
                     {/* Logo */}
                     <div className="flex-1 flex justify-center md:justify-start">
@@ -95,14 +96,13 @@ export default function Header() {
                     <DesktopNav categories={categories} />
 
                     {/* Actions & Search */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                         <UserActions />
 
                         {/* Search Bar (Desktop) */}
                         <div className="relative hidden sm:block" ref={searchRef}>
-                            <div className="relative">
-                                <Input
-                                    type="search"
+                            <div className="relative flex items-center">
+                                <MuiInput
                                     placeholder="Tìm kiếm..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -110,20 +110,23 @@ export default function Header() {
                                     onFocus={() => {
                                         if (searchQuery.trim()) setShowDropdown(true);
                                     }}
-                                    className="w-48 lg:w-64 h-9 pr-9"
-                                    aria-label="Ô tìm kiếm"
+                                    className="w-48 lg:w-64 [&_.MuiOutlinedInput-root]:rounded-full"
+                                    size="small"
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={handleSearch}
+                                                    edge="end"
+                                                    size="small"
+                                                    className="text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+                                                >
+                                                    <SearchIcon fontSize="small" />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
                                 />
-                                <Button
-                                    size="icon"
-                                    variant="ghost"
-                                    className="absolute right-0 top-0 h-9 w-9 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
-                                    aria-label="Bắt đầu tìm kiếm"
-                                    onClick={handleSearch}
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </Button>
                             </div>
 
                             {/* Live Search Dropdown */}
@@ -138,50 +141,50 @@ export default function Header() {
                         </div>
 
                         {/* Mobile Search Toggle */}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="sm:hidden text-[var(--color-text-primary)] touch-target"
-                            onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-                            aria-label={isMobileSearchOpen ? "Đóng tìm kiếm" : "Mở tìm kiếm"}
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileSearchOpen ? "M6 18L18 6M6 6l12 12" : "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"} />
-                            </svg>
-                        </Button>
+                        <div className="sm:hidden">
+                            <IconButton
+                                className="text-[var(--color-text-primary)]"
+                                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                                aria-label={isMobileSearchOpen ? "Đóng tìm kiếm" : "Mở tìm kiếm"}
+                            >
+                                {isMobileSearchOpen ? <CloseIcon /> : <SearchIcon />}
+                            </IconButton>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Mobile Search Bar Expansion */}
             {isMobileSearchOpen && (
-                <div className="sm:hidden py-3 px-4 border-t border-[var(--color-border)] animate-in slide-in-from-top-2 duration-200">
+                <div className="sm:hidden py-3 px-4 border-t border-[var(--color-border)] animate-in slide-in-from-top-2 duration-200 bg-white">
                     <div className="relative">
-                        <Input
+                        <MuiInput
                             autoFocus
-                            type="search"
                             placeholder="Tìm kiếm truyện..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="w-full h-10 pr-10"
-                            aria-label="Ô tìm kiếm điện thoại"
+                            fullWidth
+                            size="small"
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={handleSearch}
+                                            edge="end"
+                                            size="small"
+                                        >
+                                            <SearchIcon fontSize="small" />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
-                        <Button
-                            size="icon"
-                            variant="ghost"
-                            className="absolute right-0 top-0 h-10 w-10 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
-                            onClick={handleSearch}
-                        >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </Button>
                     </div>
 
-                    {/* Mobile Live Results (Reuse Desktop Dropdown style but full width) */}
+                    {/* Mobile Live Results */}
                     {searchQuery && (
-                        <div className="mt-2 relative h-0">
+                        <div className="mt-2 relative h-0 z-50">
                             <SearchDropdown
                                 results={results}
                                 isLoading={isLoading}

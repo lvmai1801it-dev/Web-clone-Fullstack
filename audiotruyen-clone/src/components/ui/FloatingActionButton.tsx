@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Fab } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CloseIcon from '@mui/icons-material/Close';
 import { PlaybackPersistence } from '@/lib/persistence';
 
 interface FABProps {
@@ -29,8 +32,8 @@ export function FloatingActionButton({ className = '' }: FABProps) {
     });
     const [isExpanded, setIsExpanded] = useState(false);
 
-    
-    
+
+
     if (!lastPlayed) return null;
 
     return (
@@ -52,21 +55,18 @@ export function FloatingActionButton({ className = '' }: FABProps) {
             )}
 
             {/* FAB Button */}
-            <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="w-14 h-14 rounded-full bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/30 flex items-center justify-center active:scale-95 transition-all"
+            <Fab
+                color="primary"
                 aria-label="Quick play"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-14 h-14"
             >
                 {isExpanded ? (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <CloseIcon />
                 ) : (
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                    </svg>
+                    <PlayArrowIcon />
                 )}
-            </button>
+            </Fab>
         </div>
     );
 }
