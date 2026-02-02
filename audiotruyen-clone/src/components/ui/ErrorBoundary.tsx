@@ -1,8 +1,8 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button, Box, Typography, Container } from '@mui/material';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Props {
     children?: ReactNode;
@@ -29,80 +29,56 @@ export class ErrorBoundary extends Component<Props, State> {
 
     public override render() {
         if (this.state.hasError) {
-            return this.props.fallback || (
-                <Container maxWidth="sm">
-                    <Box
-                        sx={{
-                            minHeight: '400px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            p: 3,
-                            textAlign: 'center',
-                            width: '100%',
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                width: 64,
-                                height: 64,
-                                bgcolor: 'error.light',
-                                color: 'error.main',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                mb: 3,
-                                mx: 'auto'
-                            }}
-                        >
-                            <AlertTriangle size={32} />
-                        </Box>
+            return (
+                <div className="container-main flex items-center justify-center min-h-[500px]">
+                    {this.props.fallback || (
+                        <div className="glass-premium border border-destructive/20 rounded-[40px] p-10 md:p-16 shadow-premium-lg max-w-2xl w-full text-center space-y-8 animate-in zoom-in duration-500">
+                            <div className="w-24 h-24 rounded-full bg-destructive/10 flex items-center justify-center text-destructive mx-auto shadow-glow shadow-destructive/20 ring-1 ring-destructive/20">
+                                <AlertTriangle size={48} strokeWidth={1.5} />
+                            </div>
 
-                        <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}>
-                            Đã có lỗi xảy ra
-                        </Typography>
+                            <div className="space-y-4">
+                                <h1 className="text-3xl md:text-4xl font-black text-foreground uppercase tracking-tight">
+                                    Hệ thống tạm gián đoạn
+                                </h1>
+                                <p className="text-base text-muted-foreground font-medium leading-relaxed">
+                                    Rất tiếc, đã có một sự cố kỹ thuật vừa xảy ra.
+                                    Đừng lo lắng, chúng tôi đã ghi nhận và sẽ sớm khắc phục.
+                                    Hãy thử tải lại trang bạn nhé!
+                                </p>
+                            </div>
 
-                        <Typography
-                            variant="body1"
-                            sx={{
-                                color: 'text.secondary',
-                                mb: 4,
-                                maxWidth: '100%',
-                                mx: 'auto',
-                                lineHeight: 1.6
-                            }}
-                        >
-                            Rất tiếc, đã có lỗi kỹ thuật xảy ra. Vui lòng thử tải lại trang hoặc quay lại sau.
-                        </Typography>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                                <Button
+                                    size="lg"
+                                    onClick={() => window.location.reload()}
+                                    className="h-14 px-8 rounded-2xl bg-destructive text-white font-black uppercase tracking-widest shadow-glow shadow-destructive/20 hover:scale-105 active:scale-95 transition-all"
+                                >
+                                    <RotateCcw size={18} className="mr-2" />
+                                    Tải lại trang
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    onClick={() => window.location.href = '/'}
+                                    className="h-14 px-8 rounded-2xl border-muted-foreground/20 text-foreground font-black uppercase tracking-widest hover:bg-muted transition-all"
+                                >
+                                    <Home size={18} className="mr-2" />
+                                    Về trang chủ
+                                </Button>
+                            </div>
 
-                        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-                            <Button
-                                variant="contained"
-                                onClick={() => window.location.reload()}
-                                sx={{ borderRadius: 2 }}
-                            >
-                                Tải lại trang
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                onClick={() => window.location.href = '/'}
-                                sx={{ borderRadius: 2 }}
-                            >
-                                Về trang chủ
-                            </Button>
-                        </Box>
-
-                        {process.env.NODE_ENV === 'development' && (
-                            <Box sx={{ mt: 6, p: 2, bgcolor: 'grey.50', borderRadius: 1, textAlign: 'left', overflow: 'auto', maxWidth: '100%' }}>
-                                <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'error.main' }}>
-                                    {this.state.error?.toString()}
-                                </Typography>
-                            </Box>
-                        )}
-                    </Box>
-                </Container>
+                            {process.env.NODE_ENV === 'development' && (
+                                <div className="mt-10 p-4 bg-muted/40 rounded-2xl text-left border border-muted divide-y divide-muted/50 overflow-hidden">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">Thông tin kỹ thuật (Chỉ Dev)</p>
+                                    <pre className="text-xs font-mono text-destructive pt-2 overflow-auto max-h-[200px] scrollbar-thin">
+                                        {this.state.error?.stack || this.state.error?.toString()}
+                                    </pre>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
             );
         }
 

@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Paper, Box, Typography } from '@mui/material';
-import { Headphones } from 'lucide-react';
+import { Headphones, Music } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { MuiButton } from '@/components/ui/MuiButton';
-import { MuiInput } from '@/components/ui/MuiInput';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Sub-components
 import { AudioProgressBar } from './AudioProgressBar';
@@ -14,7 +14,6 @@ import { AudioControls } from './AudioControls';
 import { SpeedControl } from './SpeedControl';
 import { VolumeControl } from './VolumeControl';
 import { ChapterSelector } from './ChapterSelector';
-import { ResumeToast } from './ResumeToast';
 
 interface AudioPlayerProps {
     storyId: number;
@@ -46,8 +45,6 @@ export default function AudioPlayer({
         setChapter,
         setPlaybackRate,
         setVolume,
-        hideResumeToast,
-        handleResume,
         formatTime
     } = useAudio();
 
@@ -81,130 +78,127 @@ export default function AudioPlayer({
     if (state.storyId !== storyId) return null;
 
     return (
-        <Paper
-            elevation={0}
-            sx={{
-                p: { xs: 2, md: 3 },
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                position: 'relative',
-                overflow: 'hidden'
-            }}
-        >
+        <Card className="border-none shadow-premium bg-card/80 backdrop-blur-md rounded-2xl overflow-hidden relative">
             {/* Gradient Border Top */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 4,
-                    background: 'linear-gradient(to right, primary.main, primary.light)',
-                }}
-            />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary to-primary/40" />
 
-            {/* Title */}
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Headphones size={24} />
-                {title}
-            </Typography>
+            <CardHeader className="pb-4 pt-8 px-6 md:px-8">
+                <CardTitle className="text-xl font-bold text-primary flex items-center gap-3">
+                    <Headphones className="w-6 h-6 animate-bounce-slow" />
+                    {title}
+                </CardTitle>
+            </CardHeader>
 
-            {/* Resume Toast */}
-            <ResumeToast
-                show={state.showResumeToast && !!state.resumeData}
-                chapterNumber={state.resumeData?.chapterNumber || 0}
-                timestamp={state.resumeData?.timestamp || 0}
-                formatTime={formatTime}
-                onResume={handleResume}
-                onDismiss={hideResumeToast}
-            />
+            <CardContent className="px-6 md:px-8 pb-8 space-y-8">
+                {/* Resume Toast */}
 
-            {/* Progress Bar */}
-            <AudioProgressBar
-                currentTime={state.currentTime}
-                duration={state.duration}
-                onSeek={seek}
-                formatTime={formatTime}
-            />
-
-            {/* Controls */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                <Box sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '48px 1fr 48px', sm: '1fr auto 1fr' },
-                    alignItems: 'center',
-                    gap: { xs: 1, sm: 2 },
-                    minHeight: 64
-                }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-                        <SpeedControl
-                            playbackRate={state.playbackRate}
-                            onSpeedChange={setPlaybackRate}
-                        />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
-                        <AudioControls
-                            isPlaying={state.isPlaying}
-                            canGoPrev={state.selectedChapter > 1}
-                            canGoNext={state.selectedChapter < state.chapters.length}
-                            onTogglePlay={togglePlay}
-                            onSkip={skip}
-                            onPrevChapter={() => {
-                                const prev = state.selectedChapter - 1;
-                                setChapter(prev);
-                                if (onChapterChange) onChapterChange(prev);
-                            }}
-                            onNextChapter={() => {
-                                const next = state.selectedChapter + 1;
-                                setChapter(next);
-                                if (onChapterChange) onChapterChange(next);
-                            }}
-                        />
-                    </Box>
-
-                    <Box sx={{ display: { xs: 'none', sm: 'block' } }} aria-hidden="true" />
-                </Box>
-
-                {/* Volume & Chapter */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'space-between', borderTop: '1px solid', borderColor: 'divider', pt: 2 }}>
-                    <VolumeControl volume={state.volume} onVolumeChange={setVolume} />
-                    <ChapterSelector
-                        chapters={state.chapters}
-                        selectedChapter={state.selectedChapter}
-                        onChapterChange={(chapter) => {
-                            setChapter(chapter);
-                            if (onChapterChange) onChapterChange(chapter);
-                        }}
+                {/* Progress Bar Area */}
+                <div className="space-y-2">
+                    <AudioProgressBar
+                        currentTime={state.currentTime}
+                        duration={state.duration}
+                        onSeek={seek}
+                        formatTime={formatTime}
                     />
-                </Box>
-            </Box>
+                </div>
 
-            {/* Background Music (Feature) */}
-            <Box sx={{ borderTop: '1px solid', borderColor: 'divider', pt: 2, mt: 1 }}>
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { sm: 'center' }, gap: 1.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', whiteSpace: 'nowrap' }}>
-                        Nhạc nền:
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-                        <MuiInput
-                            id="bg-music-url"
-                            placeholder="URL nhạc nền (Youtube, MP3...)"
-                            size="small"
-                            fullWidth
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                }
-                            }}
-                        />
-                        <MuiButton variant="outlined" size="small" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
-                            Phát nhạc
-                        </MuiButton>
-                    </Box>
-                </Box>
-            </Box>
-        </Paper>
+                {/* Main Controls Area */}
+                <div className="flex flex-col space-y-8">
+                    {/* Top Row: Speed, Controls, Placeholder */}
+                    {/* Top Row: Speed, Controls, Placeholder */}
+                    <div className="flex flex-col-reverse md:grid md:grid-cols-3 items-center gap-6 md:gap-4">
+                        <div className="flex w-full md:w-auto justify-between md:justify-start">
+                            <SpeedControl
+                                playbackRate={state.playbackRate}
+                                onSpeedChange={setPlaybackRate}
+                            />
+                            {/* Mobile Volume Toggle could go here if needed, or keeping explicit volume below */}
+                        </div>
+
+                        <div className="flex justify-center w-full md:w-auto">
+                            <AudioControls
+                                isPlaying={state.isPlaying}
+                                canGoPrev={state.selectedChapter > 1}
+                                canGoNext={state.selectedChapter < state.chapters.length}
+                                onTogglePlay={togglePlay}
+                                onSkip={skip}
+                                onPrevChapter={() => {
+                                    const prev = state.selectedChapter - 1;
+                                    setChapter(prev);
+                                    if (onChapterChange) onChapterChange(prev);
+                                }}
+                                onNextChapter={() => {
+                                    const next = state.selectedChapter + 1;
+                                    setChapter(next);
+                                    if (onChapterChange) onChapterChange(next);
+                                }}
+                            />
+                        </div>
+
+                        <div className="hidden md:block" />
+                    </div>
+
+                    {/* Bottom Row: Volume & Chapter */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-muted/50">
+                        <VolumeControl volume={state.volume} onVolumeChange={setVolume} />
+
+                        <div className="w-full sm:w-auto min-w-[200px]">
+                            <ChapterSelector
+                                chapters={state.chapters}
+                                selectedChapter={state.selectedChapter}
+                                onChapterChange={(chapter) => {
+                                    setChapter(chapter);
+                                    if (onChapterChange) onChapterChange(chapter);
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Resume Prompt (Inline) */}
+                    {state.resumeData && state.resumeData.storyId === state.storyId && (
+                        <div className="flex justify-center animate-in fade-in slide-in-from-top-2 pt-2">
+                            <Button
+                                onClick={() => {
+                                    if (state.resumeData) {
+                                        setChapter(state.resumeData.chapterNumber);
+                                        seek(state.resumeData.timestamp);
+                                        togglePlay();
+                                    }
+                                }}
+                                variant="secondary"
+                                className="gap-2 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 shadow-sm"
+                            >
+                                <Music size={16} />
+                                Nghe tiếp Chương {state.resumeData.chapterNumber} (từ {formatTime(state.resumeData.timestamp)})
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Background Music Section (Advanced Feature) */}
+                <div className="pt-8 mt-2 border-t border-muted/30">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
+                            <Music size={16} />
+                            <span className="text-xs font-bold uppercase tracking-widest">Nhạc nền:</span>
+                        </div>
+                        <div className="flex items-center gap-3 flex-1">
+                            <Input
+                                id="bg-music-url"
+                                placeholder="Dán link nhạc Youtube / MP3 để nghe kèm..."
+                                className="h-10 bg-muted/40 border-none rounded-xl text-sm focus-visible:ring-primary/20"
+                            />
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-10 px-6 rounded-xl font-bold whitespace-nowrap border-primary/20 hover:bg-primary/5 transition-colors"
+                            >
+                                Trải nghiệm
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

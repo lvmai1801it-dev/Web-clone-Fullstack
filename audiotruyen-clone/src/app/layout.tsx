@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Open_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
@@ -7,10 +7,10 @@ import { MobileComponents } from "@/components/mobile/MobileComponents";
 
 
 
-const openSans = Open_Sans({
+const inter = Inter({
   subsets: ["latin", "vietnamese"],
   display: "swap",
-  variable: "--font-open-sans",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { AudioProvider } from "@/contexts/AudioContext";
 import { AppProvider } from "@/contexts/AppContext";
-import ThemeRegistry from "@/components/theme/ThemeRegistry";
+import { ResumeToastContainer } from "@/components/features/audio/ResumeToastContainer";
 
 export default function RootLayout({
   children,
@@ -77,7 +77,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={`${openSans.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         {/* Skip to main content - Accessibility */}
         <a
           href="#main-content"
@@ -87,24 +87,25 @@ export default function RootLayout({
         </a>
         <AppProvider>
           <AudioProvider>
-            <ThemeRegistry>
-              <Header />
-              <main id="main-content" className="min-h-screen pb-16 md:pb-0">
-                <ErrorBoundary>
-                  {children}
-                </ErrorBoundary>
-              </main>
 
-              {/* Mobile-only components (dynamic loaded) */}
-              <MobileComponents />
+            <Header />
+            <ResumeToastContainer />
+            <main id="main-content" className="min-h-screen pb-16 md:pb-0">
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
+            </main>
 
-              <Footer />
-            </ThemeRegistry>
+            {/* Mobile-only components (dynamic loaded) */}
+            <MobileComponents />
+
+            <Footer />
+
           </AudioProvider>
         </AppProvider>
 
-      </body>
-    </html>
+      </body >
+    </html >
   );
 }
 

@@ -161,26 +161,66 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }, []);
 
+    // Check for last played story on global mount
+    useEffect(() => {
+        // Only run if we are not already playing (though on fresh mount isPlaying is false)
+        if (state.isPlaying) return;
+
+        const lastPlayed = PlaybackPersistence.getLastPlayed();
+        if (lastPlayed) {
+            // Only show if substantial progress
+            if (lastPlayed.chapterNumber > 1 || lastPlayed.timestamp > 10) {
+                dispatch({ type: 'SHOW_RESUME_TOAST', payload: lastPlayed });
+
+                // Auto hide after 15 seconds
+                const timer = setTimeout(() => {
+                    dispatch({ type: 'HIDE_RESUME_TOAST' });
+                }, 15000);
+
+                return () => clearTimeout(timer);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Use a ref to always have access to latest state for saveProgress
+    const stateRef = useRef(state);
+    useEffect(() => {
+        stateRef.current = state;
+    }, [state]);
+
     const saveProgress = useCallback(() => {
-        if (!state.storyId || !audioRef.current || audioRef.current.currentTime < 5) return;
+        const currentState = stateRef.current;
+        const audio = audioRef.current;
+
+        if (!currentState.storyId || !audio || audio.currentTime < 5) {
+            return;
+        }
 
         PlaybackPersistence.saveProgress({
-            storyId: state.storyId,
+            storyId: currentState.storyId,
             chapterId: 0,
-            chapterNumber: state.selectedChapter,
-            timestamp: audioRef.current.currentTime,
-            storyTitle: state.storyTitle,
-            storySlug: state.storySlug,
-            coverUrl: state.coverUrl,
+            chapterNumber: currentState.selectedChapter,
+            timestamp: audio.currentTime,
+            storyTitle: currentState.storyTitle,
+            storySlug: currentState.storySlug,
+            coverUrl: currentState.coverUrl,
         });
-    }, [state.storyId, state.selectedChapter, state.storyTitle, state.storySlug, state.coverUrl]);
+    }, []);
 
     const setStory = useCallback((story: { storyId: number; storyTitle: string; storySlug: string; coverUrl: string; chapters: Chapter[] }) => {
+        console.log('[setStory] Called with storyId:', story.storyId, 'type:', typeof story.storyId);
         dispatch({ type: 'SET_STORY', payload: story });
 
         const progress = PlaybackPersistence.getProgress(story.storyId);
-        if (progress && (progress.chapterNumber > 1 || progress.timestamp > 10)) {
-            setTimeout(() => dispatch({ type: 'SHOW_RESUME_TOAST', payload: progress }), 0);
+        console.log('[setStory] getProgress result:', progress);
+        console.log('[setStory] localStorage key searched:', `audiotruyen_progress_${story.storyId}`);
+        console.log('[setStory] All localStorage keys:', Object.keys(localStorage).filter(k => k.startsWith('audiotruyen')));
+
+        if (progress) {
+            // Always set resumeData for inline button
+            dispatch({ type: 'SHOW_RESUME_TOAST', payload: progress });
+            // Auto-hide the floating toast after 15 seconds
             setTimeout(() => dispatch({ type: 'HIDE_RESUME_TOAST' }), 15000);
         }
     }, []);
@@ -273,6 +313,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const debouncedSaveProgress = useCallback(() => {
         debouncedSaveRef.current?.();
     }, []);
+
+    // Save progress before page unload (reload/close tab)
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            saveProgress();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [saveProgress]);
 
     // === Effects for Audio Events ===
     useEffect(() => {

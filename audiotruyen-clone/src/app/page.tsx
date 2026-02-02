@@ -4,6 +4,7 @@ import StoryListItem from '@/components/features/story/StoryListItem';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
 import { mockRanking } from '@/test/mocks';
 import { StoryService } from '@/services/story.service';
+import { Sparkles, Trophy, Flame, ChevronRight } from 'lucide-react';
 
 export default async function Home() {
   // Fetch data from API
@@ -18,26 +19,33 @@ export default async function Home() {
   const randomStories = hotStoriesRes.success ? hotStoriesRes.data?.items || [] : [];
 
   return (
-    <div className="container-main py-6">
+    <div className="container-main py-10 space-y-16">
       <div className="layout-main">
         {/* Main Content */}
-        <div className="space-y-8">
+        <div className="space-y-16">
+
           {/* Section: Truyện Mới Cập Nhật */}
-          <section>
-            <div className="section-title flex items-center justify-between">
-              <h2 className="flex items-center gap-2 font-bold uppercase text-[var(--color-primary)]">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                </svg>
-                TRUYỆN MỚI CẬP NHẬT
-              </h2>
+          <section className="space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm ring-1 ring-primary/20">
+                  <Sparkles size={22} className="animate-pulse" />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-foreground">
+                    Truyện Mới Cập Nhật
+                  </h2>
+                  <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest leading-none mt-0.5">Vừa mới cập bến hôm nay</p>
+                </div>
+              </div>
               <Link
                 href="/danh-sach/moi-cap-nhat"
-                className="text-xs font-normal text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:underline"
+                className="group flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-all border-b-2 border-primary/20 hover:border-primary pb-1"
               >
-                Xem thêm →
+                Xem thêm <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
+
             <div className="story-grid">
               {newStories.map((story) => (
                 <StoryCard key={story.id} story={story} />
@@ -46,38 +54,50 @@ export default async function Home() {
           </section>
 
           {/* Section: Truyện Hoàn Thành */}
-          <section>
-            <div className="section-title flex items-center justify-between">
-              <h2 className="flex items-center gap-2 font-bold uppercase text-[var(--color-primary)]">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                </svg>
-                TRUYỆN HOÀN THÀNH
-              </h2>
+          <section className="space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-600 shadow-sm ring-1 ring-green-500/20">
+                  <Trophy size={22} />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-foreground">
+                    Truyện Đã Hoàn Thành
+                  </h2>
+                  <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest leading-none mt-0.5">Sẵn sàng trải nghiệm từ đầu đến cuối</p>
+                </div>
+              </div>
               <Link
                 href="/danh-sach/hoan-thanh"
-                className="text-xs font-normal text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:underline"
+                className="group flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-green-600 hover:text-green-700 transition-all border-b-2 border-green-500/20 hover:border-green-500 pb-1"
               >
-                Xem thêm →
+                Khám phá <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
-            <div className="bg-white rounded border border-[var(--color-border)] p-4">
-              {completedStories.map((story) => (
-                <StoryListItem key={story.id} story={story} />
-              ))}
+
+            <div className="glass-premium rounded-3xl border border-muted/50 p-2 md:p-6 shadow-premium">
+              <div className="divide-y divide-muted/30">
+                {completedStories.map((story) => (
+                  <StoryListItem key={story.id} story={story} />
+                ))}
+              </div>
             </div>
           </section>
 
-          {/* Section: Truyện Hot (Ngẫu nhiên placeholder replaced by Hot) */}
-          <section>
-            <h2 className="section-title mb-4">
-              <span className="flex items-center gap-2">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
-                </svg>
-                TRUYỆN HOT NHIỀU NGƯỜI NGHE
-              </span>
-            </h2>
+          {/* Section: Truyện Hot */}
+          <section className="space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600 shadow-sm ring-1 ring-orange-500/20">
+                <Flame size={22} className="animate-bounce-slow" />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-foreground">
+                  Đang Gây Sốt Cộng Đồng
+                </h2>
+                <p className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest leading-none mt-0.5">Cực nhiều người đang theo dõi</p>
+              </div>
+            </div>
+
             <div className="story-grid">
               {randomStories.map((story) => (
                 <StoryCard key={story.id} story={story} />
@@ -87,8 +107,19 @@ export default async function Home() {
         </div>
 
         {/* Sidebar */}
-        <aside className="space-y-6">
-          <SidebarRanking items={mockRanking} title="Bảng Xếp Hạng" />
+        <aside className="space-y-12">
+          <SidebarRanking items={mockRanking} title="Top Nghe Nhiều Nhất" />
+
+          {/* Decorative Sticky Section (Optional) */}
+          <div className="sticky top-24 space-y-6">
+            <div className="glass-premium rounded-2xl p-6 border border-primary/10 shadow-premium overflow-hidden relative">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+              <h3 className="text-sm font-black uppercase tracking-widest text-primary mb-3">Thông báo mới</h3>
+              <p className="text-[13px] font-medium text-muted-foreground leading-relaxed">
+                Chào mừng bạn đến với phiên bản <strong>Pro Max</strong> của AudioTruyenFree! Trải nghiệm nghe truyện đỉnh cao với giao diện hiện đại.
+              </p>
+            </div>
+          </div>
         </aside>
       </div>
     </div>

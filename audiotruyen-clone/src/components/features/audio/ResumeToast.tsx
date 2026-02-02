@@ -1,8 +1,8 @@
 'use client';
 
 import { memo } from 'react';
-import { Snackbar, Alert, Button, Typography, Box } from '@mui/material';
-import { Play } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Play, X } from 'lucide-react';
 
 interface ResumeToastProps {
     show: boolean;
@@ -21,48 +21,41 @@ export const ResumeToast = memo(function ResumeToast({
     onResume,
     onDismiss,
 }: ResumeToastProps) {
+    if (!show) return null;
+
     return (
-        <Snackbar
-            open={show}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            sx={{
-                top: { xs: 80, sm: 24 }, // Adjust top position
-                width: '100%',
-                maxWidth: 600,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                position: 'absolute' // Relative to parent container usually
-            }}
-        >
-            <Alert
-                severity="info"
-                icon={<Play size={18} fill="currentColor" />}
-                action={
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button color="inherit" size="small" onClick={onDismiss}>
-                            Bỏ qua
-                        </Button>
-                        <Button color="primary" variant="contained" size="small" onClick={onResume} disableElevation>
-                            Nghe tiếp
-                        </Button>
-                    </Box>
-                }
-                sx={{
-                    width: '100%',
-                    alignItems: 'center',
-                    bgcolor: 'background.paper',
-                    border: '1px solid',
-                    borderColor: 'primary.main',
-                    boxShadow: 3
-                }}
-            >
-                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                    Tiếp tục nghe?
-                </Typography>
-                <Typography variant="caption" display="block">
-                    Chương {chapterNumber} lúc {formatTime(timestamp)}
-                </Typography>
-            </Alert>
-        </Snackbar>
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[400px] animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="glass-premium border border-primary/20 rounded-2xl p-4 shadow-premium-lg flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <Play size={20} fill="currentColor" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-foreground">Bạn đang nghe dở?</p>
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                            Chương {chapterNumber} • {formatTime(timestamp)}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={onDismiss}
+                        className="h-9 w-9 rounded-full p-0 text-muted-foreground hover:bg-muted"
+                    >
+                        <X size={18} />
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={onResume}
+                        className="h-9 px-4 rounded-xl bg-primary text-white font-bold text-xs shadow-glow hover:bg-primary/90 transition-all"
+                    >
+                        Nghe tiếp
+                    </Button>
+                </div>
+            </div>
+        </div>
     );
 });

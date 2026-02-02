@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import StoryCard from '@/components/features/story/StoryCard';
 import Pagination from '@/components/ui/Pagination';
@@ -5,6 +6,8 @@ import SidebarRanking from '@/components/features/ranking/SidebarRanking';
 import { mockRanking } from '@/test/mocks';
 import { Story } from '@/lib/types';
 import { StoryService } from '@/services/story.service';
+import { ChevronRight, LayoutGrid, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface ListPageProps {
     params: Promise<{ slug: string }>;
@@ -57,49 +60,55 @@ export default async function ListPage({ params, searchParams }: ListPageProps) 
     }
 
     if (response && response.success && response.data) {
-        // Handle PaginatedResponse
         stories = response.data.items || [];
         const pagination = response.data.pagination;
         totalPages = pagination ? pagination.total_pages : 1;
     }
 
-    // Since our Service methods currently take 'limit' but not 'page' explicity for these specific helpers,
-    // we might need to update StoryService to accept 'page' or use getAll directly with params.
-    // For now, let's assume the specific methods utilize the limit and we might need to pass page if we want real pagination.
-    // The current getNewStories implementation only takes limit.
-
-    // Let's rely on standard GetAll for better control if specific methods are limited?
-    // Actually, let's stick to specific methods but we should update them to accept page.
-
-    const paginatedStories = stories; // API already paginates
+    const paginatedStories = stories;
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-12">
+        <div className="min-h-screen bg-background pb-20">
             {/* Header / Breadcrumb Area */}
-            <div className="bg-white border-b border-[var(--color-border-light)] mb-8">
-                <div className="container-main py-8">
-                    <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2 flex items-center gap-3">
-                        <span className="w-1.5 h-8 bg-gradient-to-b from-[var(--color-primary)] to-[var(--color-primary-dark)] rounded-full block"></span>
-                        {title}
-                    </h1>
-                    <p className="text-[var(--color-text-secondary)] ml-4.5">
-                        Tổng hợp {title.toLowerCase()} chọn lọc, cập nhật liên tục.
-                    </p>
+            <div className="bg-gradient-to-b from-primary/5 via-background to-background pt-8 pb-12 mb-8 border-b border-muted/30">
+                <div className="container-main">
+                    <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-6">
+                        <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
+                        <ChevronRight size={10} />
+                        <span className="text-foreground">{title}</span>
+                    </nav>
+
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm ring-1 ring-primary/20">
+                                <LayoutGrid size={32} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Sparkles size={14} className="text-primary animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Danh sách truyện</span>
+                                </div>
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
+                                    {title}
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div className="container-main layout-main">
                 {/* Main Content */}
-                <div className="space-y-8">
+                <div className="space-y-12">
                     {/* Story Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <div className="story-grid">
                         {paginatedStories.map((story) => (
                             <StoryCard key={story.id} story={story} />
                         ))}
                     </div>
 
                     {/* Pagination */}
-                    <div className="flex justify-center pt-8 border-t border-[var(--color-border-light)]">
+                    <div className="flex justify-center pt-8">
                         <Pagination
                             currentPage={currentPage}
                             totalPages={totalPages}
@@ -109,20 +118,29 @@ export default async function ListPage({ params, searchParams }: ListPageProps) 
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-8">
-                    <SidebarRanking items={mockRanking} title="Bảng Xếp Hạng" />
+                <aside className="space-y-10">
+                    <SidebarRanking items={mockRanking} title="Gợi Ý Cho Bạn" />
 
-                    {/* Optional: Categories Widget */}
-                    <div className="bg-white p-4 rounded-[var(--radius-card)] border border-[var(--color-border-light)] shadow-sm">
-                        <h3 className="font-bold text-[var(--color-text-primary)] mb-4 pb-2 border-b border-[var(--color-border-light)]">
-                            Thể Loại Hot
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['Tiên Hiệp', 'Kiếm Hiệp', 'Ngôn Tình', 'Đô Thị', 'Huyền Huyễn'].map(tag => (
-                                <span key={tag} className="px-3 py-1 bg-gray-50 text-xs text-gray-600 rounded-full border border-gray-100 cursor-pointer hover:bg-[var(--color-primary)] hover:text-white transition-colors">
-                                    {tag}
-                                </span>
-                            ))}
+                    {/* Categories Widget */}
+                    <div className="glass-premium rounded-2xl border border-primary/10 shadow-premium overflow-hidden">
+                        <div className="bg-primary/10 px-5 py-4 flex items-center gap-3">
+                            <Sparkles size={18} className="text-primary" />
+                            <h3 className="text-sm font-black uppercase tracking-widest text-primary">
+                                Thể Loại Hot
+                            </h3>
+                        </div>
+                        <div className="p-5">
+                            <div className="flex flex-wrap gap-2">
+                                {['Tiên Hiệp', 'Kiếm Hiệp', 'Ngôn Tình', 'Đô Thị', 'Huyền Huyễn'].map(tag => (
+                                    <Badge
+                                        key={tag}
+                                        variant="secondary"
+                                        className="px-3 py-1.5 rounded-xl cursor-pointer bg-muted/50 hover:bg-primary/10 hover:text-primary transition-all font-bold text-[11px]"
+                                    >
+                                        {tag}
+                                    </Badge>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </aside>

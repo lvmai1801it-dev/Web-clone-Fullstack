@@ -1,7 +1,13 @@
 'use client';
 
 import { memo } from 'react';
-import { Select, MenuItem, SelectChangeEvent, FormControl } from '@mui/material';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 interface Chapter {
     number: number;
@@ -22,31 +28,25 @@ export const ChapterSelector = memo(function ChapterSelector({
 }: ChapterSelectorProps) {
     if (chapters.length === 0) return null;
 
-    const handleChange = (event: SelectChangeEvent<number>) => {
-        onChapterChange(Number(event.target.value));
-    };
-
     return (
-        <FormControl size="small" sx={{ minWidth: 120, flex: 1, maxWidth: { xs: 180, sm: 220 } }}>
-            <Select
-                value={selectedChapter}
-                onChange={handleChange}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Chọn chương' }}
-                sx={{
-                    height: 44,
-                    bgcolor: 'background.paper',
-                    '& .MuiSelect-select': {
-                        py: 1.5,
-                    }
-                }}
-            >
+        <Select
+            value={selectedChapter.toString()}
+            onValueChange={(value) => onChapterChange(Number(value))}
+        >
+            <SelectTrigger className="w-full sm:w-[280px] h-12 rounded-xl bg-muted/40 border-none shadow-sm focus:ring-primary/20 text-sm font-bold">
+                <SelectValue placeholder="Chọn chương" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl shadow-premium border-muted/50 max-h-[300px]">
                 {chapters.map((chapter) => (
-                    <MenuItem key={chapter.number} value={chapter.number}>
+                    <SelectItem
+                        key={chapter.number}
+                        value={chapter.number.toString()}
+                        className="cursor-pointer rounded-lg font-medium"
+                    >
                         Chương {chapter.number}: {chapter.title}
-                    </MenuItem>
+                    </SelectItem>
                 ))}
-            </Select>
-        </FormControl>
+            </SelectContent>
+        </Select>
     );
 });

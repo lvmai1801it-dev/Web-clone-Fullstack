@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { Category } from '@/lib/types';
-import { Facebook } from 'lucide-react';
+import { Facebook, ChevronDown } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface DesktopNavProps {
     categories: Category[];
@@ -12,68 +18,62 @@ export function DesktopNav({ categories }: DesktopNavProps) {
     return (
         <nav className="hidden md:flex items-center gap-6">
             {/* Danh sách Dropdown */}
-            <div className="relative group">
-                <button
-                    className="flex items-center gap-1 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] py-2"
-                    aria-haspopup="true"
-                >
+            <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold text-foreground hover:text-primary transition-colors focus:outline-none">
                     Danh sách
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                {/* Hover Dropdown */}
-                <div className="absolute top-full left-0 mt-0 pt-2 hidden group-hover:block w-[180px] z-50">
-                    <div className="bg-white border border-[var(--color-border)] rounded-md shadow-lg py-2">
-                        <Link href="/danh-sach/moi-cap-nhat" className="block px-4 py-2 text-sm hover:bg-[var(--color-background)]">
+                    <ChevronDown size={14} className="opacity-50" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-[180px] rounded-xl shadow-premium border-muted animate-in fade-in zoom-in-95 duration-200">
+                    <DropdownMenuItem asChild>
+                        <Link href="/danh-sach/moi-cap-nhat" className="cursor-pointer">
                             Truyện mới cập nhật
                         </Link>
-                        <Link href="/danh-sach/hoan-thanh" className="block px-4 py-2 text-sm hover:bg-[var(--color-background)]">
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href="/danh-sach/hoan-thanh" className="cursor-pointer">
                             Truyện hoàn thành
                         </Link>
-                        <Link href="/danh-sach/hot" className="block px-4 py-2 text-sm hover:bg-[var(--color-background)]">
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link href="/danh-sach/hot" className="cursor-pointer">
                             Truyện hot
                         </Link>
-                    </div>
-                </div>
-            </div>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Thể loại Dropdown */}
-            <div className="relative group">
-                <button
-                    className="flex items-center gap-1 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] py-2"
-                    aria-haspopup="true"
-                >
+            <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold text-foreground hover:text-primary transition-colors focus:outline-none">
                     Thể loại
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                <div className="absolute top-full left-0 mt-0 pt-2 hidden group-hover:block w-[400px] z-50">
-                    <div className="bg-white border border-[var(--color-border)] rounded-md shadow-lg py-3 px-3 grid grid-cols-2 gap-1">
+                    <ChevronDown size={14} className="opacity-50" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-[450px] p-2 rounded-xl shadow-premium border-muted animate-in fade-in zoom-in-95 duration-200">
+                    <div className="grid grid-cols-3 gap-1">
                         {categories.map((category) => (
-                            <Link
-                                key={category.id}
-                                href={`/the-loai/${category.slug}`}
-                                className="block px-3 py-2 text-sm rounded hover:bg-[var(--color-background)] truncate"
-                            >
-                                {category.name}
-                            </Link>
+                            <DropdownMenuItem key={category.id} asChild className="focus:bg-muted p-0">
+                                <Link
+                                    href={`/the-loai/${category.slug}`}
+                                    className="block w-full px-3 py-2 text-xs font-medium rounded-md truncate transition-colors"
+                                >
+                                    {category.name}
+                                </Link>
+                            </DropdownMenuItem>
                         ))}
                     </div>
-                </div>
-            </div>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Facebook Link */}
             <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm font-medium text-[var(--color-text-primary)] hover:text-[#1877F2] py-2"
+                className="flex items-center gap-1.5 text-sm font-semibold text-foreground hover:text-[#1877F2] transition-colors"
                 aria-label="Facebook"
             >
-                <Facebook size={20} className="text-[#1877F2]" />
-                <span className="hidden lg:inline">Facebook</span>
+                <Facebook size={18} className="text-[#1877F2]" />
+                <span className="hidden lg:inline">Cộng đồng</span>
             </a>
         </nav>
     );

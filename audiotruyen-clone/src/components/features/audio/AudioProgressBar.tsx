@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { Slider, Box, Typography } from '@mui/material';
+import { Slider } from '@/components/ui/slider';
 
 interface AudioProgressBarProps {
     currentTime: number;
@@ -16,50 +16,29 @@ export const AudioProgressBar = memo(function AudioProgressBar({
     onSeek,
     formatTime,
 }: AudioProgressBarProps) {
-    const handleChange = (event: Event, newValue: number | number[]) => {
-        onSeek(newValue as number);
+    const handleSliderChange = (values: number[]) => {
+        onSeek(values[0]);
     };
 
     return (
-        <Box sx={{ mb: 2, width: '100%' }}>
+        <div className="w-full space-y-2.5">
             <Slider
-                size="small"
                 min={0}
                 max={duration || 100}
-                value={currentTime}
-                onChange={handleChange}
+                step={1}
+                value={[currentTime]}
+                onValueChange={handleSliderChange}
                 aria-label="Thanh tiến trình audio"
-                sx={{
-                    color: 'primary.main',
-                    height: 4,
-                    '& .MuiSlider-thumb': {
-                        width: 12,
-                        height: 12,
-                        transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-                        '&:before': {
-                            boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
-                        },
-                        '&:hover, &.Mui-focusVisible': {
-                            boxShadow: '0px 0px 0px 8px rgb(0 0 0 / 16%)',
-                        },
-                        '&.Mui-active': {
-                            width: 20,
-                            height: 20,
-                        },
-                    },
-                    '& .MuiSlider-rail': {
-                        opacity: 0.28,
-                    },
-                }}
+                className="cursor-pointer"
             />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
-                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+            <div className="flex justify-between items-center px-0.5">
+                <span className="text-[11px] font-bold tracking-tighter text-muted-foreground/80 font-mono">
                     {formatTime(currentTime)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
+                </span>
+                <span className="text-[11px] font-bold tracking-tighter text-muted-foreground/80 font-mono">
                     {formatTime(duration)}
-                </Typography>
-            </Box>
-        </Box>
+                </span>
+            </div>
+        </div>
     );
 });

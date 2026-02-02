@@ -1,9 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
-import { Box, Typography } from '@mui/material';
 import { Eye } from 'lucide-react';
 import { Story } from '@/lib/types';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useStoryDisplay } from '@/hooks/useStoryDisplay';
 
@@ -17,98 +18,61 @@ export default function StoryListItem({ story, showThumbnail = true, className }
     const { badges, chapterDisplay } = useStoryDisplay(story);
 
     return (
-        <Link href={`/truyen/${story.slug}`} className={cn("block group no-underline", className)}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    py: 1.5,
-                    px: 1,
-                    mx: -1,
-                    borderRadius: 1,
-                    borderBottom: '1px dashed',
-                    borderColor: 'divider',
-                    transition: 'background-color 0.2s',
-                    '&:active': { bgcolor: 'action.hover' },
-                    '@media (min-width: 600px)': {
-                        '&:hover': { bgcolor: 'action.hover' }
-                    }
-                }}
-            >
+        <Link href={`/truyen/${story.slug}`} className={cn("block group", className)}>
+            <div className="flex items-center gap-4 py-3 px-2 -mx-2 rounded-xl border-b border-dashed border-muted/50 transition-all hover:bg-muted/50 active:scale-[0.99]">
                 {/* Thumbnail */}
                 {showThumbnail && (
-                    <Box
-                        sx={{
-                            width: { xs: 48, md: 50 },
-                            height: { xs: 64, md: 70 },
-                            flexShrink: 0,
-                            position: 'relative',
-                            borderRadius: 1,
-                            overflow: 'hidden',
-                            boxShadow: 1
-                        }}
-                    >
+                    <div className="w-12 h-16 md:w-14 md:h-20 shrink-0 relative rounded-lg overflow-hidden shadow-sm border border-muted/20">
                         {story.cover_url ? (
                             <Image
                                 src={story.cover_url}
                                 alt={story.title}
                                 fill
-                                className="object-cover transition-transform group-hover:scale-105"
-                                sizes="50px"
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                sizes="60px"
                                 loading="lazy"
                             />
                         ) : (
-                            <Box sx={{ width: '100%', height: '100%', background: 'linear-gradient(to bottom right, #2563EB, #1E40AF)' }} />
+                            <div className="w-full h-full bg-gradient-to-br from-primary/80 to-primary text-[10px] text-white flex items-center justify-center font-black">
+                                NO IMG
+                            </div>
                         )}
-                    </Box>
+                    </div>
                 )}
 
                 {/* Content */}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography
-                        variant="subtitle2"
-                        sx={{
-                            fontWeight: 600,
-                            color: 'text.primary',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 1,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            transition: 'color 0.2s',
-                            '.group:hover &': { color: 'primary.main' }
-                        }}
-                    >
+                <div className="flex-1 min-w-0 space-y-1">
+                    <h4 className="text-sm md:text-base font-bold text-foreground group-hover:text-primary transition-colors truncate">
                         {story.title}
-                    </Typography>
+                    </h4>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, color: 'text.secondary', fontSize: '0.75rem' }}>
+                    <div className="flex items-center gap-2 text-muted-foreground/70">
                         {badges.showFull ? (
-                            <Badge variant="full" className="h-auto px-1.5 py-0 text-[10px]">Full</Badge>
+                            <Badge variant="full" className="h-4 px-1.5 text-[9px] font-black uppercase tracking-tighter rounded-md">Full</Badge>
                         ) : (
-                            <Typography component="span" variant="caption" sx={{ color: 'primary.main', fontWeight: 500 }}>
+                            <span className="text-[10px] md:text-xs font-black text-primary uppercase">
                                 {chapterDisplay}
-                            </Typography>
+                            </span>
                         )}
-                        <Typography component="span" variant="caption" color="text.secondary">
-                            • {story.updated_at}
-                        </Typography>
-                    </Box>
+                        <span className="text-[10px] md:text-xs font-medium text-muted-foreground/50">•</span>
+                        <span className="text-[10px] md:text-xs font-bold text-muted-foreground/60 font-mono">
+                            {story.updated_at}
+                        </span>
+                    </div>
 
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div className="text-[10px] md:text-xs font-medium text-muted-foreground/80 truncate">
                         {story.author_name}
-                    </Typography>
-                </Box>
+                    </div>
+                </div>
 
                 {/* Views */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', flexShrink: 0 }}>
-                    <Eye size={14} />
-                    <Typography variant="caption" color="text.secondary">
+                <div className="flex items-center gap-1 text-muted-foreground/50 shrink-0 pr-1">
+                    <Eye size={14} className="group-hover:text-primary/70 transition-colors" />
+                    <span className="text-[10px] md:text-xs font-black font-mono tracking-tighter">
                         {story.views.toLocaleString()}
-                    </Typography>
-                </Box>
-            </Box>
+                    </span>
+                </div>
+            </div>
         </Link>
     );
 }
-

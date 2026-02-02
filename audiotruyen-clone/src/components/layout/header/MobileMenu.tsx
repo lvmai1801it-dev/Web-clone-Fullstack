@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { IconButton, Button } from '@mui/material';
+import { IconButton } from '@/components/ui/IconButton';
+import { MuiButton as Button } from '@/components/ui/ButtonBridge';
 import { X } from 'lucide-react';
 import { Category } from '@/lib/types';
 
@@ -39,7 +40,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
             {/* Menu Content */}
             <div className="absolute top-0 bottom-0 left-0 w-[280px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
                 <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
-                    <span className="text-xl font-bold text-[var(--color-primary)] font-serif">
+                    <span className="text-xl font-bold text-primary font-serif">
                         MENU
                     </span>
                     <IconButton onClick={onClose} aria-label="Đóng menu">
@@ -49,32 +50,32 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
 
                 <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-2">
 
-                    <div className="px-4 py-2 font-semibold text-[var(--color-text-secondary)] uppercase text-xs">
+                    <div className="px-4 py-2 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
                         Danh sách
                     </div>
                     <Link
                         href="/danh-sach/moi-cap-nhat"
-                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-[var(--color-background)]"
+                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors"
                         onClick={onClose}
                     >
                         Truyện mới cập nhật
                     </Link>
                     <Link
                         href="/danh-sach/hoan-thanh"
-                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-[var(--color-background)]"
+                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors"
                         onClick={onClose}
                     >
                         Truyện hoàn thành
                     </Link>
                     <Link
                         href="/danh-sach/hot"
-                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-[var(--color-background)]"
+                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors"
                         onClick={onClose}
                     >
                         Truyện hot
                     </Link>
 
-                    <div className="px-4 py-2 font-semibold text-[var(--color-text-secondary)] uppercase text-xs mt-4">
+                    <div className="px-4 py-2 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider mt-4">
                         Thể loại
                     </div>
                     <div className="grid grid-cols-2 gap-1 px-2">
@@ -82,7 +83,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                             <Link
                                 key={cat.id}
                                 href={`/the-loai/${cat.slug}`}
-                                className="block px-3 py-2 text-sm rounded hover:bg-[var(--color-background)] truncate"
+                                className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors truncate"
                                 onClick={onClose}
                             >
                                 {cat.name}
@@ -91,14 +92,15 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                     </div>
                 </nav>
 
-                <div className="p-4 border-t border-[var(--color-border)]">
+                <div className="p-4 border-t">
                     <Button
-                        component={Link}
-                        href="/login"
-                        onClick={onClose}
+                        onClick={() => {
+                            onClose();
+                            window.location.href = '/login';
+                        }}
                         variant="contained"
                         fullWidth
-                        className="bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90"
+                        className="bg-primary hover:shadow-glow transition-all"
                     >
                         Đăng nhập
                     </Button>

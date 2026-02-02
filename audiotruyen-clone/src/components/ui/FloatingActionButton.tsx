@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Fab } from '@mui/material';
+import { Button } from './button';
 import { Play, X } from 'lucide-react';
 import { PlaybackPersistence } from '@/lib/persistence';
 import { useAudio } from '@/contexts/AudioContext';
@@ -40,33 +40,35 @@ export function FloatingActionButton({ className = '' }: FABProps) {
         <div className={`fixed bottom-20 right-4 z-40 md:hidden ${className}`}>
             {/* Expanded tooltip */}
             {isExpanded && (
-                <div className="absolute bottom-14 right-0 bg-white rounded-lg shadow-xl border border-[var(--color-border)] p-3 min-w-[180px] animate-in slide-in-from-bottom-2 fade-in duration-200">
-                    <p className="text-xs text-[var(--color-text-muted)] mb-1">Tiếp tục nghe</p>
-                    <p className="text-sm font-semibold text-[var(--color-text-primary)] line-clamp-2">
+                <div className="absolute bottom-16 right-0 bg-white rounded-2xl shadow-premium border p-4 min-w-[220px] animate-in slide-in-from-bottom-4 fade-in duration-300">
+                    <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Tiếp tục nghe</p>
+                    <p className="text-sm font-bold text-foreground line-clamp-2 mb-3">
                         {lastPlayed.storyTitle}
                     </p>
                     <Link
                         href={`/truyen/${lastPlayed.storySlug}`}
-                        className="mt-2 block w-full py-2 text-center text-sm font-medium text-white bg-[var(--color-primary)] rounded-lg active:scale-[0.98] transition-transform"
+                        className="block w-full"
                     >
-                        Nghe ngay
+                        <Button className="w-full bg-primary hover:shadow-glow transition-all rounded-xl">
+                            Nghe ngay
+                        </Button>
                     </Link>
                 </div>
             )}
 
             {/* FAB Button */}
-            <Fab
-                color="primary"
-                aria-label="Quick play"
+            <Button
+                variant="default"
+                size="icon"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-14 h-14"
+                className="w-14 h-14 rounded-full shadow-premium hover:shadow-glow transition-all"
             >
                 {isExpanded ? (
                     <X size={24} />
                 ) : (
                     <Play size={24} fill="currentColor" />
                 )}
-            </Fab>
+            </Button>
         </div>
     );
 }

@@ -2,9 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, KeyboardEvent, useEffect, useRef } from 'react';
-import { IconButton, InputAdornment } from '@mui/material';
+import { IconButton } from '@/components/ui/IconButton';
 import { Search, Menu, X } from 'lucide-react';
-import { MuiInput } from '@/components/ui/MuiInput';
+import { MuiInput } from '@/components/ui/InputBridge';
 import { Category } from '@/lib/types';
 import { CategoryService } from '@/services';
 import { Logo } from './Logo';
@@ -71,7 +71,7 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-white border-b border-[var(--color-border)] sticky top-0 z-40 shadow-sm">
+        <header className="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b">
             <div className="container-main">
                 {/* Top Row - Logo & Search */}
                 <div className="flex items-center justify-between py-2 gap-2">
@@ -108,23 +108,21 @@ export default function Header() {
                                     onFocus={() => {
                                         if (searchQuery.trim()) setShowDropdown(true);
                                     }}
-                                    className="w-48 lg:w-64 [&_.MuiOutlinedInput-root]:rounded-full"
+                                    className="w-48 lg:w-64"
                                     size="small"
                                     InputProps={{
                                         endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={handleSearch}
-                                                    edge="end"
-                                                    size="small"
-                                                    className="text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
-                                                >
-                                                    <Search size={18} />
-                                                </IconButton>
-                                            </InputAdornment>
+                                            <IconButton
+                                                onClick={handleSearch}
+                                                size="small"
+                                                className="text-muted-foreground hover:text-primary"
+                                            >
+                                                <Search size={18} />
+                                            </IconButton>
                                         ),
                                     }}
                                 />
+
                             </div>
 
                             {/* Live Search Dropdown */}
@@ -166,16 +164,16 @@ export default function Header() {
                             size="small"
                             InputProps={{
                                 endAdornment: (
-                                    <InputAdornment position="end">
+                                    <>
                                         <IconButton
                                             onClick={handleSearch}
-                                            edge="end"
                                             size="small"
                                         >
                                             <Search size={18} />
                                         </IconButton>
-                                    </InputAdornment>
+                                    </>
                                 ),
+
                             }}
                         />
                     </div>

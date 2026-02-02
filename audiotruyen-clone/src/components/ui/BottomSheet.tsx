@@ -1,8 +1,15 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { SwipeableDrawer, Box, IconButton, Typography } from '@mui/material';
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerClose,
+} from './drawer';
 import { X } from 'lucide-react';
+import { Button } from './button';
 
 interface BottomSheetProps {
     isOpen: boolean;
@@ -19,61 +26,28 @@ export function BottomSheet({
     children,
     maxHeight = '80vh'
 }: BottomSheetProps) {
-    // Puller styling
-    const Puller = (
-        <Box
-            sx={{
-                width: 40,
-                height: 4,
-                bgcolor: 'grey.300',
-                borderRadius: 2,
-                mx: 'auto', // margin auto for horizontal center
-                mt: 1,
-                mb: 1
-            }}
-        />
-    );
-
     return (
-        <SwipeableDrawer
-            anchor="bottom"
-            open={isOpen}
-            onClose={onClose}
-            onOpen={() => { }} // Required prop for SwipeableDrawer
-            disableSwipeToOpen={true}
-            PaperProps={{
-                sx: {
-                    borderTopLeftRadius: 16,
-                    borderTopRightRadius: 16,
-                    maxHeight: maxHeight,
-                }
-            }}
-        >
-            <div className="bg-white">
-                <Box
-                    className="sticky top-0 bg-white z-10 border-b border-[var(--color-border)]"
-                    sx={{ px: 2, pb: 1 }}
-                >
-                    {Puller}
-                    <div className="flex items-center justify-between">
-                        {title && (
-                            <Typography variant="h6" fontWeight="bold" color="text.primary">
-                                {title}
-                            </Typography>
-                        )}
-                        <IconButton
-                            onClick={onClose}
-                            size="small"
-                        >
+        <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DrawerContent className="px-4 pb-8">
+                <DrawerHeader className="px-0 flex flex-row items-center justify-between border-b pb-3 mb-4">
+                    {title && (
+                        <DrawerTitle className="text-lg font-bold">
+                            {title}
+                        </DrawerTitle>
+                    )}
+                    <DrawerClose asChild>
+                        <Button variant="ghost" size="icon" onClick={onClose}>
                             <X size={20} />
-                        </IconButton>
-                    </div>
-                </Box>
-
-                <Box sx={{ overflowY: 'auto', maxHeight: `calc(${maxHeight} - 60px)`, p: 0 }}>
+                        </Button>
+                    </DrawerClose>
+                </DrawerHeader>
+                <div
+                    className="overflow-y-auto"
+                    style={{ maxHeight: `calc(${maxHeight} - 80px)` }}
+                >
                     {children}
-                </Box>
-            </div>
-        </SwipeableDrawer>
+                </div>
+            </DrawerContent>
+        </Drawer>
     );
 }

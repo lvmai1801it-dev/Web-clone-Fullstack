@@ -2,11 +2,11 @@
 
 import { memo } from 'react';
 import Link from 'next/link';
-import { Card, CardActionArea, CardContent, CardMedia, Typography, Box } from '@mui/material';
 import { Eye } from 'lucide-react';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Story } from '@/lib/types';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useStoryDisplay } from '@/hooks/useStoryDisplay';
 
@@ -20,111 +20,62 @@ const StoryCard = memo(function StoryCard({ story, showBadge = true, className }
     const { progressText, badges } = useStoryDisplay(story);
 
     return (
-        <Card
-            className={cn("h-full flex flex-col hover:shadow-lg transition-shadow duration-300", className)}
-            elevation={0}
-            sx={{
-                bgcolor: 'background.paper',
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-            }}
-        >
-            <CardActionArea
-                component={Link}
-                href={`/truyen/${story.slug}`}
-                sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
-            >
+        <Card className={cn(
+            "group h-full flex flex-col border-none shadow-premium hover:shadow-premium-lg transition-all duration-500 rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm",
+            className
+        )}>
+            <Link href={`/truyen/${story.slug}`} className="block h-full cursor-pointer">
                 {/* Cover Image Container */}
-                <CardMedia
-                    sx={{
-                        position: 'relative',
-                        paddingTop: '150%', /* 2:3 aspect ratio */
-                    }}
-                >
-                    <div className="absolute inset-0">
-                        <OptimizedImage
-                            src={story.cover_url || ''}
-                            alt={story.title}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
-                            containerClassName="h-full w-full"
-                        />
-                    </div>
+                <div className="relative aspect-[2/3] overflow-hidden">
+                    <OptimizedImage
+                        src={story.cover_url || ''}
+                        alt={story.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        sizes="(max-width: 480px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                        containerClassName="h-full w-full"
+                    />
 
                     {/* Gradient Overlay */}
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: '50%',
-                            background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                            pointerEvents: 'none',
-                            zIndex: 1
-                        }}
-                    />
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
 
                     {/* Status Badges */}
                     {showBadge && (
-                        <Box sx={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 0.5, zIndex: 2 }}>
-                            {badges.showFull && <Badge variant="full">Full</Badge>}
-                            {badges.showHot && <Badge variant="hot">Hot</Badge>}
-                        </Box>
+                        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10 transition-transform duration-500 group-hover:translate-x-1">
+                            {badges.showFull && <Badge variant="full" className="shadow-premium text-[10px] font-black tracking-wider px-2.5 py-0.5">FULL</Badge>}
+                            {badges.showHot && <Badge variant="hot" className="shadow-premium text-[10px] font-black tracking-wider px-2.5 py-0.5">HOT</Badge>}
+                        </div>
                     )}
 
                     {/* Progress Badge */}
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            bottom: 8,
-                            right: 8,
-                            bgcolor: 'rgba(0,0,0,0.6)',
-                            backdropFilter: 'blur(4px)',
-                            borderRadius: 1,
-                            px: 0.75,
-                            py: 0.25,
-                            zIndex: 2
-                        }}
-                    >
-                        <Typography variant="caption" sx={{ color: 'white', fontWeight: 500, fontSize: '0.625rem' }}>
-                            {progressText}
-                        </Typography>
-                    </Box>
-                </CardMedia>
+                    <div className="absolute bottom-3 right-3 z-10">
+                        <div className="bg-black/60 backdrop-blur-md border border-white/10 text-white rounded-lg px-2 py-0.5 shadow-premium">
+                            <span className="text-[10px] font-black tracking-tight whitespace-nowrap">
+                                {progressText}
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Content */}
-                <CardContent sx={{ p: 1.5, flexGrow: 1, '&:last-child': { pb: 1.5 } }}>
-                    <Typography
-                        variant="subtitle2"
-                        component="h3"
-                        sx={{
-                            fontWeight: 700,
-                            lineHeight: 1.2,
-                            mb: 1,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            minHeight: '2.4em'
-                        }}
+                <CardContent className="p-3.5 space-y-2">
+                    <h3
+                        className="font-bold text-sm leading-tight text-foreground line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors duration-300"
                         title={story.title}
                     >
                         {story.title}
-                    </Typography>
+                    </h3>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary', fontSize: '0.75rem' }}>
-                        <Eye size={14} className="mr-1" />
-                        {story.views.toLocaleString()}
-                    </Box>
+                    <div className="flex items-center gap-2 text-muted-foreground/70">
+                        <Eye size={12} className="group-hover:text-primary transition-colors" />
+                        <span className="text-[11px] font-bold font-mono tracking-tighter">
+                            {story.views.toLocaleString()}
+                        </span>
+                    </div>
                 </CardContent>
-            </CardActionArea>
+            </Link>
         </Card>
     );
 });
 
 export default StoryCard;
-
-

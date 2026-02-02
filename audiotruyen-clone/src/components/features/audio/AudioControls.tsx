@@ -1,7 +1,8 @@
 'use client';
 
 import { memo } from 'react';
-import { IconButton } from '@mui/material';
+import { IconButton } from '@/components/ui/IconButton';
+import { Button } from '@/components/ui/button';
 import { Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw } from 'lucide-react';
 
 interface AudioControlsProps {
@@ -24,63 +25,64 @@ export const AudioControls = memo(function AudioControls({
     onNextChapter,
 }: AudioControlsProps) {
     return (
-        <div className="flex items-center justify-center gap-2 xs:gap-4 sm:gap-8">
+        <div className="flex items-center justify-center gap-3 xs:gap-6 sm:gap-10">
             {/* Prev Chapter */}
             <IconButton
                 onClick={onPrevChapter}
                 disabled={!canGoPrev}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] touch-target"
+                className="text-foreground/70 hover:text-primary hover:bg-muted transition-all active:scale-90"
                 aria-label="Chương trước"
             >
-                <SkipBack size={24} fill={canGoPrev ? "currentColor" : "none"} />
+                <SkipBack size={26} fill={canGoPrev ? "currentColor" : "none"} className="opacity-80" />
             </IconButton>
 
             {/* Rewind 10s */}
-            <div className="flex flex-col items-center -gap-1">
+            <div className="flex flex-col items-center group">
                 <IconButton
                     onClick={() => onSkip(-10)}
-                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] touch-target"
+                    className="text-foreground/70 hover:text-primary hover:bg-muted transition-all active:scale-90"
                     aria-label="Tua lại 10 giây"
                 >
-                    <RotateCcw size={24} />
+                    <RotateCcw size={22} className="group-hover:-rotate-12 transition-transform" />
                 </IconButton>
-                <span className="text-[10px] font-medium text-[var(--color-text-muted)]">-10s</span>
+                <span className="text-[10px] font-bold text-muted-foreground/60 mt-1 select-none font-mono">-10s</span>
             </div>
 
             {/* Main Play Button */}
-            <IconButton
+            <Button
+                variant="default"
+                size="icon"
                 onClick={onTogglePlay}
-                className="w-16 h-16 shadow-xl shadow-blue-200 hover:scale-105 transition-transform bg-white hover:bg-white"
+                className="w-16 h-16 rounded-full shadow-glow hover:scale-105 active:scale-95 transition-all bg-primary hover:bg-primary/90 text-white"
                 aria-label={isPlaying ? 'Tạm dừng' : 'Phát'}
-                color="primary"
             >
                 {isPlaying ? (
-                    <Pause size={32} fill="currentColor" />
+                    <Pause size={30} fill="currentColor" />
                 ) : (
-                    <Play size={32} fill="currentColor" className="translate-x-0.5" />
+                    <Play size={30} fill="currentColor" className="translate-x-0.5" />
                 )}
-            </IconButton>
+            </Button>
 
             {/* Forward 10s */}
-            <div className="flex flex-col items-center -gap-1">
+            <div className="flex flex-col items-center group">
                 <IconButton
                     onClick={() => onSkip(10)}
-                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] touch-target"
+                    className="text-foreground/70 hover:text-primary hover:bg-muted transition-all active:scale-90"
                     aria-label="Tua đi 10 giây"
                 >
-                    <RotateCw size={24} />
+                    <RotateCw size={22} className="group-hover:rotate-12 transition-transform" />
                 </IconButton>
-                <span className="text-[10px] font-medium text-[var(--color-text-muted)]">+10s</span>
+                <span className="text-[10px] font-bold text-muted-foreground/60 mt-1 select-none font-mono">+10s</span>
             </div>
 
             {/* Next Chapter */}
             <IconButton
                 onClick={onNextChapter}
                 disabled={!canGoNext}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background)] touch-target"
+                className="text-foreground/70 hover:text-primary hover:bg-muted transition-all active:scale-90"
                 aria-label="Chương sau"
             >
-                <SkipForward size={24} fill={canGoNext ? "currentColor" : "none"} />
+                <SkipForward size={26} fill={canGoNext ? "currentColor" : "none"} className="opacity-80" />
             </IconButton>
         </div>
     );

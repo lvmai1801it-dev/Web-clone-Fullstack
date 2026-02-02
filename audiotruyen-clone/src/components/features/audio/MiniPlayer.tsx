@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Paper, Box, Typography, IconButton, LinearProgress } from '@mui/material';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, ChevronRight } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 import { usePathname } from 'next/navigation';
-
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
 interface MiniPlayerProps {
@@ -24,75 +24,73 @@ export function MiniPlayer({ className = '' }: MiniPlayerProps) {
     const isOnStoryPage = pathname.startsWith('/truyen/');
     if (isOnStoryPage) return null;
 
-    const progressPercent = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
+    const progressValue = state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
 
     return (
-        <Box
-            className={cn("fixed z-30 transition-all duration-300", className)}
-            sx={{
-                bottom: { xs: 60, md: 24 },
-                right: { xs: 0, md: 24 },
-                left: { xs: 0, md: 'auto' },
-                width: { xs: '100%', md: 360 },
-                animation: 'slide-in-from-bottom 0.3s ease-out',
-            }}
+        <div
+            style={{ bottom: 'calc(90px + env(safe-area-inset-bottom, 0px))' }}
+            className={cn(
+                "fixed z-50 transition-all duration-500 md:bottom-6 right-0 left-0 md:left-auto md:right-6",
+                "px-4 md:px-0 md:w-[380px] animate-in slide-in-from-bottom-8 duration-700 ease-out",
+                className
+            )}
         >
-            <Paper
-                elevation={4}
-                sx={{
-                    mx: 2,
-                    borderRadius: 3,
-                    overflow: 'hidden',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1 }}>
+            <div className="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md rounded-2xl shadow-premium-lg border border-primary/10 overflow-hidden ring-1 ring-black/5 group">
+                {/* Progress bar at top of miniplayer */}
+                <Progress value={progressValue} className="h-1 rounded-none bg-primary/10" />
+
+                <div className="flex items-center gap-3 p-2.5">
                     {/* Cover */}
-                    <Link href={`/truyen/${state.storySlug}`} style={{ flexShrink: 0 }}>
-                        <Box sx={{ position: 'relative', width: 48, height: 48, borderRadius: 2, overflow: 'hidden', bgcolor: 'action.hover' }}>
+                    <Link href={`/truyen/${state.storySlug}`} className="shrink-0 relative overflow-hidden group/cover">
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-white/20">
                             <Image
                                 src={state.coverUrl || '/covers/placeholder.jpg'}
                                 alt={state.storyTitle}
                                 fill
-                                className="object-cover"
+                                className="object-cover transition-transform group-hover/cover:scale-110"
                                 sizes="48px"
                             />
-                        </Box>
+                        </div>
                     </Link>
 
                     {/* Info */}
-                    <Link href={`/truyen/${state.storySlug}`} style={{ flex: 1, minWidth: 0, textDecoration: 'none' }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <Link
+                        href={`/truyen/${state.storySlug}`}
+                        className="flex-1 min-w-0 pr-2 group/info"
+                    >
+                        <h4 className="text-sm font-bold text-foreground truncate group-hover/info:text-primary transition-colors">
                             {state.storyTitle}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                            Chương {state.selectedChapter} • {formatTime(state.currentTime)}
-                        </Typography>
+                        </h4>
+                        <p className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5 pt-0.5">
+                            <span className="text-primary font-black uppercase tracking-tighter">Chương {state.selectedChapter}</span>
+                            <span className="opacity-30">•</span>
+                            <span className="font-mono font-bold tracking-tight opacity-70">{formatTime(state.currentTime)}</span>
+                        </p>
                     </Link>
 
                     {/* Controls */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <IconButton
+                    <div className="flex items-center gap-1">
+                        <Button
+                            size="icon"
+                            variant="default"
                             onClick={togglePlay}
-                            color="primary"
-                            sx={{
-                                width: 40,
-                                height: 40,
-                                bgcolor: 'primary.main',
-                                color: 'white',
-                                '&:hover': { bgcolor: 'primary.dark' }
-                            }}
+                            className="w-11 h-11 rounded-full shadow-glow bg-primary hover:bg-primary/90 text-white transition-all active:scale-90"
                             aria-label={state.isPlaying ? 'Tạm dừng' : 'Phát'}
                         >
-                            {state.isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
-                        </IconButton>
-                    </Box>
-                </Box>
-
-                {/* Progress bar */}
-                <LinearProgress variant="determinate" value={progressPercent} sx={{ height: 4, bgcolor: 'action.hover' }} />
-            </Paper>
-        </Box>
+                            {state.isPlaying ? (
+                                <Pause size={22} fill="currentColor" />
+                            ) : (
+                                <Play size={22} fill="currentColor" className="translate-x-0.5" />
+                            )}
+                        </Button>
+                        <Link href={`/truyen/${state.storySlug}`} className="hidden md:flex">
+                            <Button variant="ghost" size="icon" className="text-muted-foreground rounded-full h-10 w-10">
+                                <ChevronRight size={20} />
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

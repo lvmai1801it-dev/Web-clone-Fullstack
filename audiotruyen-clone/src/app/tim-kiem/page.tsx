@@ -1,8 +1,9 @@
 import { searchStories, mockRanking } from '@/test/mocks';
 import StoryCard from '@/components/features/story/StoryCard';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { Button } from '@mui/material';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Search, ChevronRight, Home as HomeIcon, Sparkles } from 'lucide-react';
 
 interface SearchPageProps {
     searchParams: Promise<{ q: string }>;
@@ -14,40 +15,44 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     const results = query ? searchStories(query) : [];
 
     return (
-        <div className="min-h-screen bg-[var(--color-background)]">
-            {/* Search Hero - Mobile Optimized */}
-            <div className="bg-white border-b border-[var(--color-border)]">
-                <div className="container-main py-6 md:py-10">
-                    {/* Breadcrumb - Hidden on small mobile */}
-                    <nav className="hidden sm:flex items-center gap-2 text-sm text-gray-500 mb-4 md:mb-6">
-                        <Link href="/" className="hover:text-blue-600 transition-colors flex items-center gap-1">
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
+        <div className="min-h-screen bg-background pb-20">
+            {/* Search Hero */}
+            <div className="bg-gradient-to-b from-primary/5 via-background to-background pt-8 pb-12 mb-8 border-b border-muted/30">
+                <div className="container-main">
+                    {/* Breadcrumb */}
+                    <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-6">
+                        <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1">
+                            <HomeIcon size={12} className="mb-0.5" />
                             Trang chủ
                         </Link>
-                        <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                        <span className="text-gray-900 font-medium">Tìm kiếm</span>
+                        <ChevronRight size={10} />
+                        <span className="text-foreground">Tìm kiếm</span>
                     </nav>
 
-                    <h1 className="text-xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-2 md:mb-3 tracking-tight">
-                        Kết quả cho <span className="text-blue-600">&ldquo;{query}&rdquo;</span>
-                    </h1>
-                    <p className="text-sm md:text-lg text-gray-500">
-                        {query
-                            ? `Tìm thấy ${results.length} kết quả phù hợp`
-                            : 'Vui lòng nhập từ khóa để tìm kiếm'}
-                    </p>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 mb-1">
+                                <Search size={14} className="text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Kết quả tìm kiếm</span>
+                            </div>
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
+                                Từ khóa: <span className="text-primary italic">&ldquo;{query}&rdquo;</span>
+                            </h1>
+                        </div>
+                        <div className="bg-primary/5 border border-primary/10 rounded-2xl px-6 py-3 shrink-0">
+                            <span className="text-[11px] font-black text-primary/60 uppercase tracking-widest block mb-1">Trạng thái</span>
+                            <span className="text-xl font-black text-primary">
+                                {query ? `Tìm thấy ${results.length} truyện` : 'Chưa nhập từ khóa'}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="container-main py-6 md:py-10">
+            <div className="container-main">
                 {results.length > 0 ? (
                     <div className="layout-main">
-                        <div className="space-y-6 md:space-y-8">
+                        <div className="space-y-12">
                             <div className="story-grid">
                                 {results.map((story) => (
                                     <StoryCard key={story.id} story={story} />
@@ -55,34 +60,32 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                             </div>
                         </div>
 
-                        {/* Sidebar - Hidden on mobile */}
-                        <div className="hidden lg:block">
-                            <SidebarRanking items={mockRanking} />
-                        </div>
+                        {/* Sidebar */}
+                        <aside className="hidden lg:block space-y-10">
+                            <SidebarRanking items={mockRanking} title="Gợi Ý Cho Bạn" />
+                        </aside>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="flex flex-col items-center justify-center py-16 md:py-24 px-6 text-center">
-                            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 text-blue-500">
-                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
+                    <div className="glass-premium rounded-[40px] border border-muted/50 overflow-hidden shadow-premium">
+                        <div className="flex flex-col items-center justify-center py-20 md:py-32 px-6 text-center">
+                            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 text-primary shadow-glow ring-1 ring-primary/20">
+                                <Search size={40} strokeWidth={1.5} />
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                                Không tìm thấy truyện nào
+                            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
+                                Không tìm thấy truyện phù hợp
                             </h2>
-                            <p className="text-base md:text-lg text-gray-500 mb-10 max-w-2xl leading-relaxed">
-                                Chúng tôi không tìm thấy kết quả nào cho <span className="font-semibold text-gray-900">&ldquo;{query}&rdquo;</span>.
+                            <p className="text-sm md:text-base text-muted-foreground/80 mb-10 max-w-xl font-medium leading-relaxed">
+                                Chúng tôi đã lục lọi khắp kho truyện nhưng không tìm thấy kết quả nào cho <span className="font-bold text-primary">&ldquo;{query}&rdquo;</span>.
                                 <br className="hidden md:block" />
-                                Hãy thử sử dụng các từ khóa chung hơn hoặc kiểm tra lại lỗi chính tả.
+                                Hãy thử đổi từ khóa khác, hoặc ghé qua bảng xếp hạng để xem mọi người thích gì nhé!
                             </p>
-                            <Link href="/" passHref legacyBehavior>
+                            <Link href="/">
                                 <Button
-                                    variant="contained"
-                                    size="large"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-10 py-6 h-auto text-base shadow-xl shadow-blue-600/20 transition-all active:scale-[0.98]"
+                                    size="lg"
+                                    className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-glow hover:scale-105 active:scale-95 transition-all"
                                 >
-                                    Khám phá truyện mới
+                                    <Sparkles size={18} className="mr-2" />
+                                    Khám phá kho truyện
                                 </Button>
                             </Link>
                         </div>
@@ -92,4 +95,3 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         </div>
     );
 }
-

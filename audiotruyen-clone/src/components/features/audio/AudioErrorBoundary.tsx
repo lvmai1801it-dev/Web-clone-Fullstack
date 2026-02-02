@@ -1,6 +1,8 @@
 'use client';
 
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import { VolumeX, RotateCcw, RefreshCcw } from 'lucide-react';
 
 interface Props {
     children: ReactNode;
@@ -15,7 +17,7 @@ interface State {
 
 /**
  * Specialized Error Boundary for the Audio Player.
- * Provides audio-specific error recovery options.
+ * Provides audio-specific error recovery options with Pro Max aesthetics.
  */
 export class AudioErrorBoundary extends Component<Props, State> {
     constructor(props: Props) {
@@ -39,29 +41,38 @@ export class AudioErrorBoundary extends Component<Props, State> {
     override render(): ReactNode {
         if (this.state.hasError) {
             return (
-                <div className="flex flex-col items-center justify-center rounded-lg bg-gray-100 p-6 dark:bg-gray-800">
-                    <div className="mb-3 text-4xl">🔇</div>
-                    <h3 className="mb-2 font-semibold text-gray-800 dark:text-gray-200">
-                        Không thể phát audio
-                    </h3>
-                    <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                        {this.props.storyTitle
-                            ? `Lỗi khi phát "${this.props.storyTitle}"`
-                            : 'Đã xảy ra lỗi khi phát audio'}
-                    </p>
-                    <div className="flex gap-3">
-                        <button
+                <div className="flex flex-col items-center justify-center glass-premium border border-primary/10 rounded-[32px] p-10 md:p-14 text-center mt-8 animate-in fade-in zoom-in duration-500">
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6 shadow-glow ring-1 ring-primary/20">
+                        <VolumeX size={36} strokeWidth={1.5} />
+                    </div>
+
+                    <div className="space-y-2 mb-8">
+                        <h3 className="text-xl font-black text-foreground uppercase tracking-tight">
+                            Không thể tải nguồn Audio
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-medium max-w-sm">
+                            {this.props.storyTitle
+                                ? `Hiện tại không thể kết nối đến máy chủ audio cho truyện "${this.props.storyTitle}".`
+                                : 'Đã xảy ra lỗi kết nối đến máy chủ audio.'}
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Button
                             onClick={this.handleRetry}
-                            className="rounded-lg bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-600"
+                            className="h-12 px-8 rounded-xl bg-primary text-white font-black uppercase tracking-widest shadow-glow hover:scale-105 active:scale-95 transition-all"
                         >
-                            Thử lại
-                        </button>
-                        <button
+                            <RefreshCcw size={18} className="mr-2" />
+                            Thử lại ngay
+                        </Button>
+                        <Button
+                            variant="outline"
                             onClick={() => window.location.reload()}
-                            className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                            className="h-12 px-8 rounded-xl border-primary/20 text-primary font-black uppercase tracking-widest hover:bg-primary/5 transition-all"
                         >
+                            <RotateCcw size={18} className="mr-2" />
                             Tải lại trang
-                        </button>
+                        </Button>
                     </div>
                 </div>
             );

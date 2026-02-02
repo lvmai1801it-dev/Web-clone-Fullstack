@@ -6,6 +6,9 @@ import SidebarRanking from '@/components/features/ranking/SidebarRanking';
 import { mockRanking } from '@/test/mocks';
 import { CategoryService } from '@/services/category.service';
 import { StoryService } from '@/services/story.service';
+import { ChevronRight, LayoutGrid, Library, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface CategoryPageProps {
     params: Promise<{ slug: string }>;
@@ -70,31 +73,38 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     const allCategories = allCategoriesRes.success ? allCategoriesRes.data?.items || [] : [];
 
     return (
-        <div className="min-h-screen bg-gray-50/50 pb-12">
+        <div className="min-h-screen bg-background pb-20">
             {/* Category Header Hero */}
-            <div className="bg-white border-b border-gray-100 py-8 mb-8 shadow-sm">
+            <div className="bg-gradient-to-b from-primary/5 via-background to-background pt-8 pb-12 mb-8 border-b border-muted/30">
                 <div className="container-main">
-                    <nav className="text-sm text-slate-500 mb-4 flex items-center gap-2">
-                        <Link href="/" className="hover:text-blue-600 transition-colors">Trang chủ</Link>
-                        <span className="text-slate-300">/</span>
-                        <Link href="/the-loai" className="hover:text-blue-600 transition-colors">Thể loại</Link>
-                        <span className="text-slate-300">/</span>
-                        <span className="text-slate-900 font-medium">{category.name}</span>
+                    <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-6">
+                        <Link href="/" className="hover:text-primary transition-colors">Trang chủ</Link>
+                        <ChevronRight size={10} />
+                        <Link href="/the-loai" className="hover:text-primary transition-colors">Thể loại</Link>
+                        <ChevronRight size={10} />
+                        <span className="text-foreground">{category.name}</span>
                     </nav>
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
-                            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold text-slate-900">
-                                {category.name}
-                            </h1>
-                            <p className="text-slate-500 text-sm mt-1">
-                                Tổng hợp {category.story_count || 0} truyện {category.name} chọn lọc
 
-                            </p>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm ring-1 ring-primary/20">
+                                <Library size={32} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Sparkles size={14} className="text-primary animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Thể loại truyện</span>
+                                </div>
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
+                                    {category.name}
+                                </h1>
+                            </div>
+                        </div>
+                        <div className="bg-primary/5 border border-primary/10 rounded-2xl px-6 py-3 shrink-0">
+                            <span className="text-[11px] font-black text-primary/60 uppercase tracking-widest block mb-1">Quy mô kho truyện</span>
+                            <span className="text-xl font-black text-primary">
+                                {category.story_count || 0} Tác phẩm
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -102,27 +112,28 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
             <div className="layout-main container-main">
                 {/* Main Content */}
-                <div>
+                <div className="space-y-12">
                     {/* Story Grid */}
-                    <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm mb-8">
-                        {currentStories.length > 0 ? (
-                            <div className="story-grid">
-                                {currentStories.map((story) => {
-                                    return <StoryCard key={story.id} story={story} />
-                                })}
+                    {currentStories.length > 0 ? (
+                        <div className="story-grid">
+                            {currentStories.map((story) => {
+                                return <StoryCard key={story.id} story={story} />
+                            })}
+                        </div>
+                    ) : (
+                        <div className="glass-premium rounded-3xl border border-muted/50 p-20 flex flex-col items-center justify-center text-center">
+                            <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground mb-6">
+                                <Library size={40} strokeWidth={1} />
                             </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-                                <svg className="w-16 h-16 mb-4 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                                <p>Không tìm thấy truyện nào.</p>
-                            </div>
-                        )}
-                    </div>
+                            <h2 className="text-xl font-bold text-foreground mb-2">Chưa có truyện nào</h2>
+                            <p className="text-sm text-muted-foreground max-w-xs font-medium">
+                                Thể loại này hiện đang được admin cập nhật thêm nội dung. Quay lại sau bạn nhé!
+                            </p>
+                        </div>
+                    )}
 
                     {/* Pagination */}
-                    <div className="flex justify-center">
+                    <div className="flex justify-center pt-8">
                         <Pagination
                             currentPage={currentPage}
                             totalPages={totalPages}
@@ -132,31 +143,35 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-6">
-                    <SidebarRanking items={mockRanking} title="Top Thịnh Hành" />
+                <aside className="space-y-10">
+                    <SidebarRanking items={mockRanking} title="Cực Hot Tuần Này" />
 
                     {/* Other Categories */}
-                    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="bg-slate-50 border-b border-gray-100 px-4 py-3">
-                            <h3 className="font-bold text-sm uppercase tracking-wide text-slate-700 flex items-center gap-2">
-                                <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-                                </svg>
-                                Khám Phá
+                    <div className="glass-premium rounded-2xl border border-primary/10 shadow-premium overflow-hidden">
+                        <div className="bg-primary/10 px-5 py-4 flex items-center gap-3">
+                            <LayoutGrid size={18} className="text-primary" />
+                            <h3 className="text-sm font-black uppercase tracking-widest text-primary">
+                                Thế Giới Truyện
                             </h3>
                         </div>
-                        <div className="p-4">
+                        <div className="p-5">
                             <div className="flex flex-wrap gap-2">
                                 {allCategories.map((cat) => (
                                     <Link
                                         key={cat.id}
                                         href={`/the-loai/${cat.slug}`}
-                                        className={`text-xs px-3 py-1.5 rounded-full transition-all duration-200 ${cat.slug === slug
-                                            ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                                            : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-blue-600'
-                                            }`}
                                     >
-                                        {cat.name}
+                                        <Badge
+                                            variant={cat.slug === slug ? "default" : "secondary"}
+                                            className={cn(
+                                                "px-3 py-1.5 rounded-xl cursor-pointer transition-all font-bold text-[11px]",
+                                                cat.slug === slug
+                                                    ? "shadow-glow scale-105"
+                                                    : "bg-muted/50 hover:bg-primary/10 hover:text-primary"
+                                            )}
+                                        >
+                                            {cat.name}
+                                        </Badge>
                                     </Link>
                                 ))}
                             </div>

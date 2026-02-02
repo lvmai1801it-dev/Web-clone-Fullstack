@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-
-import { Paper, Box, Typography, List, ListItemButton, Chip } from '@mui/material';
 import { TrendingUp, Eye } from 'lucide-react';
 import { RankingItem } from '@/lib/types';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface SidebarRankingProps {
     items: RankingItem[];
@@ -15,136 +16,70 @@ export default function SidebarRanking({ items, title = 'Bảng Xếp Hạng' }:
     const getRankStyles = (rank: number) => {
         switch (rank) {
             case 1:
-                return {
-                    background: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)',
-                    color: 'white',
-                    boxShadow: '0 2px 4px rgba(245, 158, 11, 0.3)'
-                };
+                return "bg-gradient-to-br from-yellow-300 to-yellow-600 text-white shadow-[0_4px_12px_rgba(202,138,4,0.3)]";
             case 2:
-                return {
-                    background: 'linear-gradient(135deg, #CBD5E1 0%, #94A3B8 100%)',
-                    color: 'white',
-                    boxShadow: '0 2px 4px rgba(148, 163, 184, 0.3)'
-                };
+                return "bg-gradient-to-br from-slate-300 to-slate-500 text-white shadow-[0_4px_12px_rgba(100,116,139,0.3)]";
             case 3:
-                return {
-                    background: 'linear-gradient(135deg, #FDBA74 0%, #FB923C 100%)',
-                    color: 'white',
-                    boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
-                };
+                return "bg-gradient-to-br from-orange-300 to-orange-500 text-white shadow-[0_4px_12px_rgba(234,88,12,0.3)]";
             default:
-                return {
-                    bgcolor: 'action.selected',
-                    color: 'text.secondary',
-                    fontWeight: 600
-                };
+                return "bg-muted text-muted-foreground font-bold";
         }
     };
 
     return (
-        <Paper
-            elevation={0}
-            sx={{
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                overflow: 'hidden'
-            }}
-        >
-            {/* Header */}
-            <Box
-                sx={{
-                    background: 'linear-gradient(to right, primary.main, primary.dark)',
-                    px: 2,
-                    py: 1.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    color: 'white'
-                }}
-            >
-                <TrendingUp size={18} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    {title}
-                </Typography>
-            </Box>
-
-            {/* List */}
-            <List disablePadding sx={{ py: 0.5 }}>
-                {items.map((item) => (
-                    <ListItemButton
-                        key={item.story.id}
-                        component={Link}
-                        href={`/truyen/${item.story.slug}`}
-                        sx={{
-                            gap: 2,
-                            py: 1.5,
-                            borderBottom: '1px border',
-                            borderColor: 'divider',
-                            '&:last-child': { borderBottom: 0 }
-                        }}
-                    >
-                        {/* Rank Number */}
-                        <Box
-                            sx={{
-                                width: 28,
-                                height: 28,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                borderRadius: 2,
-                                fontSize: '0.75rem',
-                                fontWeight: 'bold',
-                                flexShrink: 0,
-                                transition: 'transform 0.2s',
-                                '.MuiListItemButton-root:hover &': {
-                                    transform: 'scale(1.1)'
-                                },
-                                ...getRankStyles(item.rank)
-                            }}
+        <Card className="border-none shadow-premium rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
+            <CardHeader className="p-0">
+                <div className="bg-primary px-5 py-4 flex items-center gap-3 text-white">
+                    <TrendingUp size={20} className="animate-pulse" />
+                    <CardTitle className="text-sm font-bold uppercase tracking-wider">
+                        {title}
+                    </CardTitle>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <div className="divide-y divide-muted/30">
+                    {items.map((item) => (
+                        <Link
+                            key={item.story.id}
+                            href={`/truyen/${item.story.slug}`}
+                            className="flex items-center gap-4 p-4 hover:bg-muted/50 transition-all group"
                         >
-                            {item.rank}
-                        </Box>
-
-                        {/* Info */}
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography
-                                variant="subtitle2"
-                                sx={{
-                                    fontWeight: 500,
-                                    fontSize: '0.9rem',
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    color: 'text.primary',
-                                    mb: 0.5,
-                                    transition: 'color 0.2s',
-                                    '.MuiListItemButton-root:hover &': {
-                                        color: 'primary.main'
-                                    }
-                                }}
-                            >
-                                {item.story.title}
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                                    <Eye size={14} />
-                                    <Typography variant="caption">{item.story.views.toLocaleString()}</Typography>
-                                </Box>
-                                {item.story.status === 'completed' && (
-                                    <Chip
-                                        label="Full"
-                                        size="small"
-                                        color="success"
-                                        variant="outlined"
-                                        sx={{ height: 20, fontSize: '0.65rem', '& .MuiChip-label': { px: 1 } }}
-                                    />
+                            {/* Rank Number */}
+                            <div
+                                className={cn(
+                                    "w-8 h-8 flex items-center justify-center rounded-xl text-xs font-black shrink-0 transition-transform group-hover:scale-110",
+                                    getRankStyles(item.rank)
                                 )}
-                            </Box>
-                        </Box>
-                    </ListItemButton>
-                ))}
-            </List>
-        </Paper>
+                            >
+                                {item.rank}
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors truncate mb-1">
+                                    {item.story.title}
+                                </h4>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1 text-muted-foreground/70">
+                                        <Eye size={12} />
+                                        <span className="text-[10px] font-bold font-mono">
+                                            {item.story.views.toLocaleString()}
+                                        </span>
+                                    </div>
+                                    {item.story.status === 'completed' && (
+                                        <Badge
+                                            variant="secondary"
+                                            className="h-4 px-1.5 text-[9px] font-black uppercase tracking-tighter rounded-md bg-green-100 text-green-700 border-none"
+                                        >
+                                            Full
+                                        </Badge>
+                                    )}
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
     );
 }
