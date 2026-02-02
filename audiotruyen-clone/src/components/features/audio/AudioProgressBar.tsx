@@ -17,7 +17,9 @@ export const AudioProgressBar = memo(function AudioProgressBar({
     formatTime,
 }: AudioProgressBarProps) {
     const handleSliderChange = (values: number[]) => {
-        onSeek(values[0]);
+        if (values.length > 0 && typeof values[0] === 'number') {
+            onSeek(values[0]);
+        }
     };
 
     return (
