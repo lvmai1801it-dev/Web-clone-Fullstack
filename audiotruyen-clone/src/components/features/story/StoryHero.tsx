@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { User, Mic, Eye, Star, Hash } from 'lucide-react';
 import { Story } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface StoryHeroProps {

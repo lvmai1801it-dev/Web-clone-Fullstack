@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { TrendingUp, Eye } from 'lucide-react';
 import { RankingItem } from '@/lib/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface SidebarRankingProps {

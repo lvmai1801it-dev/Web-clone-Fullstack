@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Eye } from 'lucide-react';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Story } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useStoryDisplay } from '@/hooks/useStoryDisplay';

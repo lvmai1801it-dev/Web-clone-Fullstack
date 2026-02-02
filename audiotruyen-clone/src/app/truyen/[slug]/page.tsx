@@ -7,7 +7,7 @@ import { generateStoryStructuredData } from '@/lib/structuredData';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
 import { mockRanking } from '@/test/mocks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { BookOpen, MessageSquare, Tag as TagIcon } from 'lucide-react';
 

@@ -7,7 +7,7 @@ import { mockRanking } from '@/test/mocks';
 import { Story } from '@/lib/types';
 import { StoryService } from '@/services/story.service';
 import { ChevronRight, LayoutGrid, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 
 interface ListPageProps {
     params: Promise<{ slug: string }>;

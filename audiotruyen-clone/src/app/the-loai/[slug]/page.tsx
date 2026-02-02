@@ -7,7 +7,7 @@ import { mockRanking } from '@/test/mocks';
 import { CategoryService } from '@/services/category.service';
 import { StoryService } from '@/services/story.service';
 import { ChevronRight, LayoutGrid, Library, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface CategoryPageProps {

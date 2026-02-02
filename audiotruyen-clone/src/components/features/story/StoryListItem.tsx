@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Eye } from 'lucide-react';
 import { Story } from '@/lib/types';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useStoryDisplay } from '@/hooks/useStoryDisplay';
 
