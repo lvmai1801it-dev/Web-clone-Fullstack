@@ -1,9 +1,18 @@
 import Link from 'next/link';
 import { CategoryService } from '@/services/category.service';
+import { Category } from '@/lib/types';
 
 export default async function CategoriesPage() {
-    const response = await CategoryService.getAll();
-    const categories = response.success ? response.data?.items || [] : [];
+    let categories: Category[] = [];
+
+    try {
+        const response = await CategoryService.getAll();
+        categories = response.success ? response.data?.items || [] : [];
+    } catch (error) {
+        console.warn('Failed to fetch categories during build:', error);
+        // Fallback to empty array to allow build to complete
+        categories = [];
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 pb-12">
