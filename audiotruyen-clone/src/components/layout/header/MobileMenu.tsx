@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { IconButton } from '@/components/ui/IconButton';
-import { MuiButton as Button } from '@/components/ui/ButtonBridge';
-import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { X, Sparkles, Trophy, Flame } from 'lucide-react';
 import { Category } from '@/lib/types';
 
 interface MobileMenuProps {
@@ -29,7 +28,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[60] md:hidden">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -37,53 +36,63 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                 aria-hidden="true"
             />
 
-            {/* Menu Content */}
-            <div className="absolute top-0 bottom-0 left-0 w-[280px] bg-white shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
-                <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
-                    <span className="text-xl font-bold text-primary font-serif">
-                        MENU
+            {/* Menu Content - subtract bottom nav height (60px + ~20px safe area) */}
+            <div className="absolute top-0 left-0 w-[280px] h-[calc(100dvh-80px)] bg-background shadow-xl flex flex-col animate-in slide-in-from-left duration-300">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b shrink-0">
+                    <span className="text-xl font-black text-primary tracking-tight">
+                        AudioTruyen
                     </span>
-                    <IconButton onClick={onClose} aria-label="Đóng menu">
-                        <X size={24} />
-                    </IconButton>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onClose}
+                        aria-label="Đóng menu"
+                        className="rounded-full hover:bg-muted"
+                    >
+                        <X size={20} />
+                    </Button>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-2">
-
-                    <div className="px-4 py-2 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
+                {/* Navigation - scrollable */}
+                <nav className="flex-1 min-h-0 overflow-y-auto py-4 px-3 space-y-1">
+                    <div className="px-3 py-2 font-bold text-muted-foreground uppercase text-[10px] tracking-widest">
                         Danh sách
                     </div>
                     <Link
                         href="/danh-sach/moi-cap-nhat"
-                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/5 hover:text-primary transition-all active:scale-95"
                         onClick={onClose}
                     >
+                        <Sparkles size={18} className="text-primary/70" />
                         Truyện mới cập nhật
                     </Link>
                     <Link
                         href="/danh-sach/hoan-thanh"
-                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-green-500/5 hover:text-green-600 transition-all active:scale-95"
                         onClick={onClose}
                     >
+                        <Trophy size={18} className="text-green-600/70" />
                         Truyện hoàn thành
                     </Link>
                     <Link
                         href="/danh-sach/hot"
-                        className="block px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium hover:bg-orange-500/5 hover:text-orange-600 transition-all active:scale-95"
                         onClick={onClose}
                     >
+                        <Flame size={18} className="text-orange-600/70" />
                         Truyện hot
                     </Link>
 
-                    <div className="px-4 py-2 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider mt-4">
+                    <div className="px-3 py-2 font-bold text-muted-foreground uppercase text-[10px] tracking-widest mt-6">
                         Thể loại
                     </div>
-                    <div className="grid grid-cols-2 gap-1 px-2">
+                    <div className="grid grid-cols-2 gap-2 px-1">
                         {categories.map((cat) => (
                             <Link
                                 key={cat.id}
                                 href={`/the-loai/${cat.slug}`}
-                                className="block px-3 py-2 text-sm rounded-lg hover:bg-muted transition-colors truncate"
+                                className="block px-3 py-2 text-sm rounded-lg hover:bg-muted font-medium transition-colors truncate border border-transparent hover:border-muted-foreground/10"
                                 onClick={onClose}
                             >
                                 {cat.name}
@@ -92,15 +101,14 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                     </div>
                 </nav>
 
-                <div className="p-4 border-t">
+                {/* Footer */}
+                <div className="p-4 border-t bg-muted/20 shrink-0">
                     <Button
                         onClick={() => {
                             onClose();
                             window.location.href = '/login';
                         }}
-                        variant="contained"
-                        fullWidth
-                        className="bg-primary hover:shadow-glow transition-all"
+                        className="w-full font-bold shadow-lg shadow-primary/25"
                     >
                         Đăng nhập
                     </Button>
