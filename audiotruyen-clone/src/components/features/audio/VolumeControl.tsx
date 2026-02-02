@@ -1,10 +1,8 @@
 'use client';
 
 import { memo } from 'react';
-import { Slider, Box, Stack } from '@mui/material';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeDownIcon from '@mui/icons-material/VolumeDown';
-import VolumeMuteIcon from '@mui/icons-material/VolumeMute';
+import { Slider, Stack } from '@mui/material';
+import { Volume2, Volume1, VolumeX } from 'lucide-react';
 
 interface VolumeControlProps {
     volume: number;
@@ -22,11 +20,11 @@ export const VolumeControl = memo(function VolumeControl({
     return (
         <Stack direction="row" spacing={1} alignItems="center" sx={{ width: 120 }}>
             {volume === 0 ? (
-                <VolumeMuteIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                <VolumeX size={20} className="text-[var(--color-text-secondary)]" />
             ) : volume < 0.5 ? (
-                <VolumeDownIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                <Volume1 size={20} className="text-[var(--color-text-secondary)]" />
             ) : (
-                <VolumeUpIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                <Volume2 size={20} className="text-[var(--color-text-secondary)]" />
             )}
             <Slider
                 size="small"

@@ -3,7 +3,7 @@ import { StoryService } from '@/services/story.service';
 import { CategoryService } from '@/services/category.service';
 import { Category } from '@/lib/types';
 
-const BASE_URL = 'https://audiotruyen-clone.vercel.app';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://audiotruyen-clone.vercel.app';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Fetch data with larger limits

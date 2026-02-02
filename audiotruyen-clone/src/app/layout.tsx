@@ -14,7 +14,7 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://audiotruyen-clone.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://audiotruyen-clone.vercel.app'),
   title: {
     default: "AudioTruyen Clone - Nghe Truyện Audio Online Miễn Phí",
     template: "%s | AudioTruyen Clone"
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "vi_VN",
-    url: "https://audiotruyen-clone.vercel.app",
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://audiotruyen-clone.vercel.app',
     siteName: "AudioTruyen Clone",
     title: "AudioTruyen Clone - Nghe Truyện Audio Online Miễn Phí",
     description: "Website nghe truyện audio online miễn phí với hàng nghìn tác phẩm hay. Tiên hiệp, huyền huyễn, kiếm hiệp, ngôn tình.",
@@ -61,11 +61,11 @@ export const metadata: Metadata = {
     google: "google-site-verification-code",
   },
   alternates: {
-    canonical: "https://audiotruyen-clone.vercel.app",
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://audiotruyen-clone.vercel.app',
   },
 };
 
-import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { AudioProvider } from "@/contexts/AudioContext";
 import { AppProvider } from "@/contexts/AppContext";
 import ThemeRegistry from "@/components/theme/ThemeRegistry";

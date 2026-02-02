@@ -3,9 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, KeyboardEvent, useEffect, useRef } from 'react';
 import { IconButton, InputAdornment } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
+import { Search, Menu, X } from 'lucide-react';
 import { MuiInput } from '@/components/ui/MuiInput';
 import { Category } from '@/lib/types';
 import { CategoryService } from '@/services';
@@ -84,7 +82,7 @@ export default function Header() {
                         aria-label="Mở menu"
                         size="large"
                     >
-                        <MenuIcon />
+                        <Menu size={24} />
                     </IconButton>
 
                     {/* Logo */}
@@ -121,7 +119,7 @@ export default function Header() {
                                                     size="small"
                                                     className="text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
                                                 >
-                                                    <SearchIcon fontSize="small" />
+                                                    <Search size={18} />
                                                 </IconButton>
                                             </InputAdornment>
                                         ),
@@ -147,7 +145,7 @@ export default function Header() {
                                 onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
                                 aria-label={isMobileSearchOpen ? "Đóng tìm kiếm" : "Mở tìm kiếm"}
                             >
-                                {isMobileSearchOpen ? <CloseIcon /> : <SearchIcon />}
+                                {isMobileSearchOpen ? <X size={24} /> : <Search size={24} />}
                             </IconButton>
                         </div>
                     </div>
@@ -174,7 +172,7 @@ export default function Header() {
                                             edge="end"
                                             size="small"
                                         >
-                                            <SearchIcon fontSize="small" />
+                                            <Search size={18} />
                                         </IconButton>
                                     </InputAdornment>
                                 ),

@@ -5,9 +5,7 @@ import Button, { ButtonProps as MuiButtonPropsBase } from '@mui/material/Button'
 import { cn } from '@/lib/utils'; // Assuming this utility exists, as seen in button.tsx
 
 // Extend MUI Button props
-export interface MuiButtonProps extends MuiButtonPropsBase {
-    // Add any custom props if needed
-}
+export type MuiButtonProps = MuiButtonPropsBase;
 
 export const MuiButton = React.forwardRef<HTMLButtonElement, MuiButtonProps>(
     ({ className, children, ...props }, ref) => {

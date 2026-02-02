@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Box, Typography, Divider } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Box, Typography } from '@mui/material';
+import { Eye } from 'lucide-react';
 import { Story } from '@/lib/types';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
+import { useStoryDisplay } from '@/hooks/useStoryDisplay';
 
 interface StoryListItemProps {
     story: Story;
@@ -13,7 +14,7 @@ interface StoryListItemProps {
 }
 
 export default function StoryListItem({ story, showThumbnail = true, className }: StoryListItemProps) {
-    const isCompleted = story.status === 'completed';
+    const { badges, chapterDisplay } = useStoryDisplay(story);
 
     return (
         <Link href={`/truyen/${story.slug}`} className={cn("block group no-underline", className)}>
@@ -82,11 +83,11 @@ export default function StoryListItem({ story, showThumbnail = true, className }
                     </Typography>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, color: 'text.secondary', fontSize: '0.75rem' }}>
-                        {isCompleted ? (
+                        {badges.showFull ? (
                             <Badge variant="full" className="h-auto px-1.5 py-0 text-[10px]">Full</Badge>
                         ) : (
                             <Typography component="span" variant="caption" sx={{ color: 'primary.main', fontWeight: 500 }}>
-                                C.{story.currentChapter}/{story.total_chapters}
+                                {chapterDisplay}
                             </Typography>
                         )}
                         <Typography component="span" variant="caption" color="text.secondary">
@@ -101,7 +102,7 @@ export default function StoryListItem({ story, showThumbnail = true, className }
 
                 {/* Views */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary', flexShrink: 0 }}>
-                    <VisibilityIcon sx={{ fontSize: '0.875rem' }} />
+                    <Eye size={14} />
                     <Typography variant="caption" color="text.secondary">
                         {story.views.toLocaleString()}
                     </Typography>

@@ -3,11 +3,12 @@
 import { memo } from 'react';
 import Link from 'next/link';
 import { Card, CardActionArea, CardContent, CardMedia, Typography, Box } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Eye } from 'lucide-react';
 import { OptimizedImage } from '@/components/ui/OptimizedImage';
 import { Story } from '@/lib/types';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
+import { useStoryDisplay } from '@/hooks/useStoryDisplay';
 
 interface StoryCardProps {
     story: Story;
@@ -16,10 +17,7 @@ interface StoryCardProps {
 }
 
 const StoryCard = memo(function StoryCard({ story, showBadge = true, className }: StoryCardProps) {
-    const isCompleted = story.status === 'completed';
-    const progressText = isCompleted
-        ? `${story.total_chapters} Chương`
-        : `Chương ${story.currentChapter || 0}`;
+    const { progressText, badges } = useStoryDisplay(story);
 
     return (
         <Card
@@ -72,8 +70,8 @@ const StoryCard = memo(function StoryCard({ story, showBadge = true, className }
                     {/* Status Badges */}
                     {showBadge && (
                         <Box sx={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 0.5, zIndex: 2 }}>
-                            {isCompleted && <Badge variant="full">Full</Badge>}
-                            {story.views > 50000 && <Badge variant="hot">Hot</Badge>}
+                            {badges.showFull && <Badge variant="full">Full</Badge>}
+                            {badges.showHot && <Badge variant="hot">Hot</Badge>}
                         </Box>
                     )}
 
@@ -118,7 +116,7 @@ const StoryCard = memo(function StoryCard({ story, showBadge = true, className }
                     </Typography>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary', fontSize: '0.75rem' }}>
-                        <VisibilityIcon sx={{ fontSize: 14, mr: 0.5 }} />
+                        <Eye size={14} className="mr-1" />
                         {story.views.toLocaleString()}
                     </Box>
                 </CardContent>

@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { Snackbar, Alert, Button, Typography, Box } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { Play } from 'lucide-react';
 
 interface ResumeToastProps {
     show: boolean;
@@ -36,7 +36,7 @@ export const ResumeToast = memo(function ResumeToast({
         >
             <Alert
                 severity="info"
-                icon={<PlayArrowIcon fontSize="inherit" />}
+                icon={<Play size={18} fill="currentColor" />}
                 action={
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button color="inherit" size="small" onClick={onDismiss}>

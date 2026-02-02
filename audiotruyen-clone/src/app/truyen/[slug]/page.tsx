@@ -1,12 +1,17 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import AudioPlayer from '@/components/features/audio/AudioPlayer';
-import StoryHero from '@/components/features/story/StoryHero';
-import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/lib/mock-data';
+import dynamic from 'next/dynamic';
 import { StoryService } from '@/services/story.service';
 import { Metadata } from 'next';
 import { generateStoryStructuredData } from '@/lib/structuredData';
+import SidebarRanking from '@/components/features/ranking/SidebarRanking';
+import { mockRanking } from '@/test/mocks';
+
+import ClientAudioPlayer from '@/components/features/audio/ClientAudioPlayer';
+
+const StoryHero = dynamic(() => import('@/components/features/story/StoryHero'), {
+    loading: () => <div className="h-[400px] animate-pulse bg-slate-100" />
+});
 
 interface StoryPageProps {
     params: Promise<{ slug: string }>;
@@ -96,7 +101,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
 
                     {/* Audio Player Section */}
                     <section>
-                        <AudioPlayer
+                        <ClientAudioPlayer
                             storyId={story.id}
                             storyTitle={story.title}
                             storySlug={story.slug}

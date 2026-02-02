@@ -2,7 +2,7 @@
 
 import { memo, useState, MouseEvent } from 'react';
 import { Button, Menu, MenuItem, Typography } from '@mui/material';
-import SpeedIcon from '@mui/icons-material/Speed';
+import { Gauge } from 'lucide-react';
 
 interface SpeedControlProps {
     playbackRate: number;
@@ -40,7 +40,7 @@ export const SpeedControl = memo(function SpeedControl({
                 onClick={handleClick}
                 color="inherit"
                 size="small"
-                startIcon={<SpeedIcon sx={{ fontSize: 18 }} />}
+                startIcon={<Gauge size={18} />}
                 sx={{
                     minWidth: 'auto',
                     borderRadius: 20,

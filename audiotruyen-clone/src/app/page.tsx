@@ -2,7 +2,7 @@ import Link from 'next/link';
 import StoryCard from '@/components/features/story/StoryCard';
 import StoryListItem from '@/components/features/story/StoryListItem';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/lib/mock-data';
+import { mockRanking } from '@/test/mocks';
 import { StoryService } from '@/services/story.service';
 
 export default async function Home() {

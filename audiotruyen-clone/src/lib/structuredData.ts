@@ -1,5 +1,7 @@
 import { Story, Chapter } from './types';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://audiotruyen-clone.vercel.app';
+
 function formatDurationForSEO(chapters: number): string {
     const estimatedMinutesPerChapter = 20;
     const totalMinutes = chapters * estimatedMinutesPerChapter;
@@ -29,7 +31,7 @@ export function generateStoryStructuredData(story: Story) {
         publisher: {
             '@type': 'Organization',
             name: 'AudioTruyen Clone',
-            url: 'https://audiotruyen-clone.vercel.app',
+            url: SITE_URL,
         },
         datePublished: story.created_at,
         dateModified: story.updated_at,
@@ -53,7 +55,7 @@ export function generateStoryStructuredData(story: Story) {
             availability: 'https://schema.org/InStock',
         },
         image: [story.cover_url],
-        url: `https://audiotruyen-clone.vercel.app/truyen/${story.slug}`,
+        url: `${SITE_URL}/truyen/${story.slug}`,
         aggregateRating: story.rating_avg ? {
             '@type': 'AggregateRating',
             ratingValue: story.rating_avg,
@@ -73,7 +75,7 @@ export function generateChapterStructuredData(story: Story, chapter: Chapter) {
         '@type': 'AudioBookChapter',
         name: `Chương ${chapter.number}: ${chapter.title}`,
         description: `Nghe chương ${chapter.number} truyện ${story.title}`,
-        url: `https://audiotruyen-clone.vercel.app/truyen/${story.slug}?chapter=${chapter.number}`,
+        url: `${SITE_URL}/truyen/${story.slug}?chapter=${chapter.number}`,
         position: chapter.number,
         datePublished: chapter.created_at || new Date().toISOString(),
         timeRequired: 'PT20M', // Estimate 20 minutes per chapter
@@ -84,7 +86,7 @@ export function generateChapterStructuredData(story: Story, chapter: Chapter) {
         isPartOf: {
             '@type': 'AudioBook',
             name: story.title,
-            url: `https://audiotruyen-clone.vercel.app/truyen/${story.slug}`,
+            url: `${SITE_URL}/truyen/${story.slug}`,
         },
     };
     return JSON.stringify(structuredData);
@@ -97,7 +99,7 @@ export function generateWebsiteStructuredData() {
         name: 'AudioTruyen Clone',
         alternateName: 'AudioTruyen.org Clone',
         description: 'Website nghe truyện audio online miễn phí với hàng nghìn tác phẩm hay. Clone từ AudioTruyen.org - Tiên hiệp, huyền huyễn, kiếm hiệp, ngôn tình.',
-        url: 'https://audiotruyen-clone.vercel.app',
+        url: SITE_URL,
         inLanguage: 'vi-VN',
         isAccessibleForFree: true,
         about: {
@@ -108,10 +110,10 @@ export function generateWebsiteStructuredData() {
         publisher: {
             '@type': 'Organization',
             name: 'AudioTruyen Clone',
-            url: 'https://audiotruyen-clone.vercel.app',
+            url: SITE_URL,
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://audiotruyen-clone.vercel.app/logo.png',
+                url: `${SITE_URL}/logo.png`,
                 width: 200,
                 height: 60,
             },
@@ -120,7 +122,7 @@ export function generateWebsiteStructuredData() {
             '@type': 'SearchAction',
             target: {
                 '@type': 'EntryPoint',
-                urlTemplate: 'https://audiotruyen-clone.vercel.app/tim-kiem?q={search_term_string}'
+                urlTemplate: `${SITE_URL}/tim-kiem?q={search_term_string}`
             },
             'query-input': 'required name=search_term_string'
         },

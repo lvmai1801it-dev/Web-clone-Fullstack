@@ -3,13 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Box, Typography, Chip, Stack, Rating, Container, Grid, CardMedia } from '@mui/material';
+import { Box, Typography, Chip, Stack, Rating, Container, CardMedia } from '@mui/material';
 import { Story } from '@/lib/types';
 import { Badge } from '@/components/ui/Badge';
-import PersonIcon from '@mui/icons-material/Person';
-import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { User, Mic, BookOpen, Eye } from 'lucide-react';
 
 interface StoryHeroProps {
     story: Story;
@@ -125,27 +122,27 @@ export default function StoryHero({ story }: StoryHeroProps) {
                                 maxWidth: '600px'
                             }}>
                                 <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
-                                    <PersonIcon fontSize="small" />
+                                    <User size={18} />
                                     <Typography variant="body2" width={80} fontWeight={500}>Tác giả:</Typography>
                                     <Typography variant="body2" fontWeight={600} color="primary.main">{story.author_name}</Typography>
                                 </Stack>
 
                                 {story.narrator && (
                                     <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
-                                        <RecordVoiceOverIcon fontSize="small" />
+                                        <Mic size={18} />
                                         <Typography variant="body2" width={80} fontWeight={500}>Giọng đọc:</Typography>
                                         <Typography variant="body2" color="text.primary">{story.narrator}</Typography>
                                     </Stack>
                                 )}
 
                                 <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
-                                    <MenuBookIcon fontSize="small" />
+                                    <BookOpen size={18} />
                                     <Typography variant="body2" width={80} fontWeight={500}>Số chương:</Typography>
                                     <Typography variant="body2">{story.total_chapters}</Typography>
                                 </Stack>
 
                                 <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
-                                    <VisibilityIcon fontSize="small" />
+                                    <Eye size={18} />
                                     <Typography variant="body2" width={80} fontWeight={500}>Lượt xem:</Typography>
                                     <Typography variant="body2">{story.views.toLocaleString()}</Typography>
                                 </Stack>

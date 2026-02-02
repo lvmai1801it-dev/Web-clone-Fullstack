@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { SwipeableDrawer, Box, IconButton, Typography } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { X } from 'lucide-react';
 
 interface BottomSheetProps {
     isOpen: boolean;
@@ -65,7 +65,7 @@ export function BottomSheet({
                             onClick={onClose}
                             size="small"
                         >
-                            <CloseIcon />
+                            <X size={20} />
                         </IconButton>
                     </div>
                 </Box>

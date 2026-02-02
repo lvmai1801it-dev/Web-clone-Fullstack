@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import StoryCard from '@/components/features/story/StoryCard';
 import Pagination from '@/components/ui/Pagination';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/lib/mock-data';
+import { mockRanking } from '@/test/mocks';
 import { CategoryService } from '@/services/category.service';
 import { StoryService } from '@/services/story.service';
 

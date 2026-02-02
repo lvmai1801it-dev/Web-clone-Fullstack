@@ -2,9 +2,8 @@
 
 import Link from 'next/link';
 
-import { Paper, Box, Typography, List, ListItemButton, Chip, Divider } from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Paper, Box, Typography, List, ListItemButton, Chip } from '@mui/material';
+import { TrendingUp, Eye } from 'lucide-react';
 import { RankingItem } from '@/lib/types';
 
 interface SidebarRankingProps {
@@ -64,7 +63,7 @@ export default function SidebarRanking({ items, title = 'Bảng Xếp Hạng' }:
                     color: 'white'
                 }}
             >
-                <TrendingUpIcon fontSize="small" />
+                <TrendingUp size={18} />
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                     {title}
                 </Typography>
@@ -129,7 +128,7 @@ export default function SidebarRanking({ items, title = 'Bảng Xếp Hạng' }:
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                                    <VisibilityIcon sx={{ fontSize: 14 }} />
+                                    <Eye size={14} />
                                     <Typography variant="caption">{item.story.views.toLocaleString()}</Typography>
                                 </Box>
                                 {item.story.status === 'completed' && (

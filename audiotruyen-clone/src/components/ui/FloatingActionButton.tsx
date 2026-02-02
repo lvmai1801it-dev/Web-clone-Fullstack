@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Fab } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import CloseIcon from '@mui/icons-material/Close';
+import { Play, X } from 'lucide-react';
 import { PlaybackPersistence } from '@/lib/persistence';
+import { useAudio } from '@/contexts/AudioContext';
 
 interface FABProps {
     className?: string;
 }
 
 export function FloatingActionButton({ className = '' }: FABProps) {
+    const { state } = useAudio();
     const [lastPlayed] = useState<{
         storyId: number;
         storySlug: string;
@@ -32,9 +33,8 @@ export function FloatingActionButton({ className = '' }: FABProps) {
     });
     const [isExpanded, setIsExpanded] = useState(false);
 
-
-
-    if (!lastPlayed) return null;
+    // Hide if no story to resume OR if player is currently active (MiniPlayer is visible)
+    if (!lastPlayed || state.storyId) return null;
 
     return (
         <div className={`fixed bottom-20 right-4 z-40 md:hidden ${className}`}>
@@ -62,9 +62,9 @@ export function FloatingActionButton({ className = '' }: FABProps) {
                 className="w-14 h-14"
             >
                 {isExpanded ? (
-                    <CloseIcon />
+                    <X size={24} />
                 ) : (
-                    <PlayArrowIcon />
+                    <Play size={24} fill="currentColor" />
                 )}
             </Fab>
         </div>

@@ -1,14 +1,40 @@
 'use client';
 
-import { createContext, useContext, useReducer, useRef, useCallback, ReactNode, useEffect, useMemo } from 'react';
+import { createContext, useContext, useReducer, useRef, useCallback, ReactNode, useEffect } from 'react';
 import { PlaybackPersistence, PlaybackProgress } from '@/lib/persistence';
 import { debounce } from '@/lib/utils';
+import { Chapter as APIChapter } from '@/lib/types';
 
 // === Types ===
+// Internal Chapter type for AudioContext (uses camelCase for consistency with UI)
 export interface Chapter {
     number: number;
     title: string;
     audioUrl: string;
+}
+
+/**
+ * Converts an API Chapter object to the UI Chapter format.
+ * 
+ * This helper bridges the naming convention gap between the backend API
+ * (snake_case: `audio_url`) and the frontend UI (camelCase: `audioUrl`).
+ * 
+ * @param apiChapter - Chapter object from the API with snake_case properties
+ * @returns Chapter object formatted for UI consumption with camelCase properties
+ * 
+ * @example
+ * ```tsx
+ * const apiChapters = await fetchChapters(storyId);
+ * const uiChapters = apiChapters.map(toUIChapter);
+ * setStory({ ...storyData, chapters: uiChapters });
+ * ```
+ */
+export function toUIChapter(apiChapter: APIChapter): Chapter {
+    return {
+        number: apiChapter.number,
+        title: apiChapter.title,
+        audioUrl: apiChapter.audio_url
+    };
 }
 
 export interface AudioState {
@@ -235,6 +261,19 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         }
     }, [state.resumeData, state.selectedChapter, setChapter]);
 
+    // Create stable debounced save function using a ref to avoid reading refs during render
+    const debouncedSaveRef = useRef<(() => void) | null>(null);
+
+    useEffect(() => {
+        debouncedSaveRef.current = debounce(() => {
+            saveProgress();
+        }, 5000);
+    }, [saveProgress]);
+
+    const debouncedSaveProgress = useCallback(() => {
+        debouncedSaveRef.current?.();
+    }, []);
+
     // === Effects for Audio Events ===
     useEffect(() => {
         const audio = audioRef.current;
@@ -290,16 +329,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
             audio.removeEventListener('pause', handlePauseForContext);
             audio.removeEventListener('error', handleError);
         };
-    }, [state.chapters.length, state.selectedChapter, state.playbackRate, state.volume, setChapter, saveProgress]);
-
-    // Create stable debounced save function
-    // Create stable debounced save function
-    const debouncedSaveProgress = useMemo(
-        () => debounce(() => {
-            saveProgress();
-        }, 5000), // Save every 5 seconds of continuous playback
-        [saveProgress]
-    );
+    }, [state.chapters.length, state.selectedChapter, state.playbackRate, state.volume, setChapter, saveProgress, debouncedSaveProgress]);
 
     // Clean up debounce on unmount is handled by the fact that it's just a function closure, 
     // but we can't easily cancel it with this simple implementation. 

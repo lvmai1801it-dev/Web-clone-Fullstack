@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button, Paper, Box, Typography, TextField, IconButton } from '@mui/material';
-import HeadsetIcon from '@mui/icons-material/Headset';
+import { useEffect } from 'react';
+import { Paper, Box, Typography } from '@mui/material';
+import { Headphones } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { MuiButton } from '@/components/ui/MuiButton';
+import { MuiInput } from '@/components/ui/MuiInput';
 
 // Sub-components
 import { AudioProgressBar } from './AudioProgressBar';
@@ -44,7 +46,6 @@ export default function AudioPlayer({
         setChapter,
         setPlaybackRate,
         setVolume,
-        toggleSpeedMenu,
         hideResumeToast,
         handleResume,
         formatTime
@@ -105,7 +106,7 @@ export default function AudioPlayer({
 
             {/* Title */}
             <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <HeadsetIcon />
+                <Headphones size={24} />
                 {title}
             </Typography>
 
@@ -187,7 +188,7 @@ export default function AudioPlayer({
                         Nhạc nền:
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-                        <TextField
+                        <MuiInput
                             id="bg-music-url"
                             placeholder="URL nhạc nền (Youtube, MP3...)"
                             size="small"
@@ -198,9 +199,9 @@ export default function AudioPlayer({
                                 }
                             }}
                         />
-                        <Button variant="outlined" size="small" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        <MuiButton variant="outlined" size="small" sx={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
                             Phát nhạc
-                        </Button>
+                        </MuiButton>
                     </Box>
                 </Box>
             </Box>

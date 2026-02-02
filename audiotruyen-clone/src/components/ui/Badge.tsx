@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 
 const StyledChip = styled(Chip, {
     shouldForwardProp: (prop) => prop !== 'customVariant',
-})<{ customVariant?: 'default' | 'full' | 'hot' | 'translate' | 'convert' }>(({ theme, customVariant }) => {
+})<{ customVariant?: 'default' | 'full' | 'hot' | 'translate' | 'convert' }>(({ customVariant }) => {
     const variants = {
         default: {
             backgroundColor: '#2563EB', // blue-600

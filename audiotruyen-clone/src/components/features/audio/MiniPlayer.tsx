@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Paper, Box, Typography, IconButton, LinearProgress } from '@mui/material';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
+import { Play, Pause } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 import { usePathname } from 'next/navigation';
+
+import { cn } from '@/lib/utils';
 
 interface MiniPlayerProps {
     className?: string;
@@ -27,15 +28,13 @@ export function MiniPlayer({ className = '' }: MiniPlayerProps) {
 
     return (
         <Box
+            className={cn("fixed z-30 transition-all duration-300", className)}
             sx={{
-                position: 'fixed',
-                bottom: 60,
-                left: 0,
-                right: 0,
-                zIndex: 30,
-                display: { xs: 'block', md: 'none' },
+                bottom: { xs: 60, md: 24 },
+                right: { xs: 0, md: 24 },
+                left: { xs: 0, md: 'auto' },
+                width: { xs: '100%', md: 360 },
                 animation: 'slide-in-from-bottom 0.3s ease-out',
-                ...className as any
             }}
         >
             <Paper
@@ -86,7 +85,7 @@ export function MiniPlayer({ className = '' }: MiniPlayerProps) {
                             }}
                             aria-label={state.isPlaying ? 'Tạm dừng' : 'Phát'}
                         >
-                            {state.isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+                            {state.isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
                         </IconButton>
                     </Box>
                 </Box>

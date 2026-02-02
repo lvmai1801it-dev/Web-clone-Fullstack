@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { IconButton, Button } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { X } from 'lucide-react';
 import { Category } from '@/lib/types';
 
 interface MobileMenuProps {
@@ -43,7 +43,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                         MENU
                     </span>
                     <IconButton onClick={onClose} aria-label="Đóng menu">
-                        <CloseIcon />
+                        <X size={24} />
                     </IconButton>
                 </div>
 

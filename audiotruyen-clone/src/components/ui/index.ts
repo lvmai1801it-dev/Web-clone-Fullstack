@@ -7,5 +7,3 @@ export * from './Pagination';
 export * from './PullToRefresh';
 export * from './OptimizedImage';
 export { ErrorBoundary } from './ErrorBoundary';
-export { ScreenReaderAnnouncer } from './ScreenReaderAnnouncer';
-

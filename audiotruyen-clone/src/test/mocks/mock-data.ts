@@ -1,4 +1,4 @@
-import { Story, RankingItem } from './types';
+import { Story, RankingItem } from '@/lib/types';
 
 // Base mock stories for templates
 const baseStories: Story[] = [
@@ -190,7 +190,7 @@ function getRelevanceScore(story: Story, lowerQuery: string, normalizedQuery: st
     if (author.includes(lowerQuery) || normalizedAuthor.includes(normalizedQuery)) return 40;
 
     // 6. Tags Match
-    if (story.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))) return 20;
+    if (story.tags?.some((tag: string) => tag.toLowerCase().includes(lowerQuery))) return 20;
 
     return 0;
 }

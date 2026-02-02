@@ -1,7 +1,6 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AudioProvider, useAudio } from './AudioContext';
-import { PlaybackPersistence } from '@/lib/persistence';
 
 // Mock Persistence
 vi.mock('@/lib/persistence', () => ({
@@ -16,7 +15,8 @@ vi.mock('@/lib/utils', async (importOriginal) => {
     const actual = await importOriginal();
     return {
         ...(actual as object),
-        debounce: (fn: Function) => fn, // Execute immediately
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+        debounce: (fn: Function) => fn, // Execute immediately (suppressing for test utility)
     };
 });
 
