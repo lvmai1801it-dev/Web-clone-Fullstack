@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
 import { MobileComponents } from "@/components/mobile/MobileComponents";
-import Link from "next/link";
 import { ThemeProvider } from "@/components/theme-provider";
 
 

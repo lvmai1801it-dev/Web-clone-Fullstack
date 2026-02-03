@@ -18,7 +18,8 @@ vi.mock('next/navigation', () => ({
 // Mock Next.js image
 vi.mock('next/image', () => ({
     __esModule: true,
-    default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />,
+    // eslint-disable-next-line @next/next/no-img-element
+    default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img alt="" {...props} />,
 }));
 
 // Global test cleanup

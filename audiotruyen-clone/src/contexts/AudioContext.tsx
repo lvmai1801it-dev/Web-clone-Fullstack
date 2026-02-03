@@ -214,13 +214,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const setStory = useCallback((story: { storyId: number; storyTitle: string; storySlug: string; coverUrl: string; chapters: Chapter[] }) => {
-        console.log('[setStory] Called with storyId:', story.storyId, 'type:', typeof story.storyId);
+
         dispatch({ type: 'SET_STORY', payload: story });
 
         const progress = PlaybackPersistence.getProgress(story.storyId);
-        console.log('[setStory] getProgress result:', progress);
-        console.log('[setStory] localStorage key searched:', `audiotruyen_progress_${story.storyId}`);
-        console.log('[setStory] All localStorage keys:', Object.keys(localStorage).filter(k => k.startsWith('audiotruyen')));
+
 
         if (progress) {
             // Always set resumeData for inline button
