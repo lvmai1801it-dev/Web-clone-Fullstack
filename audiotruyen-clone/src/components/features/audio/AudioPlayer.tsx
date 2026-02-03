@@ -45,7 +45,8 @@ export default function AudioPlayer({
         setChapter,
         setPlaybackRate,
         setVolume,
-        formatTime
+        formatTime,
+        handleResume
     } = useAudio();
 
     // Initialize story in context if it's different
@@ -160,13 +161,7 @@ export default function AudioPlayer({
                             <div className="flex flex-col items-center gap-3">
                                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tiếp tục nghe</span>
                                 <Button
-                                    onClick={() => {
-                                        if (state.resumeData) {
-                                            setChapter(state.resumeData.chapterNumber);
-                                            seek(state.resumeData.timestamp);
-                                            togglePlay();
-                                        }
-                                    }}
+                                    onClick={handleResume}
                                     size="lg"
                                     className="w-full sm:w-auto min-w-[300px] gap-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow font-bold rounded-xl h-12"
                                 >

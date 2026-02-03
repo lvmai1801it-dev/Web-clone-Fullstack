@@ -58,6 +58,7 @@ export interface AudioState {
     isSpeedMenuOpen: boolean;
     showResumeToast: boolean;
     resumeData: PlaybackProgress | null;
+    pendingSeek: number | null; // Timestamp to seek to after audio loads
 }
 
 type AudioAction =
@@ -71,6 +72,7 @@ type AudioAction =
     | { type: 'TOGGLE_SPEED_MENU' }
     | { type: 'SHOW_RESUME_TOAST'; payload: PlaybackProgress }
     | { type: 'HIDE_RESUME_TOAST' }
+    | { type: 'SET_PENDING_SEEK'; payload: number | null }
     | { type: 'RESET' };
 
 // === Initial State ===
@@ -90,6 +92,7 @@ const initialState: AudioState = {
     isSpeedMenuOpen: false,
     showResumeToast: false,
     resumeData: null,
+    pendingSeek: null,
 };
 
 // === Reducer ===
@@ -117,6 +120,8 @@ function audioReducer(state: AudioState, action: AudioAction): AudioState {
             return { ...state, showResumeToast: true, resumeData: action.payload };
         case 'HIDE_RESUME_TOAST':
             return { ...state, showResumeToast: false };
+        case 'SET_PENDING_SEEK':
+            return { ...state, pendingSeek: action.payload };
         case 'RESET':
             return initialState;
         default:
@@ -291,12 +296,15 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         shouldAutoPlayRef.current = true;
 
         if (state.selectedChapter === state.resumeData.chapterNumber) {
+            // Same chapter - seek directly
             const audio = audioRef.current;
             if (audio) {
                 audio.currentTime = state.resumeData.timestamp;
                 audio.play().catch(console.error);
             }
         } else {
+            // Different chapter - store pending seek in state, then change chapter
+            dispatch({ type: 'SET_PENDING_SEEK', payload: state.resumeData.timestamp });
             setChapter(state.resumeData.chapterNumber);
         }
     }, [state.resumeData, state.selectedChapter, setChapter]);
@@ -338,6 +346,15 @@ export function AudioProvider({ children }: { children: ReactNode }) {
             dispatch({ type: 'SET_DURATION', payload: audio.duration });
             audio.playbackRate = state.playbackRate;
             audio.volume = state.volume;
+
+            // Check if we need to seek to a specific timestamp (from resume)
+            // Use stateRef to get the latest pendingSeek value
+            const currentPendingSeek = stateRef.current.pendingSeek;
+            if (currentPendingSeek !== null) {
+                audio.currentTime = currentPendingSeek;
+                dispatch({ type: 'SET_CURRENT_TIME', payload: currentPendingSeek });
+                dispatch({ type: 'SET_PENDING_SEEK', payload: null });
+            }
 
             if (shouldAutoPlayRef.current) {
                 audio.play().catch(console.error);
