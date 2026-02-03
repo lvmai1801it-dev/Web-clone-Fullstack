@@ -38,9 +38,9 @@ export function FloatingActionButton({ className = '' }: FABProps) {
 
     return (
         <div className={`fixed bottom-20 right-4 z-40 md:hidden ${className}`}>
-            {/* Expanded tooltip */}
+            {/* Expanded tooltip - FIXED for Dark Mode */}
             {isExpanded && (
-                <div className="absolute bottom-16 right-0 bg-white rounded-2xl shadow-premium border p-4 min-w-[220px] animate-in slide-in-from-bottom-4 fade-in duration-300">
+                <div className="absolute bottom-16 right-0 bg-popover text-popover-foreground rounded-2xl shadow-premium-lg border border-border p-4 min-w-[220px] animate-in slide-in-from-bottom-4 fade-in duration-300">
                     <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider font-semibold">Tiếp tục nghe</p>
                     <p className="text-sm font-bold text-foreground line-clamp-2 mb-3">
                         {lastPlayed.storyTitle}
@@ -49,7 +49,7 @@ export function FloatingActionButton({ className = '' }: FABProps) {
                         href={`/truyen/${lastPlayed.storySlug}`}
                         className="block w-full"
                     >
-                        <Button className="w-full bg-primary hover:shadow-glow transition-all rounded-xl">
+                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow transition-all rounded-xl">
                             Nghe ngay
                         </Button>
                     </Link>
@@ -61,7 +61,7 @@ export function FloatingActionButton({ className = '' }: FABProps) {
                 variant="default"
                 size="icon"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-14 h-14 rounded-full shadow-premium hover:shadow-glow transition-all"
+                className="w-14 h-14 rounded-full shadow-premium hover:shadow-glow transition-all bg-primary text-primary-foreground"
             >
                 {isExpanded ? (
                     <X size={24} />

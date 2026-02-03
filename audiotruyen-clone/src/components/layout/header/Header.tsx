@@ -13,6 +13,7 @@ import { useSearch } from '@/hooks';
 import { SearchDropdown } from './SearchDropdown';
 import { DesktopNav } from './DesktopNav';
 import { UserActions } from './UserActions';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function Header() {
     const router = useRouter();
@@ -71,7 +72,7 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b">
+        <header className="bg-background/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-border">
             <div className="container-main">
                 {/* Top Row - Logo & Search */}
                 <div className="flex items-center justify-between py-2 gap-2">
@@ -95,6 +96,9 @@ export default function Header() {
 
                     {/* Actions & Search */}
                     <div className="flex items-center gap-2">
+                        <div className="hidden md:block">
+                            <ThemeToggle />
+                        </div>
                         <UserActions />
 
                         {/* Search Bar (Desktop) */}
@@ -152,7 +156,7 @@ export default function Header() {
 
             {/* Mobile Search Bar Expansion */}
             {isMobileSearchOpen && (
-                <div className="sm:hidden py-3 px-4 border-t border-[var(--color-border)] animate-in slide-in-from-top-2 duration-200 bg-white">
+                <div className="sm:hidden py-3 px-4 border-t border-border animate-in slide-in-from-top-2 duration-200 bg-background/95 backdrop-blur-md shadow-lg">
                     <div className="relative">
                         <MuiInput
                             autoFocus

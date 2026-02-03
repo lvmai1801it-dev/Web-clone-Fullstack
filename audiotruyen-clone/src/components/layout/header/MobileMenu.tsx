@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { X, Sparkles, Trophy, Flame } from 'lucide-react';
 import { Category } from '@/lib/types';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 interface MobileMenuProps {
     isOpen: boolean;
@@ -43,15 +44,18 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                     <span className="text-xl font-black text-primary tracking-tight">
                         AudioTruyen
                     </span>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onClose}
-                        aria-label="Đóng menu"
-                        className="rounded-full hover:bg-muted"
-                    >
-                        <X size={20} />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                        <ThemeToggle />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onClose}
+                            aria-label="Đóng menu"
+                            className="rounded-full hover:bg-muted"
+                        >
+                            <X size={20} />
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Navigation - scrollable */}

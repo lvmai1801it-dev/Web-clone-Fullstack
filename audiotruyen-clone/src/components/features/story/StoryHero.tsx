@@ -16,6 +16,21 @@ export default function StoryHero({ story }: StoryHeroProps) {
 
     return (
         <div className="relative w-full overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background pb-12 pt-10">
+            {/* Dynamic Story Background (Blur Effect) */}
+            {story.cover_url && (
+                <div className="fixed inset-0 z-[-1] pointer-events-none">
+                    <Image
+                        src={story.cover_url}
+                        alt=""
+                        fill
+                        className="object-cover blur-3xl opacity-20 dark:opacity-10 scale-110"
+                        priority
+                    />
+                    {/* Blend Overlay */}
+                    <div className="absolute inset-0 bg-background/60 dark:bg-background/80" />
+                </div>
+            )}
+
             {/* Background Decorative Element */}
             <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl -z-10" />
 

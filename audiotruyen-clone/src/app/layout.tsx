@@ -4,7 +4,8 @@ import "./globals.css";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
 import { MobileComponents } from "@/components/mobile/MobileComponents";
-
+import Link from "next/link";
+import { ThemeProvider } from "@/components/theme-provider";
 
 
 const inter = Inter({
@@ -68,7 +69,6 @@ export const metadata: Metadata = {
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { AudioProvider } from "@/contexts/AudioContext";
 import { AppProvider } from "@/contexts/AppContext";
-import { ResumeToastContainer } from "@/components/features/audio/ResumeToastContainer";
 
 export default function RootLayout({
   children,
@@ -85,25 +85,30 @@ export default function RootLayout({
         >
           Chuyển đến nội dung chính
         </a>
-        <AppProvider>
-          <AudioProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AppProvider>
+            <AudioProvider>
 
-            <Header />
-            <ResumeToastContainer />
-            <main id="main-content" className="min-h-screen pb-16 md:pb-0">
-              <ErrorBoundary>
-                {children}
-              </ErrorBoundary>
-            </main>
+              <Header />
+              <main id="main-content" className="min-h-screen pb-16 md:pb-0">
+                <ErrorBoundary>
+                  {children}
+                </ErrorBoundary>
+              </main>
 
-            {/* Mobile-only components (dynamic loaded) */}
-            <MobileComponents />
+              {/* Mobile-only components (dynamic loaded) */}
+              <MobileComponents />
 
-            <Footer />
+              <Footer />
 
-          </AudioProvider>
-        </AppProvider>
-
+            </AudioProvider>
+          </AppProvider>
+        </ThemeProvider>
       </body >
     </html >
   );

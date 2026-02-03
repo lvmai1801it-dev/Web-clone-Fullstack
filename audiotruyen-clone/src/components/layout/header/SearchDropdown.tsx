@@ -15,7 +15,7 @@ interface SearchDropdownProps {
 
 export function SearchDropdown({ results, isLoading, onItemClick, onViewAll }: SearchDropdownProps) {
     return (
-        <div className="absolute top-full right-0 mt-3 w-full sm:w-[320px] lg:w-[420px] glass-premium rounded-2xl shadow-premium-lg border border-primary/10 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="absolute top-full right-0 mt-3 w-full sm:w-[320px] lg:w-[420px] bg-popover text-popover-foreground rounded-2xl shadow-premium-lg border border-primary/10 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-300">
             {isLoading ? (
                 <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center justify-center gap-3">
                     <Loader2 className="w-8 h-8 text-primary animate-spin opacity-50" />

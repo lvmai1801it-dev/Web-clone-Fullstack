@@ -47,7 +47,7 @@ export const MuiInput = React.forwardRef<HTMLInputElement, MuiInputProps>(
                             InputProps?.startAdornment && "pl-10",
                             InputProps?.endAdornment && "pr-10",
                             size === 'small' && "h-9 text-sm",
-                            "rounded-xl bg-background/50 hover:bg-background transition-all",
+                            "rounded-full bg-muted/40 hover:bg-muted/60 dark:bg-muted/30 dark:hover:bg-muted/50 transition-all border-transparent focus:border-primary/50 shadow-sm",
                             className
                         )}
                         {...props}

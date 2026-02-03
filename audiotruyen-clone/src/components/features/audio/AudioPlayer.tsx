@@ -154,23 +154,29 @@ export default function AudioPlayer({
                         </div>
                     </div>
 
-                    {/* Resume Prompt (Inline) */}
+                    {/* Resume Prompt (Inline - Contextual) */}
                     {state.resumeData && state.resumeData.storyId === state.storyId && (
-                        <div className="flex justify-center animate-in fade-in slide-in-from-top-2 pt-2">
-                            <Button
-                                onClick={() => {
-                                    if (state.resumeData) {
-                                        setChapter(state.resumeData.chapterNumber);
-                                        seek(state.resumeData.timestamp);
-                                        togglePlay();
-                                    }
-                                }}
-                                variant="secondary"
-                                className="gap-2 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 shadow-sm"
-                            >
-                                <Music size={16} />
-                                Nghe tiếp Chương {state.resumeData.chapterNumber} (từ {formatTime(state.resumeData.timestamp)})
-                            </Button>
+                        <div className="animate-in fade-in slide-in-from-top-3 pt-4 border-t border-dashed border-primary/20 mt-2">
+                            <div className="flex flex-col items-center gap-3">
+                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Tiếp tục nghe</span>
+                                <Button
+                                    onClick={() => {
+                                        if (state.resumeData) {
+                                            setChapter(state.resumeData.chapterNumber);
+                                            seek(state.resumeData.timestamp);
+                                            togglePlay();
+                                        }
+                                    }}
+                                    size="lg"
+                                    className="w-full sm:w-auto min-w-[300px] gap-3 bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow font-bold rounded-xl h-12"
+                                >
+                                    <Music size={18} className="animate-pulse" />
+                                    <span>
+                                        Chương {state.resumeData.chapterNumber}
+                                        <span className="opacity-70 font-medium ml-2 text-xs">(từ {formatTime(state.resumeData.timestamp)})</span>
+                                    </span>
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>
