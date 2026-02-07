@@ -110,7 +110,7 @@ export function MobileMenu({ isOpen, onClose, categories }: MobileMenuProps) {
                     <Button
                         onClick={() => {
                             onClose();
-                            window.location.href = '/login';
+                            window.location.href = '/dang-nhap';
                         }}
                         className="w-full font-bold shadow-lg shadow-primary/25"
                     >

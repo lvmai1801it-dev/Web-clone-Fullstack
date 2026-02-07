@@ -1,9 +1,10 @@
-import { searchStories, mockRanking } from '@/test/mocks';
 import StoryCard from '@/components/features/story/StoryCard';
-import SidebarRanking from '@/components/features/ranking/SidebarRanking';
+import { StoryService } from '@/services/story.service';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Search, ChevronRight, Home as HomeIcon, Sparkles } from 'lucide-react';
+import { Suspense } from 'react';
+import RankingSidebarLoader from '@/components/features/ranking/RankingSidebarLoader';
 
 interface SearchPageProps {
     searchParams: Promise<{ q: string }>;
@@ -12,7 +13,10 @@ interface SearchPageProps {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
     const { q } = await searchParams;
     const query = q || '';
-    const results = query ? searchStories(query) : [];
+
+    // Use real API for search (non-blocking for sidebar)
+    const searchResponse = query ? await StoryService.search(query, 50) : null;
+    const results = searchResponse?.success ? searchResponse.data?.items || [] : [];
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -60,9 +64,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                             </div>
                         </div>
 
-                        {/* Sidebar */}
+                        {/* Sidebar with Streaming SSR */}
                         <aside className="hidden lg:block space-y-10">
-                            <SidebarRanking items={mockRanking} title="Gợi Ý Cho Bạn" />
+                            <Suspense fallback={
+                                <div className="h-[600px] w-full rounded-2xl bg-muted/20 animate-pulse border border-muted/30" />
+                            }>
+                                <RankingSidebarLoader />
+                            </Suspense>
                         </aside>
                     </div>
                 ) : (

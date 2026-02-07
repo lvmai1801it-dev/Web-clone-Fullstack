@@ -7,5 +7,3 @@ export { SpeedControl } from './SpeedControl';
 export { VolumeControl } from './VolumeControl';
 
 export { MiniPlayer } from './MiniPlayer';
-export { AudioErrorBoundary } from './AudioErrorBoundary';
-

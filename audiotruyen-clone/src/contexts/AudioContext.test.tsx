@@ -7,6 +7,7 @@ vi.mock('@/lib/persistence', () => ({
     PlaybackPersistence: {
         saveProgress: vi.fn(),
         getProgress: vi.fn(),
+        getLastPlayed: vi.fn(),
     },
 }));
 

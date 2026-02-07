@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import StoryCard from '@/components/features/story/StoryCard';
 import Pagination from '@/components/ui/Pagination';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/test/mocks';
+import { RankingService } from '@/services/ranking.service';
 import { Story } from '@/lib/types';
 import { StoryService } from '@/services/story.service';
 import { ChevronRight, LayoutGrid, Sparkles } from 'lucide-react';
@@ -67,6 +67,9 @@ export default async function ListPage({ params, searchParams }: ListPageProps) 
 
     const paginatedStories = stories;
 
+    // Get ranking data for sidebar
+    const rankingData = await RankingService.getTopStories(10);
+
     return (
         <div className="min-h-screen bg-background pb-20">
             {/* Header / Breadcrumb Area */}
@@ -119,7 +122,7 @@ export default async function ListPage({ params, searchParams }: ListPageProps) 
 
                 {/* Sidebar */}
                 <aside className="space-y-10">
-                    <SidebarRanking items={mockRanking} title="Gợi Ý Cho Bạn" />
+                    <SidebarRanking items={rankingData} title="Gợi Ý Cho Bạn" />
 
                     {/* Categories Widget */}
                     <div className="glass-premium rounded-2xl border border-primary/10 shadow-premium overflow-hidden">

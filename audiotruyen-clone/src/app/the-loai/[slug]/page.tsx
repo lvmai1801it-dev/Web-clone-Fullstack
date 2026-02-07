@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import StoryCard from '@/components/features/story/StoryCard';
 import Pagination from '@/components/ui/Pagination';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/test/mocks';
+import { RankingService } from '@/services/ranking.service';
 import { CategoryService } from '@/services/category.service';
 import { StoryService } from '@/services/story.service';
 import { ChevronRight, LayoutGrid, Library, Sparkles } from 'lucide-react';
@@ -55,14 +55,17 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
     const category = response.data;
 
-    // 2. Fetch stories by category_id
-    const storiesRes = await StoryService.getAll({
-        category_id: category.id,
-        page: currentPage,
-        limit: itemsPerPage,
-        sort: 'updated_at', // Optional: sort by something relevant
-        order: 'desc'
-    });
+    // 2. Fetch stories by category_id and ranking data in parallel
+    const [storiesRes, rankingData] = await Promise.all([
+        StoryService.getAll({
+            category_id: category.id,
+            page: currentPage,
+            limit: itemsPerPage,
+            sort: 'updated_at',
+            order: 'desc'
+        }),
+        RankingService.getTopStories(10)
+    ]);
 
     const currentStories = storiesRes.success ? storiesRes.data?.items || [] : [];
     const pagination = storiesRes.success ? storiesRes.data?.pagination : null;
@@ -117,7 +120,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     {currentStories.length > 0 ? (
                         <div className="story-grid">
                             {currentStories.map((story) => {
-                                return <StoryCard key={story.id} story={story} />
+                                return <StoryCard key={story.id} story={story} />;
                             })}
                         </div>
                     ) : (
@@ -144,7 +147,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
                 {/* Sidebar */}
                 <aside className="space-y-10">
-                    <SidebarRanking items={mockRanking} title="Cực Hot Tuần Này" />
+                    <SidebarRanking items={rankingData} title="Cực Hot Tuần Này" />
 
                     {/* Other Categories */}
                     <div className="glass-premium rounded-2xl border border-primary/10 shadow-premium overflow-hidden">

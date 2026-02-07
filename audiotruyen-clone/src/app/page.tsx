@@ -2,7 +2,7 @@ import Link from 'next/link';
 import StoryCard from '@/components/features/story/StoryCard';
 import StoryListItem from '@/components/features/story/StoryListItem';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/test/mocks';
+
 import { StoryService } from '@/services/story.service';
 import { Sparkles, Trophy, Flame, ChevronRight } from 'lucide-react';
 
@@ -11,12 +11,18 @@ export default async function Home() {
   const [newStoriesRes, completedStoriesRes, hotStoriesRes] = await Promise.all([
     StoryService.getNewStories(6),
     StoryService.getCompletedStories(5),
-    StoryService.getHotStories(12)
+    StoryService.getHotStories(12),
   ]);
 
   const newStories = newStoriesRes.success ? newStoriesRes.data?.items || [] : [];
   const completedStories = completedStoriesRes.success ? completedStoriesRes.data?.items || [] : [];
   const randomStories = hotStoriesRes.success ? hotStoriesRes.data?.items || [] : [];
+
+  // Reuse hot stories for ranking (Client-side transformation to save 1 API call)
+  const rankingData = randomStories.slice(0, 10).map((story, index) => ({
+    rank: index + 1,
+    story,
+  }));
 
   return (
     <div className="container-main py-10 space-y-16">
@@ -108,7 +114,7 @@ export default async function Home() {
 
         {/* Sidebar */}
         <aside className="space-y-12">
-          <SidebarRanking items={mockRanking} title="Top Nghe Nhiều Nhất" />
+          <SidebarRanking items={rankingData} title="Top Nghe Nhiều Nhất" />
 
           {/* Decorative Sticky Section (Optional) */}
           <div className="sticky top-24 space-y-6">

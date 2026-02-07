@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { StoryService } from '@/services/story.service';
+import { RankingService } from '@/services/ranking.service';
 import { Metadata } from 'next';
 import { generateStoryStructuredData } from '@/lib/structuredData';
 import SidebarRanking from '@/components/features/ranking/SidebarRanking';
-import { mockRanking } from '@/test/mocks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui';
 import { Button } from '@/components/ui/button';
@@ -44,7 +44,11 @@ export async function generateMetadata({ params }: StoryPageProps): Promise<Meta
 export default async function StoryPage({ params }: StoryPageProps) {
     const { slug } = await params;
 
-    const response = await StoryService.getById(slug, true);
+    // Fetch story data and ranking in parallel
+    const [response, rankingData] = await Promise.all([
+        StoryService.getById(slug, true),
+        RankingService.getTopStories(10)
+    ]);
 
     if (!response.success || !response.data) {
         notFound();
@@ -174,7 +178,7 @@ export default async function StoryPage({ params }: StoryPageProps) {
 
                 {/* Sidebar */}
                 <aside className="space-y-8">
-                    <SidebarRanking items={mockRanking} title="Top Truyện Nghe Nhiều" />
+                    <SidebarRanking items={rankingData} title="Top Truyện Nghe Nhiều" />
                 </aside>
             </div>
         </div>
