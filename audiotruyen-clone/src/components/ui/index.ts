@@ -1,6 +1,6 @@
 // Core Shadcn Components (lowercase convention)
 export * from './button';
-export * from './Badge';
+export * from './badge';
 export * from './card';
 export * from './input';
 export * from './slider';
