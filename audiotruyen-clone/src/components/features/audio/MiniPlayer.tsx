@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Play, Pause, ChevronRight } from 'lucide-react';
+import { Play, Pause, ChevronRight, Headphones } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -43,13 +43,19 @@ export function MiniPlayer({ className = '' }: MiniPlayerProps) {
                     {/* Cover */}
                     <Link href={`/truyen/${state.storySlug}`} className="shrink-0 relative overflow-hidden group/cover">
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-white/20">
-                            <Image
-                                src={state.coverUrl || '/covers/placeholder.jpg'}
-                                alt={state.storyTitle}
-                                fill
-                                className="object-cover transition-transform group-hover/cover:scale-110"
-                                sizes="48px"
-                            />
+                            {state.coverUrl ? (
+                                <Image
+                                    src={state.coverUrl}
+                                    alt={state.storyTitle}
+                                    fill
+                                    className="object-cover transition-transform group-hover/cover:scale-110"
+                                    sizes="48px"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
+                                    <Headphones size={20} className="text-white/80" />
+                                </div>
+                            )}
                         </div>
                     </Link>
 

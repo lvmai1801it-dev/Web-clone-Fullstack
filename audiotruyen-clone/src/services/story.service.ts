@@ -2,19 +2,26 @@ import axiosInstance from '@/lib/axios';
 import { ApiResponse, PaginatedResponse } from '@/types';
 import { Story, Chapter } from '@/lib/types';
 
-// Simple in-memory cache
+// Simple in-memory cache with size limit
 const cache = new Map<string, { data: unknown; expiry: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_SIZE = 100;
 
 const getFromCache = <T>(key: string): T | null => {
     const item = cache.get(key);
     if (item && Date.now() < item.expiry) {
         return item.data as T;
     }
+    if (item) cache.delete(key); // Clean expired
     return null;
 };
 
 const setCache = <T>(key: string, data: T) => {
+    // Evict oldest entries when cache is full
+    if (cache.size >= MAX_CACHE_SIZE) {
+        const keysToDelete = [...cache.keys()].slice(0, Math.floor(MAX_CACHE_SIZE / 2));
+        keysToDelete.forEach(k => cache.delete(k));
+    }
     cache.set(key, {
         data,
         expiry: Date.now() + CACHE_DURATION
@@ -146,34 +153,4 @@ export const StoryService = {
     incrementViews: async (storyId: number): Promise<ApiResponse<void>> => {
         return axiosInstance.post(`/public/stories/${storyId}/click`) as Promise<ApiResponse<void>>;
     },
-
-    // --- ADMIN METHODS ---
-
-    /**
-     * Save story (Create or Update)
-     * POST /admin/stories/save
-     * Supports category_ids array
-     */
-    save: async (data: Partial<Story> & { category_ids?: number[] }): Promise<ApiResponse<Story>> => {
-        cache.clear(); // Clear cache on update
-        return axiosInstance.post('/admin/stories/save', data) as Promise<ApiResponse<Story>>;
-    },
-
-    /**
-     * Bulk save stories
-     * POST /admin/stories/save (Send array)
-     */
-    bulkSave: async (data: (Partial<Story> & { category_ids?: number[] })[]): Promise<ApiResponse<Story[]>> => {
-        cache.clear(); // Clear cache on update
-        return axiosInstance.post('/admin/stories/save', data) as Promise<ApiResponse<Story[]>>;
-    },
-
-    /**
-     * Delete story
-     * DELETE /admin/stories/{id}
-     */
-    delete: async (id: number): Promise<ApiResponse<void>> => {
-        cache.clear(); // Clear cache on delete
-        return axiosInstance.delete(`/admin/stories/${id}`) as Promise<ApiResponse<void>>;
-    }
 };

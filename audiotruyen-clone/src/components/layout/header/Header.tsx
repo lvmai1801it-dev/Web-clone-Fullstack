@@ -12,7 +12,6 @@ import { MobileMenu } from './MobileMenu';
 import { useSearch } from '@/hooks';
 import { SearchDropdown } from './SearchDropdown';
 import { DesktopNav } from './DesktopNav';
-import { UserActions } from './UserActions';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function Header() {
@@ -99,7 +98,6 @@ export default function Header() {
                         <div className="hidden md:block">
                             <ThemeToggle />
                         </div>
-                        <UserActions />
 
                         {/* Search Bar (Desktop) */}
                         <div className="relative hidden sm:block" ref={searchRef}>

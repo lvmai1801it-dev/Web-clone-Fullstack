@@ -1,11 +1,12 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Eye } from 'lucide-react';
 import { Story } from '@/lib/types';
 import { Badge } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { cn, formatRelativeTime } from '@/lib/utils';
 import { useStoryDisplay } from '@/hooks/useStoryDisplay';
 
 interface StoryListItemProps {
@@ -14,7 +15,7 @@ interface StoryListItemProps {
     className?: string;
 }
 
-export default function StoryListItem({ story, showThumbnail = true, className }: StoryListItemProps) {
+const StoryListItem = memo(function StoryListItem({ story, showThumbnail = true, className }: StoryListItemProps) {
     const { badges, chapterDisplay } = useStoryDisplay(story);
 
     return (
@@ -55,8 +56,8 @@ export default function StoryListItem({ story, showThumbnail = true, className }
                             </span>
                         )}
                         <span className="text-[10px] md:text-xs font-medium text-muted-foreground/50">•</span>
-                        <span className="text-[10px] md:text-xs font-bold text-muted-foreground/60 font-mono">
-                            {story.updated_at}
+                        <span className="text-[10px] md:text-xs font-bold text-muted-foreground/60">
+                            {formatRelativeTime(story.updated_at)}
                         </span>
                     </div>
 
@@ -75,4 +76,6 @@ export default function StoryListItem({ story, showThumbnail = true, className }
             </div>
         </Link>
     );
-}
+});
+
+export default StoryListItem;

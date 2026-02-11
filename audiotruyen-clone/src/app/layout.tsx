@@ -67,7 +67,6 @@ export const metadata: Metadata = {
 
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { AudioProvider } from "@/contexts/AudioContext";
-import { AppProvider } from "@/contexts/AppContext";
 
 export default function RootLayout({
   children,
@@ -90,23 +89,21 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppProvider>
-            <AudioProvider>
+          <AudioProvider>
 
-              <Header />
-              <main id="main-content" className="min-h-screen pb-16 md:pb-0">
-                <ErrorBoundary>
-                  {children}
-                </ErrorBoundary>
-              </main>
+            <Header />
+            <main id="main-content" className="min-h-screen pb-16 md:pb-0">
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
+            </main>
 
-              {/* Mobile-only components (dynamic loaded) */}
-              <MobileComponents />
+            {/* Mobile-only components (dynamic loaded) */}
+            <MobileComponents />
 
-              <Footer />
+            <Footer />
 
-            </AudioProvider>
-          </AppProvider>
+          </AudioProvider>
         </ThemeProvider>
       </body >
     </html >

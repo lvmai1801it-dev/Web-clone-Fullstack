@@ -5,7 +5,6 @@ import { Headphones, Music } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Sub-components
@@ -176,29 +175,6 @@ export default function AudioPlayer({
                     )}
                 </div>
 
-                {/* Background Music Section (Advanced Feature) */}
-                <div className="pt-8 mt-2 border-t border-muted/30">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                        <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
-                            <Music size={16} />
-                            <span className="text-xs font-bold uppercase tracking-widest">Nhạc nền:</span>
-                        </div>
-                        <div className="flex items-center gap-3 flex-1">
-                            <Input
-                                id="bg-music-url"
-                                placeholder="Dán link nhạc Youtube / MP3 để nghe kèm..."
-                                className="h-10 bg-muted/40 border-none rounded-xl text-sm focus-visible:ring-primary/20"
-                            />
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-10 px-6 rounded-xl font-bold whitespace-nowrap border-primary/20 hover:bg-primary/5 transition-colors"
-                            >
-                                Trải nghiệm
-                            </Button>
-                        </div>
-                    </div>
-                </div>
             </CardContent>
         </Card>
     );
